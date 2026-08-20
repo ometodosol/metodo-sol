@@ -10,15 +10,18 @@ import { ClienteDetalhes } from './pages/ClienteDetalhes';
 import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
-import { Checklist } from './pages/Checklist';
+import { Comissionamento } from './pages/Comissionamento';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
-// Dummy components for non-implemented pages
+// Placeholder para rotas em desenvolvimento
 const Placeholder = ({ title }: { title: string }) => (
-  <div className="p-10 text-center animate-in fade-in">
-    <h1 className="text-2xl font-bold text-gray-400">{title}</h1>
-    <p className="text-gray-500 mt-2">Em breve</p>
+  <div className="flex flex-col items-center justify-center h-full text-slate-400">
+    <div className="bg-slate-100 p-4 rounded-full mb-4">
+      <div className="w-8 h-8 opacity-50 flex items-center justify-center">🚧</div>
+    </div>
+    <h2 className="text-xl font-medium text-slate-600 mb-2">{title}</h2>
+    <p>Este módulo está em desenvolvimento.</p>
   </div>
 );
 
@@ -30,10 +33,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<AppLayout />}>
+            <Route element={<AppLayout />}>
               <Route index element={<Dashboard />} />
               
-              {/* Clientes e Projetos */}
               <Route path="clientes" element={<Clientes />} />
               <Route path="clientes/novo" element={<NovoCliente />} />
               <Route path="clientes/:id" element={<ClienteDetalhes />} />
@@ -42,7 +44,7 @@ function App() {
               <Route path="projetos/novo" element={<NovoProjeto />} />
               <Route path="projetos/:id" element={<ProjetoDetalhes />} />
               
-              <Route path="checklist" element={<Checklist />} />
+              <Route path="comissionamento" element={<Comissionamento />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />

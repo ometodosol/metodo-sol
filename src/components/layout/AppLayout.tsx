@@ -10,10 +10,10 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: FileText, label: 'Meus Projetos', path: '/projetos' },
-  { icon: CheckSquare, label: 'Checklist', path: '/checklist' },
   { icon: Calculator, label: 'Calculadoras', path: '/calculadoras' },
   { icon: Wrench, label: 'Instalação', path: '/instalacao' },
   { icon: Settings2, label: 'Homologação', path: '/homologacao' },
+  { icon: CheckSquare, label: 'Comissionamento', path: '/comissionamento' },
   { icon: GraduationCap, label: 'Aprender', path: '/aprender' },
 ];
 
