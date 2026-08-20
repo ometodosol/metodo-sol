@@ -9,6 +9,7 @@ export function Clientes() {
   const navigate = useNavigate();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busca, setBusca] = useState('');
 
   useEffect(() => {
     async function fetchClientes() {
@@ -25,6 +26,10 @@ export function Clientes() {
     
     fetchClientes();
   }, []);
+
+  const clientesFiltrados = clientes.filter(c => 
+    c.nome.toLowerCase().includes(busca.toLowerCase())
+  );
 
   return (
     <div className="p-6 md:p-10 space-y-6 animate-in fade-in duration-500">
@@ -49,6 +54,8 @@ export function Clientes() {
         </div>
         <input
           type="text"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
           className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-brand-dark focus:border-brand-dark bg-white"
           placeholder="Buscar cliente por nome..."
         />

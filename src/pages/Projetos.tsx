@@ -15,6 +15,7 @@ export function Projetos() {
   const navigate = useNavigate();
   const [projetos, setProjetos] = useState<ProjetoComCliente[]>([]);
   const [loading, setLoading] = useState(true);
+  const [busca, setBusca] = useState('');
 
   useEffect(() => {
     async function fetchProjetos() {
@@ -32,6 +33,11 @@ export function Projetos() {
     
     fetchProjetos();
   }, []);
+
+  const projetosFiltrados = projetos.filter(p => 
+    p.titulo.toLowerCase().includes(busca.toLowerCase()) || 
+    p.clientes?.nome.toLowerCase().includes(busca.toLowerCase())
+  );
 
   return (
     <div className="p-6 md:p-10 space-y-6 animate-in fade-in duration-500">
@@ -56,6 +62,8 @@ export function Projetos() {
         </div>
         <input
           type="text"
+          value={busca}
+          onChange={(e) => setBusca(e.target.value)}
           className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-brand-dark focus:border-brand-dark bg-white"
           placeholder="Buscar projeto..."
         />
@@ -85,7 +93,7 @@ export function Projetos() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {projetos.map((projeto) => (
+          {projetosFiltrados.map((projeto) => (
             <div 
               key={projeto.id} 
               onClick={() => navigate(`/projetos/${projeto.id}`)}
