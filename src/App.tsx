@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
+import { Clientes } from './pages/Clientes';
+import { NovoCliente } from './pages/NovoCliente';
 
 // Dummy components for non-implemented pages
 const Placeholder = ({ title }: { title: string }) => (
@@ -17,7 +19,8 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Dashboard />} />
-          <Route path="clientes" element={<Placeholder title="Gestão de Clientes" />} />
+          <Route path="clientes" element={<Clientes />} />
+          <Route path="clientes/novo" element={<NovoCliente />} />
           <Route path="projetos" element={<Placeholder title="Meus Projetos" />} />
           <Route path="projetos/novo" element={<Placeholder title="Novo Projeto (Levantamento)" />} />
           <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
