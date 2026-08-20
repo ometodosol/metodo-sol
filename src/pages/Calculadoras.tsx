@@ -20,19 +20,33 @@ const MODELOS_PLACAS = [
 export function Calculadoras() {
   const [metodo, setMetodo] = useState<MetodoCalculo>(null);
   
-  // Entradas
+  // Entradas Básicas
   const [potenciaKwp, setPotenciaKwp] = useState<string>('');
   const [areaM2, setAreaM2] = useState<string>('');
   const [placaSelecionadaId, setPlacaSelecionadaId] = useState<string>('jinko550');
   
+  // Entradas Avançadas (Distâncias e Tensão)
+  const [tensaoRede, setTensaoRede] = useState<string>('220bi'); // 220bi, 220mono, 380tri
+  const [distanciaCC, setDistanciaCC] = useState<string>(''); // Modulos -> Inversor
+  const [distanciaCA, setDistanciaCA] = useState<string>(''); // Inversor -> Padrao
+  
   // Estado do resultado
   const [resultado, setResultado] = useState<any>(null);
+
+  const disjuntoresComerciais = [10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 150];
 
   const calcularKit = () => {
     const placa = MODELOS_PLACAS.find(p => p.id === placaSelecionadaId) || MODELOS_PLACAS[1];
     const potPlacaW = placa.potenciaW;
     const potPlacaKwp = potPlacaW / 1000;
     const areaPlaca = placa.areaM2;
+
+    const distCC = parseFloat(distanciaCC.replace(',', '.')) || 0;
+    const distCA = parseFloat(distanciaCA.replace(',', '.')) || 0;
+
+    if (!distCC || !distCA) {
+      return alert('Por favor, preencha as distâncias CC e CA para gerar a lista de cabos.');
+    }
 
     let numPlacas = 0;
     let potTotalKwp = 0;
@@ -57,9 +71,40 @@ export function Calculadoras() {
     }
 
     // Regras de negócio da Lista de Materiais
-    const inversorSugeridoKwp = (potTotalKwp / 1.25).toFixed(1); // Considera 25% de oversizing seguro
-    const cabosMetros = Math.max(30, numPlacas * 5); // 5m por placa, minimo 30m
-    const mc4Pares = Math.ceil(numPlacas / 10) * 2; // 2 pares a cada 10 placas (estimativa de strings)
+    const inversorW = potTotalKwp * 1000 / 1.25;
+    const inversorSugeridoKwp = (inversorW / 1000).toFixed(1); // 25% oversizing
+
+    // Cálculo Disjuntor CA
+    let correnteInversor = 0;
+    let tipoDisjuntor = 'Bipolar'; // Padrão 220V Bi
+    if (tensaoRede === '220bi') {
+      correnteInversor = inversorW / 220;
+      tipoDisjuntor = 'Bipolar';
+    } else if (tensaoRede === '220mono') {
+      correnteInversor = inversorW / 220;
+      tipoDisjuntor = 'Unipolar';
+    } else if (tensaoRede === '380tri') {
+      correnteInversor = inversorW / (380 * 1.732);
+      tipoDisjuntor = 'Tripolar';
+    }
+
+    // Acha o disjuntor comercial imediatamente acima da corrente do inversor + 20%
+    const correnteSegura = correnteInversor * 1.2;
+    const disjuntorCA = disjuntoresComerciais.find(d => d >= correnteSegura) || 150;
+
+    // Cabeamento CC com margem de segurança de 15%
+    const qtdeStringsEstimada = Math.ceil(numPlacas / 10);
+    // Para cada string, um par de cabos descendo até o inversor.
+    const caboCCPorPolo = Math.ceil(distCC * qtdeStringsEstimada * 1.15); 
+    const caboTerraCC = Math.ceil(distCC * 1.15);
+    const mc4Pares = qtdeStringsEstimada * 2;
+
+    // Cabeamento CA com margem de segurança de 15%
+    const caboCA = Math.ceil(distCA * 1.15);
+    const caboTerraCA = Math.ceil(distCA * 1.15);
+    let descricaoCaboCA = 'Cabo CA 3 vias (Fase+Fase+Terra)';
+    if (tensaoRede === '380tri') descricaoCaboCA = 'Cabo CA 5 vias (3 Fases+Neutro+Terra)';
+    if (tensaoRede === '220mono') descricaoCaboCA = 'Cabo CA 3 vias (Fase+Neutro+Terra)';
 
     setResultado({
       numPlacas,
@@ -68,7 +113,14 @@ export function Calculadoras() {
       inversorSugeridoKwp,
       potPlacaW,
       nomePlaca: placa.nome,
-      cabosMetros,
+      caboCCPreto: caboCCPorPolo,
+      caboCCVermelho: caboCCPorPolo,
+      caboTerraCC,
+      caboCA,
+      caboTerraCA,
+      descricaoCaboCA,
+      disjuntorCA,
+      tipoDisjuntor,
       mc4Pares
     });
   };
@@ -78,17 +130,32 @@ export function Calculadoras() {
     setResultado(null);
     setPotenciaKwp('');
     setAreaM2('');
+    setDistanciaCC('');
+    setDistanciaCA('');
   };
 
   const copiarLista = () => {
     if (!resultado) return;
     const texto = `LISTA DE MATERIAIS - SISTEMA ${resultado.potTotalKwp} kWp
+
+✅ EQUIPAMENTOS PRINCIPAIS
 - ${resultado.numPlacas}x Módulos Solares ${resultado.nomePlaca} de ${resultado.potPlacaW}W
 - 1x Inversor Solar (Potência sugerida: ~${resultado.inversorSugeridoKwp} kW)
 - ${resultado.numPlacas}x Kits de fixação (suportes) para telhado
-- ${resultado.cabosMetros}m Cabo Solar CC (Preto/Vermelho)
+
+✅ CABEAMENTO CC (Com margem de 15%)
+- ${resultado.caboCCPreto}m Cabo Solar CC Preto
+- ${resultado.caboCCVermelho}m Cabo Solar CC Vermelho
+- ${resultado.caboTerraCC}m Cabo Terra Verde/Amarelo (Módulos ao Inversor)
 - ${resultado.mc4Pares} pares de Conectores MC4
-- 1x String Box CA (Disjuntor e DPS)`;
+
+✅ QUADRO CC E PROTEÇÃO CA
+- 1x String Box CC (Fusíveis/Disjuntores CC e DPS CC)
+- 1x Quadro CA com Disjuntor ${resultado.tipoDisjuntor} de ${resultado.disjuntorCA}A e DPS CA
+
+✅ CABEAMENTO CA (Com margem de 15%)
+- ${resultado.caboCA}m de ${resultado.descricaoCaboCA} (Inversor ao Padrão)
+- ${resultado.caboTerraCA}m Cabo Terra CA (Inversor ao Padrão)`;
     
     navigator.clipboard.writeText(texto);
     alert('Lista de materiais copiada para a área de transferência!');
@@ -208,14 +275,71 @@ export function Calculadoras() {
                   </select>
                   <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                 </div>
-                <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                  <Info className="w-3 h-3" /> A potência e a área exata do modelo serão usadas no cálculo.
-                </p>
+              </div>
+
+              <div className="pt-4 border-t border-gray-100">
+                <h3 className="text-sm font-bold text-brand-dark uppercase tracking-wide mb-4">Informações de Instalação</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Tensão da Rede Elétrica (Local)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={tensaoRede}
+                        onChange={(e) => setTensaoRede(e.target.value)}
+                        className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:border-gray-400 focus:ring-gray-400/20 outline-none appearance-none bg-white text-gray-800"
+                      >
+                        <option value="220bi">220V Bifásico (Fase-Fase 220V)</option>
+                        <option value="220mono">220V Monofásico (Fase-Neutro 220V)</option>
+                        <option value="380tri">380V Trifásico</option>
+                      </select>
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Distância: Módulos ➡️ Inversor
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={distanciaCC}
+                          onChange={(e) => setDistanciaCC(e.target.value)}
+                          placeholder="Ex: 15"
+                          className="w-full pl-4 pr-16 py-3 border border-gray-300 rounded-xl focus:border-gray-400 focus:ring-gray-400/20 outline-none"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">m</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Distância: Inversor ➡️ Padrão
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          value={distanciaCA}
+                          onChange={(e) => setDistanciaCA(e.target.value)}
+                          placeholder="Ex: 10"
+                          className="w-full pl-4 pr-16 py-3 border border-gray-300 rounded-xl focus:border-gray-400 focus:ring-gray-400/20 outline-none"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">m</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                    <Info className="w-3 h-3" /> Adicionaremos automaticamente 15% de folga nas metragens.
+                  </p>
+                </div>
               </div>
 
               <button
                 onClick={calcularKit}
-                className="w-full bg-brand-dark text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark/90 transition-colors shadow-lg shadow-brand-dark/20"
+                className="w-full bg-brand-dark text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:bg-brand-dark/90 transition-colors shadow-lg shadow-brand-dark/20 mt-6"
               >
                 Gerar Lista de Materiais <ArrowRight className="w-5 h-5" />
               </button>
@@ -257,48 +381,101 @@ export function Calculadoras() {
                 </div>
                 
                 <ul className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-200 overflow-hidden">
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
                     <div>
-                      <span className="font-semibold text-brand-dark block">Módulos Solares {resultado.potPlacaW}W</span>
-                      <span className="text-sm text-gray-500">Painéis fotovoltaicos</span>
+                      <span className="font-semibold text-brand-dark block">Módulos Solares {resultado.nomePlaca}</span>
+                      <span className="text-sm text-gray-500">{resultado.potPlacaW}W por placa</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.numPlacas} un</span>
                   </li>
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
                     <div>
                       <span className="font-semibold text-brand-dark block">Inversor Solar de Rede</span>
                       <span className="text-sm text-gray-500">Potência recomendada aprox. {resultado.inversorSugeridoKwp} kW</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
                   </li>
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
                     <div>
                       <span className="font-semibold text-brand-dark block">Kits de Fixação</span>
                       <span className="text-sm text-gray-500">Trilhos e suportes baseados em {resultado.numPlacas} placas</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.numPlacas} un</span>
                   </li>
+
+                  {/* Lado CC */}
+                  <li className="px-4 py-2 bg-gray-100 border-y border-gray-200">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Cabeamento Lado CC (Módulos ➡️ Inversor)</span>
+                  </li>
                   <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
                     <div>
-                      <span className="font-semibold text-brand-dark block">Cabo Solar CC 4mm/6mm</span>
-                      <span className="text-sm text-gray-500">Preto e Vermelho (Estimativa)</span>
+                      <span className="font-semibold text-brand-dark block">Cabo Solar CC Preto (Negativo)</span>
+                      <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
                     </div>
-                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">~{resultado.cabosMetros} m</span>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.caboCCPreto} m</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">Cabo Solar CC Vermelho (Positivo)</span>
+                      <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.caboCCVermelho} m</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">Cabo de Aterramento (Verde/Amarelo)</span>
+                      <span className="text-sm text-gray-500">Aterramento da estrutura dos módulos ao inversor</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.caboTerraCC} m</span>
                   </li>
                   <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
                     <div>
                       <span className="font-semibold text-brand-dark block">Conectores MC4</span>
-                      <span className="text-sm text-gray-500">Pares macho/fêmea (Estimativa para {Math.ceil(resultado.numPlacas/10)} strings)</span>
+                      <span className="text-sm text-gray-500">Pares macho/fêmea necessários</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.mc4Pares} pares</span>
                   </li>
                   <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
                     <div>
-                      <span className="font-semibold text-brand-dark block">String Box CA</span>
-                      <span className="text-sm text-gray-500">Quadro de proteção de Corrente Alternada</span>
+                      <span className="font-semibold text-brand-dark block">String Box CC</span>
+                      <span className="text-sm text-gray-500">Com chaves/disjuntores CC e DPS CC</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
                   </li>
+
+                  {/* Lado CA */}
+                  <li className="px-4 py-2 bg-gray-100 border-y border-gray-200 mt-2">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Cabeamento Lado CA (Inversor ➡️ Padrão/Quadro)</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">{resultado.descricaoCaboCA}</span>
+                      <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.caboCA} m</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">Cabo de Aterramento (Verde/Amarelo)</span>
+                      <span className="text-sm text-gray-500">Aterramento do inversor ao quadro</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.caboTerraCA} m</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">Disjuntor CA {resultado.tipoDisjuntor} (Curva C)</span>
+                      <span className="text-sm text-gray-500">Proteção recomendada para o lado CA</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.disjuntorCA}A</span>
+                  </li>
+                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                    <div>
+                      <span className="font-semibold text-brand-dark block">DPS CA</span>
+                      <span className="text-sm text-gray-500">Dispositivo de Proteção contra Surtos CA</span>
+                    </div>
+                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
+                  </li>
+
                 </ul>
               </div>
 
