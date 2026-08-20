@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, FileText, CheckSquare, Zap, Calculator, 
-  LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList 
+  LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList, Briefcase
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -14,7 +14,8 @@ const navItems = [
 
   { icon: Settings2, label: 'Homologação', path: '/homologacao' },
   { icon: CheckSquare, label: 'Comissionamento', path: '/comissionamento' },
-  { icon: GraduationCap, label: 'Aprender', path: '/aprender' },
+  { icon: GraduationCap, label: 'Aulas', path: '/aprender' },
+  { icon: Briefcase, label: 'Conexões', path: '/profissionais' },
 ];
 
 const bottomNavItems = [

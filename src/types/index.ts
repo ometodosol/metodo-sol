@@ -22,3 +22,14 @@ export interface Projeto {
   homologacao_dados?: any;
   criado_em: string;
 }
+
+export interface Profissional {
+  id: string;
+  usuario_id: string;
+  nome: string;
+  especialidade: string;
+  telefone: string;
+  estado: string;
+  cidade: string;
+  criado_em: string;
+}

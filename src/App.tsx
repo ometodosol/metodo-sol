@@ -13,6 +13,7 @@ import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
 import { Dimensionamento } from './pages/Dimensionamento';
 import { Comissionamento } from './pages/Comissionamento';
 import { Homologacao } from './pages/Homologacao';
+import { Profissionais } from './pages/Profissionais';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
@@ -56,9 +57,9 @@ function App() {
               
               {/* Negócios e Educação */}
               <Route path="comercial" element={<Placeholder title="Área Comercial" />} />
-              <Route path="profissionais" element={<Placeholder title="Diretório de Profissionais" />} />
+              <Route path="aprender" element={<Placeholder title="Aulas" />} />
+              <Route path="profissionais" element={<Profissionais />} />
               <Route path="homologacao" element={<Homologacao />} />
-              <Route path="aprender" element={<Placeholder title="Área Educacional" />} />
               
               {/* Configurações e Conta */}
               <Route path="configuracoes" element={<Placeholder title="Configurações" />} />
