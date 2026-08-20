@@ -170,9 +170,24 @@ export function Dimensionamento() {
     setSalvando(true);
     setSalvoSucesso(false);
     
+    const { data: projExistente } = await supabase
+      .from('projetos')
+      .select('*')
+      .eq('id', projetoSelecionado)
+      .single();
+
+    let updates: any = { dimensionamento: resultado };
+
+    if (projExistente) {
+      if (!projExistente.potencia_kwp) updates.potencia_kwp = parseFloat(resultado.potTotalKwp);
+      if (!projExistente.inversor_modelo) updates.inversor_modelo = resultado.nomeInversor;
+      if (!projExistente.modulos_modelo) updates.modulos_modelo = resultado.nomePlaca;
+      if (!projExistente.modulos_quantidade) updates.modulos_quantidade = parseInt(resultado.numPlacas);
+    }
+
     const { error } = await supabase
       .from('projetos')
-      .update({ dimensionamento: resultado })
+      .update(updates)
       .eq('id', projetoSelecionado);
       
     setSalvando(false);

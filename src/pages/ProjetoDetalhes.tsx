@@ -33,7 +33,42 @@ export function ProjetoDetalhes() {
         .single();
         
       if (data && !error) {
-        setProjeto(data as any);
+        let proj = data as any;
+        
+        // Auto-fill from dimensionamento se os campos estiverem vazios
+        if (proj.dimensionamento) {
+          const dim = proj.dimensionamento;
+          let changed = false;
+          
+          if (!proj.potencia_kwp && dim.potTotalKwp) {
+            proj.potencia_kwp = parseFloat(dim.potTotalKwp);
+            changed = true;
+          }
+          if (!proj.inversor_modelo && dim.nomeInversor) {
+            proj.inversor_modelo = dim.nomeInversor;
+            changed = true;
+          }
+          if (!proj.modulos_modelo && dim.nomePlaca) {
+            proj.modulos_modelo = dim.nomePlaca;
+            changed = true;
+          }
+          if (!proj.modulos_quantidade && dim.numPlacas) {
+            proj.modulos_quantidade = parseInt(dim.numPlacas);
+            changed = true;
+          }
+          
+          if (changed) {
+            // Atualiza silenciosamente no banco
+            supabase.from('projetos').update({
+              potencia_kwp: proj.potencia_kwp,
+              inversor_modelo: proj.inversor_modelo,
+              modulos_modelo: proj.modulos_modelo,
+              modulos_quantidade: proj.modulos_quantidade
+            }).eq('id', proj.id).then();
+          }
+        }
+        
+        setProjeto(proj);
       }
       setLoading(false);
     }
