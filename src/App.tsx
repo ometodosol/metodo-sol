@@ -10,6 +10,7 @@ import { ClienteDetalhes } from './pages/ClienteDetalhes';
 import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
+import { Calculadoras } from './pages/Calculadoras';
 import { Comissionamento } from './pages/Comissionamento';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
@@ -45,12 +46,11 @@ function App() {
               <Route path="projetos/:id" element={<ProjetoDetalhes />} />
               
               <Route path="comissionamento" element={<Comissionamento />} />
+              <Route path="calculadoras" element={<Calculadoras />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
               <Route path="instalacao" element={<Placeholder title="Checklist de Instalação" />} />
-              <Route path="diagnostico" element={<Placeholder title="Diagnóstico de Problemas" />} />
-              <Route path="calculadoras" element={<Placeholder title="Calculadoras Técnicas" />} />
               <Route path="equipamentos" element={<Placeholder title="Banco de Equipamentos" />} />
               
               {/* Negócios e Educação */}
