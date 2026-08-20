@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import type { Projeto } from '../types';
-import { ArrowLeft, Save, Zap, User, FileText, Component } from 'lucide-react';
+import { ArrowLeft, Save, Zap, User, FileText, Component, ShoppingCart, Copy, Check } from 'lucide-react';
 import { StatusBadge } from '../components/ui/StatusBadge';
 
 interface ProjetoComCliente extends Projeto {
@@ -18,6 +18,7 @@ export function ProjetoDetalhes() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
+  const [copiado, setCopiado] = useState(false);
   
   const [projeto, setProjeto] = useState<ProjetoComCliente | null>(null);
 
@@ -70,6 +71,37 @@ export function ProjetoDetalhes() {
     } else {
       setMensagem({ texto: 'Projeto atualizado com sucesso!', tipo: 'success' });
     }
+  };
+
+  const copiarLista = () => {
+    if (!projeto?.dimensionamento) return;
+    const res = projeto.dimensionamento;
+    const texto = `LISTA DE MATERIAIS - ${projeto.titulo}
+
+SISTEMA: ${res.tipoSistema === 'ongrid' ? 'On-Grid' : res.tipoSistema === 'offgrid' ? 'Off-Grid' : 'Híbrido'}
+POTÊNCIA: ${res.potTotalKwp} kWp
+ÁREA: ${res.areaTotal} m²
+
+EQUIPAMENTOS:
+- ${res.numPlacas}x Módulos Solares ${res.nomePlaca} (${res.potPlacaW}W)
+- 1x ${res.nomeInversor} (~${res.inversorSugeridoKwp} kW)
+${res.precisaBateria ? '- Banco de Baterias (A dimensionar)\n' : ''}- ${res.numPlacas}x Kits de Fixação
+
+CABEAMENTO CC:
+- ${res.caboCCPreto}m Cabo Solar CC Preto
+- ${res.caboCCVermelho}m Cabo Solar CC Vermelho
+- ${res.caboTerraCC}m Cabo Aterramento CC (Verde/Amarelo)
+- ${res.mc4Pares} pares Conector MC4
+- 1x String Box CC
+
+CABEAMENTO CA:
+- ${res.caboCA}m ${res.descricaoCaboCA}
+- ${res.caboTerraCA}m Cabo Aterramento CA (Verde/Amarelo)
+- 1x ${res.nomeQuadroCA} (Disjuntor ${res.tipoDisjuntor} ${res.disjuntorCA}A + DPS)
+`;
+    navigator.clipboard.writeText(texto);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000);
   };
 
   if (loading) {
@@ -239,6 +271,122 @@ export function ProjetoDetalhes() {
           </button>
         </div>
       </form>
+
+      {projeto.dimensionamento && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-100 pb-4">
+            <h3 className="text-lg font-bold text-brand-dark flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5 text-gray-400" />
+              Lista de Materiais Salva
+            </h3>
+            <button 
+              onClick={copiarLista}
+              className="text-sm font-bold text-brand-dark bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {copiado ? <><Check className="w-4 h-4 text-brand-green" /> Copiado!</> : <><Copy className="w-4 h-4" /> Copiar Lista</>}
+            </button>
+          </div>
+          
+          <ul className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-200 overflow-hidden">
+            <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+              <div>
+                <span className="font-semibold text-brand-dark block">Módulos Solares {projeto.dimensionamento.nomePlaca}</span>
+                <span className="text-sm text-gray-500">{projeto.dimensionamento.potPlacaW}W por placa</span>
+              </div>
+              <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.numPlacas} un</span>
+            </li>
+            <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+              <div>
+                <span className="font-semibold text-brand-dark block">{projeto.dimensionamento.nomeInversor}</span>
+                <span className="text-sm text-gray-500">Potência recomendada aprox. {projeto.dimensionamento.inversorSugeridoKwp} kW</span>
+              </div>
+              <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
+            </li>
+            {projeto.dimensionamento.precisaBateria && (
+              <li className="p-4 flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 transition-colors">
+                <div>
+                  <span className="font-semibold text-blue-900 block">Banco de Baterias</span>
+                  <span className="text-sm text-blue-700">A dimensionar conforme autonomia desejada pelo cliente</span>
+                </div>
+                <span className="bg-blue-600 text-white font-bold py-1 px-3 rounded-full">A definir</span>
+              </li>
+            )}
+            <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Kits de Fixação</span>
+                  <span className="text-sm text-gray-500">Trilhos e suportes baseados em {projeto.dimensionamento.numPlacas} placas</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.numPlacas} un</span>
+              </li>
+
+              {/* Lado CC */}
+              <li className="px-4 py-2 bg-gray-100 border-y border-gray-200">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Cabeamento Lado CC (Módulos ➡️ Inversor)</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Cabo Solar CC Preto (Negativo)</span>
+                  <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.caboCCPreto} m</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Cabo Solar CC Vermelho (Positivo)</span>
+                  <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.caboCCVermelho} m</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Cabo de Aterramento (Verde/Amarelo)</span>
+                  <span className="text-sm text-gray-500">Aterramento da estrutura dos módulos ao inversor</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.caboTerraCC} m</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Conectores MC4</span>
+                  <span className="text-sm text-gray-500">Pares macho/fêmea necessários</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.mc4Pares} pares</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">String Box CC</span>
+                  <span className="text-sm text-gray-500">Com chaves/disjuntores CC e DPS CC</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
+              </li>
+
+              {/* Lado CA */}
+              <li className="px-4 py-2 bg-gray-100 border-y border-gray-200 mt-2">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Cabeamento Lado CA (Inversor ➡️ Padrão/Quadro)</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">{projeto.dimensionamento.descricaoCaboCA}</span>
+                  <span className="text-sm text-gray-500">Já inclui 15% de folga</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.caboCA} m</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">Cabo de Aterramento (Verde/Amarelo)</span>
+                  <span className="text-sm text-gray-500">Aterramento do inversor ao quadro</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{projeto.dimensionamento.caboTerraCA} m</span>
+              </li>
+              <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
+                <div>
+                  <span className="font-semibold text-brand-dark block">{projeto.dimensionamento.nomeQuadroCA}</span>
+                  <span className="text-sm text-gray-500">Disjuntor {projeto.dimensionamento.tipoDisjuntor} de {projeto.dimensionamento.disjuntorCA}A + DPS CA</span>
+                </div>
+                <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
+              </li>
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
