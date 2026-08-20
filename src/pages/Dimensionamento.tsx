@@ -276,7 +276,7 @@ ${resultado.precisaBateria ? '- Banco de Baterias (A dimensionar conforme autono
 
               <button 
                 onClick={() => setProjetoSelecionado('avulso')}
-                className="text-sm font-bold text-brand-dark hover:text-brand-green transition-colors whitespace-nowrap bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl flex items-center gap-2"
+                className="text-sm font-bold text-brand-dark hover:text-brand-light transition-colors whitespace-nowrap bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl flex items-center gap-2"
               >
                 Fazer Dimensionamento Avulso &rarr;
               </button>
