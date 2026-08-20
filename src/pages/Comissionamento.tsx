@@ -173,16 +173,16 @@ export function Comissionamento() {
   );
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-brand-dark flex items-center gap-2">
+    <div className="p-6 md:p-10 space-y-8 animate-in fade-in duration-500">
+      <header>
+        <h1 className="text-3xl font-bold text-brand-dark flex items-center gap-2">
           <ClipboardCheck className="w-8 h-8 text-brand-green" />
-          Comissionamento de Sistema Fotovoltaico
+          Comissionamento
         </h1>
-        <p className="text-slate-500 mt-1">Preencha o formulário técnico para validar e certificar a instalação.</p>
-      </div>
+        <p className="text-gray-500 mt-2">Preencha o formulário técnico para validar e certificar a instalação.</p>
+      </header>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+      <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
         <label className="block text-sm font-medium text-slate-700">
           Selecione o Projeto / Obra para Comissionar
         </label>
@@ -210,10 +210,10 @@ export function Comissionamento() {
             </option>
           ))}
         </select>
-      </div>
+      </section>
 
       {projetoSelecionado && (
-        <div className="space-y-6 animate-fade-in pb-20">
+        <div className="space-y-8 pb-20">
           {/* Barra de Progresso */}
           <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4 sticky top-4 z-10">
             <div className="flex items-center space-x-4 w-full">
@@ -243,19 +243,20 @@ export function Comissionamento() {
           {/* Categorias */}
           {CATEGORIAS.map((categoria) => {
             return (
-              <div key={categoria.id} className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                <div className="bg-brand-dark p-4 border-b border-brand-dark/10">
-                  <h3 className="font-bold text-white text-lg tracking-wide">{categoria.titulo}</h3>
+              <section key={categoria.id}>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-brand-dark">{categoria.titulo}</h2>
                 </div>
                 
-                {categoria.alerta && (
-                  <div className="bg-yellow-50 p-4 border-b border-yellow-100 flex items-start gap-3">
-                    <span className="text-xl">⚠️</span>
-                    <p className="text-sm text-yellow-800 font-medium leading-relaxed">{categoria.alerta}</p>
-                  </div>
-                )}
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                  {categoria.alerta && (
+                    <div className="bg-yellow-50 p-4 border-b border-yellow-100 flex items-start gap-3">
+                      <span className="text-xl">⚠️</span>
+                      <p className="text-sm text-yellow-800 font-medium leading-relaxed">{categoria.alerta}</p>
+                    </div>
+                  )}
 
-                <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-gray-100">
                   {categoria.itens.map((item) => {
                     const itemState = dados[item.id] || { status: null, obs: '', nominal: '', medido: '' };
                     const isChecked = itemState.status !== null;
@@ -336,6 +337,7 @@ export function Comissionamento() {
                   })}
                 </div>
               </div>
+            </section>
             );
           })}
         </div>
