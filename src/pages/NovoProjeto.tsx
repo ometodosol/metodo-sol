@@ -35,13 +35,13 @@ export function NovoProjeto() {
   // Busca os clientes para o select
   useEffect(() => {
     async function fetchClientes() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('clientes')
         .select('id, nome')
         .order('nome', { ascending: true });
       
-      if (data) {
-        setClientes(data);
+      if (data && !error) {
+        setClientes(data as Cliente[]);
       }
     }
     fetchClientes();
