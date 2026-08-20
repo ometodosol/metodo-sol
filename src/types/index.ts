@@ -18,6 +18,7 @@ export interface Projeto {
   modulos_modelo?: string;
   modulos_quantidade?: number;
   checklist?: any;
+  instalacao_checklist?: any;
   dimensionamento?: any;
   criado_em: string;
 }
