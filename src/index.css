@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #CDF757;
+  --color-brand-dark: #040B15;
+  --color-brand-light: #8BBCC7;
+  --color-brand-gray: #E6E6E6;
+  --color-brand-white: #FFFFFF;
+  
+  --color-status-success: #22c55e;
+  --color-status-warning: #f59e0b;
+  --color-status-error: #ef4444;
+  --color-status-info: #3b82f6;
+  --color-status-unknown: #9ca3af;
+
+  --font-sans: Inter, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-brand-gray);
+    color: var(--color-brand-dark);
+    -webkit-font-smoothing: antialiased;
+  }
+}
