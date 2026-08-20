@@ -17,5 +17,7 @@ export interface Projeto {
   inversor_modelo?: string;
   modulos_modelo?: string;
   modulos_quantidade?: number;
+  checklist?: any;
+  dimensionamento?: any;
   criado_em: string;
 }

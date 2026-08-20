@@ -10,7 +10,7 @@ import { ClienteDetalhes } from './pages/ClienteDetalhes';
 import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
-import { Calculadoras } from './pages/Calculadoras';
+import { Dimensionamento } from './pages/Dimensionamento';
 import { Comissionamento } from './pages/Comissionamento';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
@@ -46,7 +46,7 @@ function App() {
               <Route path="projetos/:id" element={<ProjetoDetalhes />} />
               
               <Route path="comissionamento" element={<Comissionamento />} />
-              <Route path="calculadoras" element={<Calculadoras />} />
+              <Route path="dimensionamento" element={<Dimensionamento />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />

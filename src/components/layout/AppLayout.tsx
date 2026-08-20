@@ -10,7 +10,7 @@ const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: FileText, label: 'Meus Projetos', path: '/projetos' },
-  { icon: Calculator, label: 'Calculadoras', path: '/calculadoras' },
+  { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
   { icon: Wrench, label: 'Instalação', path: '/instalacao' },
   { icon: Settings2, label: 'Homologação', path: '/homologacao' },
   { icon: CheckSquare, label: 'Comissionamento', path: '/comissionamento' },

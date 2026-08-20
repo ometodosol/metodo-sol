@@ -16,7 +16,7 @@ const navItems = [
   { icon: CheckSquare, label: 'Conferir Kit', path: '/conferir-kit' },
   { icon: Wrench, label: 'Instalação', path: '/instalacao' },
   { icon: Activity, label: 'Diagnóstico', path: '/diagnostico' },
-  { icon: Calculator, label: 'Calculadoras', path: '/calculadoras' },
+  { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
   { icon: Cpu, label: 'Equipamentos', path: '/equipamentos' },
   { icon: Briefcase, label: 'Profissionais', path: '/profissionais' },
   { icon: FileSignature, label: 'Homologação', path: '/homologacao' },

@@ -18,7 +18,7 @@ const moreMenu = [
   { icon: Users, label: 'Clientes', path: '/clientes' },
   { icon: CheckSquare, label: 'Conferir Kit', path: '/conferir-kit' },
   { icon: Wrench, label: 'Instalação', path: '/instalacao' },
-  { icon: Calculator, label: 'Calculadoras', path: '/calculadoras' },
+  { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
   { icon: Cpu, label: 'Equipamentos', path: '/equipamentos' },
   { icon: Briefcase, label: 'Profissionais', path: '/profissionais' },
   { icon: FileSignature, label: 'Homologação', path: '/homologacao' },

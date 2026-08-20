@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Calculator, Zap, Maximize, ArrowRight, ShoppingCart, Info, RotateCcw, Copy, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calculator, Zap, Maximize, ArrowRight, ShoppingCart, Info, RotateCcw, Copy, ChevronDown, Search, Save, CheckCircle2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import type { Projeto } from '../types';
 
 type MetodoCalculo = 'potencia' | 'area' | null;
 
@@ -17,10 +19,17 @@ const MODELOS_PLACAS = [
   { id: 'canadian700', nome: 'Canadian Solar TOPBiHiKu7', potenciaW: 700, areaM2: 3.11 },
 ];
 
-export function Calculadoras() {
+export function Dimensionamento() {
+  const [projetos, setProjetos] = useState<Projeto[]>([]);
+  const [buscaProjeto, setBuscaProjeto] = useState('');
+  const [projetoSelecionado, setProjetoSelecionado] = useState<string>('');
+  const [salvando, setSalvando] = useState(false);
+  const [salvoSucesso, setSalvoSucesso] = useState(false);
+
   const [metodo, setMetodo] = useState<MetodoCalculo>(null);
   
   // Entradas Básicas
+  const [tipoSistema, setTipoSistema] = useState<'ongrid' | 'offgrid' | 'hibrido'>('ongrid');
   const [potenciaKwp, setPotenciaKwp] = useState<string>('');
   const [areaM2, setAreaM2] = useState<string>('');
   const [placaSelecionadaId, setPlacaSelecionadaId] = useState<string>('jinko550');
@@ -34,6 +43,18 @@ export function Calculadoras() {
   const [resultado, setResultado] = useState<any>(null);
 
   const disjuntoresComerciais = [10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125, 150];
+
+  useEffect(() => {
+    async function fetchProjetos() {
+      const { data } = await supabase
+        .from('projetos')
+        .select('id, titulo, cliente_id, clientes(nome)')
+        .order('criado_em', { ascending: false });
+
+      if (data) setProjetos(data as any);
+    }
+    fetchProjetos();
+  }, []);
 
   const calcularKit = () => {
     const placa = MODELOS_PLACAS.find(p => p.id === placaSelecionadaId) || MODELOS_PLACAS[1];
@@ -106,7 +127,25 @@ export function Calculadoras() {
     if (tensaoRede === '380tri') descricaoCaboCA = 'Cabo CA 5 vias (3 Fases+Neutro+Terra)';
     if (tensaoRede === '220mono') descricaoCaboCA = 'Cabo CA 3 vias (Fase+Neutro+Terra)';
 
+    // Nomes adaptados para Off-Grid / Híbrido
+    let nomeInversor = 'Inversor Solar de Rede (On-Grid)';
+    let nomeQuadroCA = 'String Box CA (Disjuntor e DPS)';
+    let precisaBateria = false;
+
+    if (tipoSistema === 'offgrid') {
+      nomeInversor = 'Inversor Off-Grid (Ilha) / Controlador de Carga';
+      nomeQuadroCA = 'Quadro de Distribuição CA (Consumo)';
+      precisaBateria = true;
+    } else if (tipoSistema === 'hibrido') {
+      nomeInversor = 'Inversor Híbrido';
+      precisaBateria = true;
+    }
+
     setResultado({
+      tipoSistema,
+      precisaBateria,
+      nomeInversor,
+      nomeQuadroCA,
       numPlacas,
       potTotalKwp: potTotalKwp.toFixed(2),
       areaTotal: areaTotal.toFixed(1),
@@ -125,6 +164,28 @@ export function Calculadoras() {
     });
   };
 
+  const salvarNoProjeto = async () => {
+    if (!projetoSelecionado || !resultado) return;
+    
+    setSalvando(true);
+    setSalvoSucesso(false);
+    
+    const { error } = await supabase
+      .from('projetos')
+      .update({ dimensionamento: resultado })
+      .eq('id', projetoSelecionado);
+      
+    setSalvando(false);
+    
+    if (error) {
+      console.error(error);
+      alert('Erro ao salvar. Verifique se a coluna "dimensionamento" (jsonb) existe na tabela "projetos" no Supabase!');
+    } else {
+      setSalvoSucesso(true);
+      setTimeout(() => setSalvoSucesso(false), 3000);
+    }
+  };
+
   const resetar = () => {
     setMetodo(null);
     setResultado(null);
@@ -140,8 +201,8 @@ export function Calculadoras() {
 
 ✅ EQUIPAMENTOS PRINCIPAIS
 - ${resultado.numPlacas}x Módulos Solares ${resultado.nomePlaca} de ${resultado.potPlacaW}W
-- 1x Inversor Solar (Potência sugerida: ~${resultado.inversorSugeridoKwp} kW)
-- ${resultado.numPlacas}x Kits de fixação (suportes) para telhado
+- 1x ${resultado.nomeInversor} (Potência sugerida: ~${resultado.inversorSugeridoKwp} kW)
+${resultado.precisaBateria ? '- Banco de Baterias (A dimensionar conforme autonomia desejada)\n' : ''}- ${resultado.numPlacas}x Kits de fixação (suportes) para telhado
 
 ✅ CABEAMENTO CC (Com margem de 15%)
 - ${resultado.caboCCPreto}m Cabo Solar CC Preto
@@ -151,7 +212,7 @@ export function Calculadoras() {
 
 ✅ QUADRO CC E PROTEÇÃO CA
 - 1x String Box CC (Fusíveis/Disjuntores CC e DPS CC)
-- 1x Quadro CA com Disjuntor ${resultado.tipoDisjuntor} de ${resultado.disjuntorCA}A e DPS CA
+- 1x ${resultado.nomeQuadroCA} com Disjuntor ${resultado.tipoDisjuntor} de ${resultado.disjuntorCA}A e DPS CA
 
 ✅ CABEAMENTO CA (Com margem de 15%)
 - ${resultado.caboCA}m de ${resultado.descricaoCaboCA} (Inversor ao Padrão)
@@ -161,20 +222,85 @@ export function Calculadoras() {
     alert('Lista de materiais copiada para a área de transferência!');
   };
 
+  const projetosFiltrados = projetos.filter(p => 
+    p.titulo.toLowerCase().includes(buscaProjeto.toLowerCase()) ||
+    (p as any).clientes?.nome?.toLowerCase().includes(buscaProjeto.toLowerCase())
+  );
+
   return (
     <div className="p-6 md:p-10 space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
       <header>
         <h1 className="text-3xl font-bold text-brand-dark flex items-center gap-3">
           <Calculator className="w-8 h-8 text-brand-green" />
-          Dimensionador de Kit
+          Dimensionamento de Kit
         </h1>
         <p className="text-gray-500 mt-2">
-          Gere rapidamente a lista de materiais para a sua obra com base na potência ou tamanho do telhado.
+          Gere rapidamente a lista de materiais para a sua obra e vincule ao seu projeto.
         </p>
       </header>
 
-      {!metodo ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      {!projetoSelecionado ? (
+        <div className="space-y-6">
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+            <h2 className="text-lg font-bold text-brand-dark">Vincular a um Projeto (Opcional)</h2>
+            <p className="text-sm text-gray-500 mb-4">Selecione um projeto para salvar automaticamente a lista de materiais gerada.</p>
+            
+            <div className="relative max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                value={buscaProjeto}
+                onChange={(e) => setBuscaProjeto(e.target.value)}
+                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
+                placeholder="Buscar projeto..."
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto pr-2 mt-4">
+              {projetosFiltrados.map((projeto: any) => (
+                <div 
+                  key={projeto.id} 
+                  onClick={() => setProjetoSelecionado(projeto.id)}
+                  className="bg-white border-2 border-gray-100 rounded-xl p-4 hover:border-brand-green transition-colors cursor-pointer group"
+                >
+                  <h3 className="font-semibold text-brand-dark group-hover:text-brand-green transition-colors line-clamp-1">
+                    {projeto.titulo}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 truncate">Cliente: {projeto.clientes?.nome}</p>
+                </div>
+              ))}
+            </div>
+            
+            <div className="pt-4 flex justify-end border-t border-gray-100 mt-4">
+              <button 
+                onClick={() => setProjetoSelecionado('avulso')}
+                className="text-sm font-bold text-brand-dark hover:text-brand-green transition-colors"
+              >
+                Pular e fazer Dimensionamento Avulso &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : !metodo ? (
+        <div className="space-y-6 animate-in slide-in-from-bottom-4">
+          <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500">Projeto vinculado:</p>
+              <h3 className="font-bold text-brand-dark">
+                {projetoSelecionado === 'avulso' ? 'Dimensionamento Avulso (Não será salvo)' : projetos.find(p => p.id === projetoSelecionado)?.titulo}
+              </h3>
+            </div>
+            <button 
+              onClick={() => { setProjetoSelecionado(''); resetar(); }}
+              className="text-sm font-medium text-brand-green hover:text-brand-dark transition-colors px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+            >
+              Trocar
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <button 
             onClick={() => setMetodo('potencia')}
             className="flex flex-col items-center justify-center p-10 bg-white border-2 border-gray-100 hover:border-brand-green rounded-2xl transition-all hover:shadow-lg group"
@@ -201,7 +327,8 @@ export function Calculadoras() {
             </p>
           </button>
         </div>
-      ) : (
+      </div>
+    ) : (
         <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-100 shadow-sm space-y-8 animate-in slide-in-from-bottom-4">
           <div className="flex items-center justify-between border-b border-gray-100 pb-4">
             <h2 className="text-xl font-bold text-brand-dark flex items-center gap-2">
@@ -221,6 +348,33 @@ export function Calculadoras() {
 
           {!resultado ? (
             <div className="space-y-6 max-w-xl">
+              
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6">
+                <label className="block text-sm font-semibold text-brand-dark mb-3">
+                  Tipo de Sistema Solar
+                </label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    onClick={() => setTipoSistema('ongrid')}
+                    className={`p-3 rounded-lg border-2 text-sm font-bold transition-colors ${tipoSistema === 'ongrid' ? 'border-brand-green bg-brand-green/10 text-brand-green' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'}`}
+                  >
+                    On-Grid
+                  </button>
+                  <button
+                    onClick={() => setTipoSistema('offgrid')}
+                    className={`p-3 rounded-lg border-2 text-sm font-bold transition-colors ${tipoSistema === 'offgrid' ? 'border-brand-dark bg-brand-dark/10 text-brand-dark' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'}`}
+                  >
+                    Off-Grid
+                  </button>
+                  <button
+                    onClick={() => setTipoSistema('hibrido')}
+                    className={`p-3 rounded-lg border-2 text-sm font-bold transition-colors ${tipoSistema === 'hibrido' ? 'border-blue-500 bg-blue-500/10 text-blue-600' : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300'}`}
+                  >
+                    Híbrido
+                  </button>
+                </div>
+              </div>
+
               {metodo === 'potencia' ? (
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -366,36 +520,55 @@ export function Calculadoras() {
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-brand-dark flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5 text-gray-400" />
-                    O que você precisa comprar
-                  </h3>
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4">
+                <h3 className="text-lg font-bold text-brand-dark flex items-center gap-2">
+                  <ShoppingCart className="w-5 h-5 text-gray-400" />
+                  O que você precisa comprar
+                </h3>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  {projetoSelecionado !== 'avulso' && (
+                    <button 
+                      onClick={salvarNoProjeto}
+                      disabled={salvando}
+                      className={`flex-1 sm:flex-none text-sm font-bold text-white px-4 py-2 rounded-lg transition-all flex items-center justify-center gap-2 ${salvoSucesso ? 'bg-green-500' : 'bg-brand-green hover:bg-brand-green/90'}`}
+                    >
+                      {salvando ? 'Salvando...' : salvoSucesso ? <><CheckCircle2 className="w-4 h-4" /> Salvo!</> : <><Save className="w-4 h-4" /> Salvar no Projeto</>}
+                    </button>
+                  )}
                   <button 
                     onClick={copiarLista}
-                    className="text-sm font-medium text-brand-dark bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2"
+                    className="flex-1 sm:flex-none text-sm font-bold text-brand-dark bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
-                    <Copy className="w-4 h-4" /> Copiar Lista
+                    <Copy className="w-4 h-4" /> Copiar 
                   </button>
                 </div>
-                
-                <ul className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-200 overflow-hidden">
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+              </div>
+              
+              <ul className="bg-gray-50 rounded-xl border border-gray-200 divide-y divide-gray-200 overflow-hidden">
+                <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+                  <div>
+                    <span className="font-semibold text-brand-dark block">Módulos Solares {resultado.nomePlaca}</span>
+                    <span className="text-sm text-gray-500">{resultado.potPlacaW}W por placa</span>
+                  </div>
+                  <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.numPlacas} un</span>
+                </li>
+                <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+                  <div>
+                    <span className="font-semibold text-brand-dark block">{resultado.nomeInversor}</span>
+                    <span className="text-sm text-gray-500">Potência recomendada aprox. {resultado.inversorSugeridoKwp} kW</span>
+                  </div>
+                  <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
+                </li>
+                {resultado.precisaBateria && (
+                  <li className="p-4 flex items-center justify-between bg-blue-50/50 hover:bg-blue-50 transition-colors">
                     <div>
-                      <span className="font-semibold text-brand-dark block">Módulos Solares {resultado.nomePlaca}</span>
-                      <span className="text-sm text-gray-500">{resultado.potPlacaW}W por placa</span>
+                      <span className="font-semibold text-blue-900 block">Banco de Baterias</span>
+                      <span className="text-sm text-blue-700">A dimensionar conforme autonomia desejada pelo cliente</span>
                     </div>
-                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.numPlacas} un</span>
+                    <span className="bg-blue-600 text-white font-bold py-1 px-3 rounded-full">A definir</span>
                   </li>
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
-                    <div>
-                      <span className="font-semibold text-brand-dark block">Inversor Solar de Rede</span>
-                      <span className="text-sm text-gray-500">Potência recomendada aprox. {resultado.inversorSugeridoKwp} kW</span>
-                    </div>
-                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
-                  </li>
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
+                )}
+                <li className="p-4 flex items-center justify-between hover:bg-white transition-colors bg-white/50">
                     <div>
                       <span className="font-semibold text-brand-dark block">Kits de Fixação</span>
                       <span className="text-sm text-gray-500">Trilhos e suportes baseados em {resultado.numPlacas} placas</span>
@@ -463,23 +636,13 @@ export function Calculadoras() {
                   </li>
                   <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
                     <div>
-                      <span className="font-semibold text-brand-dark block">Disjuntor CA {resultado.tipoDisjuntor} (Curva C)</span>
-                      <span className="text-sm text-gray-500">Proteção recomendada para o lado CA</span>
-                    </div>
-                    <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">{resultado.disjuntorCA}A</span>
-                  </li>
-                  <li className="p-4 flex items-center justify-between hover:bg-white transition-colors">
-                    <div>
-                      <span className="font-semibold text-brand-dark block">DPS CA</span>
-                      <span className="text-sm text-gray-500">Dispositivo de Proteção contra Surtos CA</span>
+                      <span className="font-semibold text-brand-dark block">{resultado.nomeQuadroCA}</span>
+                      <span className="text-sm text-gray-500">Disjuntor {resultado.tipoDisjuntor} de {resultado.disjuntorCA}A + DPS CA</span>
                     </div>
                     <span className="bg-brand-dark text-white font-bold py-1 px-3 rounded-full">1 un</span>
                   </li>
-
                 </ul>
               </div>
-
-            </div>
           )}
         </div>
       )}
