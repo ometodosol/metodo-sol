@@ -12,6 +12,7 @@ import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
 import { Dimensionamento } from './pages/Dimensionamento';
 import { Comissionamento } from './pages/Comissionamento';
+import { Homologacao } from './pages/Homologacao';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
@@ -50,13 +51,13 @@ function App() {
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
-              <Route path="instalacao" element={<Placeholder title="Checklist de Instalação" />} />
+
               <Route path="equipamentos" element={<Placeholder title="Banco de Equipamentos" />} />
               
               {/* Negócios e Educação */}
               <Route path="comercial" element={<Placeholder title="Área Comercial" />} />
               <Route path="profissionais" element={<Placeholder title="Diretório de Profissionais" />} />
-              <Route path="homologacao" element={<Placeholder title="Homologação" />} />
+              <Route path="homologacao" element={<Homologacao />} />
               <Route path="aprender" element={<Placeholder title="Área Educacional" />} />
               
               {/* Configurações e Conta */}

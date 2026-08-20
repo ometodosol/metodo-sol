@@ -14,7 +14,7 @@ const navItems = [
   { icon: PlusSquare, label: 'Novo Projeto', path: '/projetos/novo' },
   { icon: FolderOpen, label: 'Meus Projetos', path: '/projetos' },
   { icon: CheckSquare, label: 'Conferir Kit', path: '/conferir-kit' },
-  { icon: Wrench, label: 'Instalação', path: '/instalacao' },
+
   { icon: Activity, label: 'Diagnóstico', path: '/diagnostico' },
   { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
   { icon: Cpu, label: 'Equipamentos', path: '/equipamentos' },

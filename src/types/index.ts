@@ -19,5 +19,6 @@ export interface Projeto {
   modulos_quantidade?: number;
   checklist?: any;
   dimensionamento?: any;
+  homologacao_dados?: any;
   criado_em: string;
 }
