@@ -260,17 +260,26 @@ ${resultado.precisaBateria ? '- Banco de Baterias (A dimensionar conforme autono
             <h2 className="text-lg font-bold text-brand-dark">Vincular a um Projeto (Opcional)</h2>
             <p className="text-sm text-gray-500 mb-4">Selecione um projeto para salvar automaticamente a lista de materiais gerada.</p>
             
-            <div className="relative max-w-md">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="relative flex-1 max-w-md">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  value={buscaProjeto}
+                  onChange={(e) => setBuscaProjeto(e.target.value)}
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
+                  placeholder="Buscar projeto..."
+                />
               </div>
-              <input
-                type="text"
-                value={buscaProjeto}
-                onChange={(e) => setBuscaProjeto(e.target.value)}
-                className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                placeholder="Buscar projeto..."
-              />
+
+              <button 
+                onClick={() => setProjetoSelecionado('avulso')}
+                className="text-sm font-bold text-brand-dark hover:text-brand-green transition-colors whitespace-nowrap bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl flex items-center gap-2"
+              >
+                Fazer Dimensionamento Avulso &rarr;
+              </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-60 overflow-y-auto pr-2 mt-4">
@@ -286,15 +295,6 @@ ${resultado.precisaBateria ? '- Banco de Baterias (A dimensionar conforme autono
                   <p className="text-xs text-gray-500 mt-1 truncate">Cliente: {projeto.clientes?.nome}</p>
                 </div>
               ))}
-            </div>
-            
-            <div className="pt-4 flex justify-end border-t border-gray-100 mt-4">
-              <button 
-                onClick={() => setProjetoSelecionado('avulso')}
-                className="text-sm font-bold text-brand-dark hover:text-brand-green transition-colors"
-              >
-                Pular e fazer Dimensionamento Avulso &rarr;
-              </button>
             </div>
           </div>
         </div>
