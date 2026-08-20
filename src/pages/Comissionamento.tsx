@@ -182,35 +182,64 @@ export function Comissionamento() {
         <p className="text-gray-500 mt-2">Preencha o formulário técnico para validar e certificar a instalação.</p>
       </header>
 
-      <section className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-        <label className="block text-sm font-medium text-slate-700">
-          Selecione o Projeto / Obra para Comissionar
-        </label>
-        
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Buscar por nome do cliente ou projeto..."
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:border-brand-green focus:ring-brand-green/20 outline-none transition-all bg-gray-50 mb-3"
-          />
-        </div>
+      {!projetoSelecionado ? (
+        <div className="space-y-6">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-brand-dark focus:border-brand-dark bg-white"
+              placeholder="Buscar projeto para comissionar..."
+            />
+          </div>
 
-        <select
-          value={projetoSelecionado}
-          onChange={(e) => setProjetoSelecionado(e.target.value)}
-          className="w-full rounded-lg border-slate-200 focus:border-brand-green focus:ring-brand-green bg-white py-3 shadow-sm"
-        >
-          <option value="">-- Selecione uma obra da lista --</option>
-          {projetosFiltrados.map((proj: any) => (
-            <option key={proj.id} value={proj.id}>
-              {proj.titulo} - Cliente: {proj.clientes?.nome || 'Sem cliente'}
-            </option>
-          ))}
-        </select>
-      </section>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projetosFiltrados.map((projeto: any) => (
+              <div 
+                key={projeto.id} 
+                onClick={() => setProjetoSelecionado(projeto.id)}
+                className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md transition-shadow group cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="font-semibold text-brand-dark text-lg group-hover:text-brand-light transition-colors line-clamp-2">
+                    {projeto.titulo}
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-medium text-gray-700">Cliente:</span>
+                    <span className="truncate">{projeto.clientes?.nome || 'Desconhecido'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {projetosFiltrados.length === 0 && (
+              <div className="col-span-full py-8 text-center text-gray-500">
+                Nenhum projeto encontrado.
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between mb-6">
+          <div>
+            <p className="text-sm text-gray-500">Projeto selecionado:</p>
+            <h3 className="font-bold text-brand-dark text-lg">
+              {projetos.find(p => p.id === projetoSelecionado)?.titulo}
+            </h3>
+          </div>
+          <button 
+            onClick={() => setProjetoSelecionado('')}
+            className="text-sm font-medium text-brand-green hover:text-brand-dark transition-colors px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            Trocar Projeto
+          </button>
+        </div>
+      )}
 
       {projetoSelecionado && (
         <div className="space-y-8 pb-20">
