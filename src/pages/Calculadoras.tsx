@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
-import { Calculator, Zap, Maximize, ArrowRight, ShoppingCart, Info, RotateCcw, Copy } from 'lucide-react';
+import { Calculator, Zap, Maximize, ArrowRight, ShoppingCart, Info, RotateCcw, Copy, ChevronDown } from 'lucide-react';
 
 type MetodoCalculo = 'potencia' | 'area' | null;
+
+// Banco de dados de placas padrão do mercado
+const MODELOS_PLACAS = [
+  { id: 'ja450', nome: 'JA Solar DeepBlue 4.0 Pro', potenciaW: 450, areaM2: 2.00 },
+  { id: 'jinko550', nome: 'Jinko JKM550M-72HL4', potenciaW: 550, areaM2: 2.58 },
+  { id: 'longi570', nome: 'LONGi Hi-MO 7 LR5-72HGD', potenciaW: 570, areaM2: 2.58 },
+  { id: 'longi575', nome: 'LONGi Hi-MO 7 LR5-72HGD', potenciaW: 575, areaM2: 2.58 },
+  { id: 'trina580', nome: 'Trina Vertex NEG19RC.20', potenciaW: 580, areaM2: 2.70 },
+  { id: 'trina585', nome: 'Trina Vertex NEG19RC.20', potenciaW: 585, areaM2: 2.70 },
+  { id: 'astronergy590', nome: 'Astronergy ASTRO 5 Twins', potenciaW: 590, areaM2: 2.80 },
+  { id: 'eging620', nome: 'EGing NT66-HRc', potenciaW: 620, areaM2: 2.70 },
+  { id: 'trina650', nome: 'Trina Vertex N atual', potenciaW: 650, areaM2: 2.70 },
+  { id: 'canadian700', nome: 'Canadian Solar TOPBiHiKu7', potenciaW: 700, areaM2: 3.11 },
+];
 
 export function Calculadoras() {
   const [metodo, setMetodo] = useState<MetodoCalculo>(null);
@@ -9,15 +23,16 @@ export function Calculadoras() {
   // Entradas
   const [potenciaKwp, setPotenciaKwp] = useState<string>('');
   const [areaM2, setAreaM2] = useState<string>('');
-  const [potenciaPlaca, setPotenciaPlaca] = useState<string>('550');
+  const [placaSelecionadaId, setPlacaSelecionadaId] = useState<string>('jinko550');
   
   // Estado do resultado
   const [resultado, setResultado] = useState<any>(null);
 
   const calcularKit = () => {
-    const potPlacaW = parseFloat(potenciaPlaca);
+    const placa = MODELOS_PLACAS.find(p => p.id === placaSelecionadaId) || MODELOS_PLACAS[1];
+    const potPlacaW = placa.potenciaW;
     const potPlacaKwp = potPlacaW / 1000;
-    const areaPlaca = 2.58; // m2 padrão para painéis ~550W
+    const areaPlaca = placa.areaM2;
 
     let numPlacas = 0;
     let potTotalKwp = 0;
@@ -35,7 +50,7 @@ export function Calculadoras() {
       if (!areaAlvo || areaAlvo <= 0) return alert('Insira uma área válida.');
       
       numPlacas = Math.floor(areaAlvo / areaPlaca);
-      if (numPlacas === 0) return alert('A área é muito pequena para instalar ao menos uma placa.');
+      if (numPlacas === 0) return alert(`A área é muito pequena para instalar ao menos uma placa de ${areaPlaca}m².`);
       
       potTotalKwp = numPlacas * potPlacaKwp;
       areaTotal = numPlacas * areaPlaca;
@@ -52,6 +67,7 @@ export function Calculadoras() {
       areaTotal: areaTotal.toFixed(1),
       inversorSugeridoKwp,
       potPlacaW,
+      nomePlaca: placa.nome,
       cabosMetros,
       mc4Pares
     });
@@ -67,7 +83,7 @@ export function Calculadoras() {
   const copiarLista = () => {
     if (!resultado) return;
     const texto = `LISTA DE MATERIAIS - SISTEMA ${resultado.potTotalKwp} kWp
-- ${resultado.numPlacas}x Módulos Solares de ${resultado.potPlacaW}W
+- ${resultado.numPlacas}x Módulos Solares ${resultado.nomePlaca} de ${resultado.potPlacaW}W
 - 1x Inversor Solar (Potência sugerida: ~${resultado.inversorSugeridoKwp} kW)
 - ${resultado.numPlacas}x Kits de fixação (suportes) para telhado
 - ${resultado.cabosMetros}m Cabo Solar CC (Preto/Vermelho)
@@ -176,19 +192,24 @@ export function Calculadoras() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Potência da Placa (W)
+                  Qual o modelo da placa solar?
                 </label>
                 <div className="relative">
-                  <input
-                    type="number"
-                    value={potenciaPlaca}
-                    onChange={(e) => setPotenciaPlaca(e.target.value)}
-                    className="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-xl focus:border-gray-400 focus:ring-gray-400/20 outline-none"
-                  />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">W</span>
+                  <select
+                    value={placaSelecionadaId}
+                    onChange={(e) => setPlacaSelecionadaId(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:border-gray-400 focus:ring-gray-400/20 outline-none appearance-none bg-white text-gray-800"
+                  >
+                    {MODELOS_PLACAS.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.nome} - {p.potenciaW}W ({p.areaM2.toFixed(2).replace('.', ',')} m²)
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
                 </div>
                 <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                  <Info className="w-3 h-3" /> Usado para calcular a quantidade exata de módulos.
+                  <Info className="w-3 h-3" /> A potência e a área exata do modelo serão usadas no cálculo.
                 </p>
               </div>
 
