@@ -78,12 +78,16 @@ export function Clientes() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {clientes.map((cliente) => (
-            <div key={cliente.id} className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md transition-shadow group cursor-pointer">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-semibold text-brand-dark text-lg group-hover:text-brand-light transition-colors">
-                  {cliente.nome}
-                </h3>
+          {clientesFiltrados.map((cliente) => (
+            <div 
+              key={cliente.id} 
+              onClick={() => navigate(`/clientes/${cliente.id}`)}
+              className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md transition-shadow group cursor-pointer"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-brand-dark text-lg group-hover:text-brand-light transition-colors line-clamp-1">{cliente.nome}</h3>
+                </div>
                 <StatusBadge status="success" label="Ativo" />
               </div>
               <div className="space-y-2 text-sm text-gray-600">

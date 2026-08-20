@@ -6,8 +6,10 @@ import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
 import { Clientes } from './pages/Clientes';
 import { NovoCliente } from './pages/NovoCliente';
+import { ClienteDetalhes } from './pages/ClienteDetalhes';
 import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
+import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
@@ -33,8 +35,11 @@ function App() {
               {/* Clientes e Projetos */}
               <Route path="clientes" element={<Clientes />} />
               <Route path="clientes/novo" element={<NovoCliente />} />
+              <Route path="clientes/:id" element={<ClienteDetalhes />} />
+              
               <Route path="projetos" element={<Projetos />} />
               <Route path="projetos/novo" element={<NovoProjeto />} />
+              <Route path="projetos/:id" element={<ProjetoDetalhes />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
