@@ -12,7 +12,6 @@ import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
 import { Dimensionamento } from './pages/Dimensionamento';
 import { Comissionamento } from './pages/Comissionamento';
-import { Instalacao } from './pages/Instalacao';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
@@ -51,7 +50,7 @@ function App() {
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
-              <Route path="instalacao" element={<Instalacao />} />
+              <Route path="instalacao" element={<Placeholder title="Checklist de Instalação" />} />
               <Route path="equipamentos" element={<Placeholder title="Banco de Equipamentos" />} />
               
               {/* Negócios e Educação */}
