@@ -6,6 +6,7 @@ import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
 import { Clientes } from './pages/Clientes';
 import { NovoCliente } from './pages/NovoCliente';
+import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
@@ -32,7 +33,7 @@ function App() {
               {/* Clientes e Projetos */}
               <Route path="clientes" element={<Clientes />} />
               <Route path="clientes/novo" element={<NovoCliente />} />
-              <Route path="projetos" element={<Placeholder title="Meus Projetos" />} />
+              <Route path="projetos" element={<Projetos />} />
               <Route path="projetos/novo" element={<NovoProjeto />} />
               
               {/* Ferramentas Técnicas */}
