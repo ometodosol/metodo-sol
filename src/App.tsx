@@ -10,6 +10,7 @@ import { ClienteDetalhes } from './pages/ClienteDetalhes';
 import { Projetos } from './pages/Projetos';
 import { NovoProjeto } from './pages/NovoProjeto';
 import { ProjetoDetalhes } from './pages/ProjetoDetalhes';
+import { Checklist } from './pages/Checklist';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 
@@ -40,6 +41,8 @@ function App() {
               <Route path="projetos" element={<Projetos />} />
               <Route path="projetos/novo" element={<NovoProjeto />} />
               <Route path="projetos/:id" element={<ProjetoDetalhes />} />
+              
+              <Route path="checklist" element={<Checklist />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
