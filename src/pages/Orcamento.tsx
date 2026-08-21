@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Plus, Trash2, FileText, Download, User, Save } from 'lucide-react';
+import { Plus, Trash2, FileText, Download, User, Save, Upload } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 
 interface BudgetItem {
@@ -18,7 +18,24 @@ export function Orcamento() {
     { id: '1', description: 'Sistema Fotovoltaico 5kWp', quantity: 1, unitPrice: 15000 }
   ]);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('A logo deve ter no máximo 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setCustomLogo(event.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const addItem = () => {
     setItems([...items, { id: Date.now().toString(), description: '', quantity: 1, unitPrice: 0 }]);
@@ -78,6 +95,23 @@ export function Orcamento() {
               <User className="w-4 h-4" /> Dados Gerais
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium leading-none">Sua Logo (Opcional)</label>
+                <div className="flex items-center gap-3">
+                  {customLogo && (
+                    <div className="w-10 h-10 border border-border rounded-md overflow-hidden bg-white flex-shrink-0">
+                      <img src={customLogo} alt="Logo" className="w-full h-full object-contain" />
+                    </div>
+                  )}
+                  <label className="flex h-10 flex-1 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors">
+                    <Upload className="w-4 h-4 mr-2" />
+                    {customLogo ? 'Trocar Logo' : 'Enviar Logo (Máx 2MB)'}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                  </label>
+                </div>
+                <p className="text-[10px] text-muted-foreground mt-1">A imagem processa no navegador sem consumir espaço no servidor.</p>
+              </div>
+
               <div className="space-y-2">
                 <label className="text-sm font-medium leading-none">Cliente</label>
                 <input
@@ -213,7 +247,13 @@ export function Orcamento() {
                 {/* Cabeçalho do PDF */}
                 <div className="flex justify-between items-start border-b-2 border-gray-200 pb-6 mb-6">
                   <div>
-                    <img src="/logo-dark.png" alt="O Método Sol" className="h-12 object-contain mb-2" />
+                    {customLogo ? (
+                      <img src={customLogo} alt="Logo do Cliente" className="h-12 object-contain mb-2" />
+                    ) : (
+                      <div className="h-12 flex items-end mb-2 text-gray-400 text-sm font-medium">
+                        [Sua Logo Aqui]
+                      </div>
+                    )}
                     <h2 className="text-sm text-gray-500 uppercase tracking-widest font-semibold">Proposta Comercial</h2>
                   </div>
                   <div className="text-right text-sm text-gray-600 space-y-1">
@@ -276,7 +316,7 @@ export function Orcamento() {
                 
                 {/* Rodapé */}
                 <div className="mt-16 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
-                  Documento gerado pela plataforma O Método Sol.
+                  Este documento é uma estimativa e está sujeito a alterações.
                 </div>
               </div>
             </div>
