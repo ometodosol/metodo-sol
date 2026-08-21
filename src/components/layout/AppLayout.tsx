@@ -59,7 +59,7 @@ export function AppLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-brand-dark flex flex-col md:flex-row font-sans text-foreground">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-brand-dark text-white flex-shrink-0">
         <div className="h-14 lg:h-[60px] px-6 flex items-center">
@@ -87,7 +87,7 @@ export function AppLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-gray-50 dark:bg-background md:rounded-l-3xl">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-gray-50/50 dark:bg-background">
         <header className="h-14 lg:h-[60px] bg-transparent flex items-center justify-between px-6 flex-shrink-0 pt-2">
           <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground w-full max-w-sm">
             <div className="relative w-full">
