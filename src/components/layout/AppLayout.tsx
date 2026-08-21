@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { supabase } from '../../lib/supabase';
 
 const navGroups = [
   {
@@ -47,11 +48,33 @@ export function AppLayout() {
   
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
+  
+  const [notificacoes, setNotificacoes] = useState<any[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    async function fetchNotificacoes() {
+      const { data, error } = await supabase
+        .from('notificacoes')
+        .select('*')
+        .eq('ativa', true)
+        .order('criado_em', { ascending: false })
+        .limit(5);
+      if (!error && data) {
+        setNotificacoes(data);
+      }
+    }
+    fetchNotificacoes();
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileOpen(false);
+      }
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setShowNotifications(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -133,9 +156,38 @@ export function AppLayout() {
             >
               {actualTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <button className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-accent">
-              <Bell className="w-5 h-5" />
-            </button>
+            
+            <div className="relative" ref={notifRef}>
+              <button 
+                onClick={() => setShowNotifications(!showNotifications)}
+                className="relative text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-accent"
+              >
+                <Bell className="w-5 h-5" />
+                {notificacoes.length > 0 && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border border-background"></span>
+                )}
+              </button>
+              
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#0a1120] rounded-2xl shadow-xl border border-black/5 dark:border-white/5 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-4 border-b border-black/5 dark:border-white/5">
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Notificações</p>
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto">
+                    {notificacoes.length === 0 ? (
+                      <div className="p-8 text-center text-sm text-gray-500">Nenhuma notificação nova</div>
+                    ) : (
+                      notificacoes.map((notif) => (
+                        <div key={notif.id} className="p-4 border-b border-black/5 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white">{notif.titulo}</p>
+                          <p className="text-xs text-gray-500 mt-1">{notif.mensagem}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             
             <div className="relative" ref={profileRef}>
               <div 

@@ -5,9 +5,21 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const defaultCarouselImages = [
-  'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop'
+  { 
+    imagem_url: 'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop',
+    titulo: 'Do orçamento à instalação',
+    texto: 'Um fluxo de trabalho completo: geração de propostas, dimensionamento e gestão de projetos com precisão profissional.'
+  },
+  {
+    imagem_url: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop',
+    titulo: 'Energia Solar',
+    texto: 'Transforme o sol em economia para seus clientes.'
+  },
+  {
+    imagem_url: 'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop',
+    titulo: 'Projetos Profissionais',
+    texto: 'Tudo o que você precisa em um só lugar.'
+  }
 ];
 
 export function Login() {
@@ -17,7 +29,7 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [carouselImages, setCarouselImages] = useState<string[]>(defaultCarouselImages);
+  const [carouselImages, setCarouselImages] = useState<any[]>(defaultCarouselImages);
 
   useEffect(() => {
     async function fetchBanners() {
@@ -29,7 +41,7 @@ export function Login() {
         .order('id', { ascending: false });
       
       if (!error && data && data.length > 0) {
-        setCarouselImages(data.map(b => b.imagem_url));
+        setCarouselImages(data);
       }
     }
     fetchBanners();
@@ -69,10 +81,10 @@ export function Login() {
       {/* Left Column - Image Carousel */}
       <div className="hidden lg:flex lg:w-1/2 p-4">
         <div className="relative w-full h-full rounded-[2rem] overflow-hidden shadow-2xl">
-          {carouselImages.map((src, idx) => (
+          {carouselImages.map((banner, idx) => (
             <img 
               key={idx}
-              src={src} 
+              src={banner.imagem_url} 
               alt={`Slide ${idx + 1}`} 
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
             />
@@ -82,20 +94,18 @@ export function Login() {
           
           {/* Text and Carousel Indicators */}
           <div className="absolute bottom-12 left-12 right-12">
-            <h2 className="text-3xl font-bold text-white mb-2">Do orçamento à instalação</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">{carouselImages[currentSlide]?.titulo || ''}</h2>
             <p className="text-gray-300 text-sm mb-8 max-w-md">
-              Um fluxo de trabalho completo: geração de propostas, dimensionamento e gestão de projetos com precisão profissional.
+              {carouselImages[currentSlide]?.texto || ''}
             </p>
             
-            <div className="flex gap-6 text-[10px] font-bold tracking-widest text-gray-500">
-              {['DIMENSIONAR', 'PROPOSTAS', 'PROJETOS'].map((label, idx) => (
+            <div className="flex gap-2 text-[10px] font-bold tracking-widest text-gray-500">
+              {carouselImages.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
-                  className={`pb-3 border-b-2 transition-all ${idx === currentSlide ? 'border-white text-white' : 'border-transparent hover:text-gray-300'}`}
-                >
-                  {label}
-                </button>
+                  className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-6' : 'bg-white/50'}`}
+                />
               ))}
             </div>
           </div>
