@@ -5,23 +5,45 @@ import { supabase } from '../lib/supabase';
 import type { Cliente } from '../types';
 
 const concessionariasData = [
-  { nome: 'CEMIG-D (MG)', tarifa: 0.95 },
-  { nome: 'ENEL-SP (SP)', tarifa: 0.75 },
-  { nome: 'CPFL Paulista (SP)', tarifa: 0.70 },
-  { nome: 'Elektro (SP)', tarifa: 0.73 },
-  { nome: 'Copel (PR)', tarifa: 0.85 },
-  { nome: 'Celesc (SC)', tarifa: 0.65 },
-  { nome: 'RGE (RS)', tarifa: 0.80 },
-  { nome: 'CEEE Equatorial (RS)', tarifa: 0.78 },
-  { nome: 'Light (RJ)', tarifa: 1.05 },
-  { nome: 'Enel-RJ (RJ)', tarifa: 1.00 },
-  { nome: 'Neoenergia Coelba (BA)', tarifa: 0.88 },
-  { nome: 'Neoenergia Pernambuco (PE)', tarifa: 0.85 },
+  // Norte
+  { nome: 'Amazonas Energia (AM)', tarifa: 0.98 },
+  { nome: 'CEA Equatorial (AP)', tarifa: 0.95 },
+  { nome: 'Energisa AC (AC)', tarifa: 0.96 },
+  { nome: 'Energisa RO (RO)', tarifa: 0.92 },
+  { nome: 'Energisa TO (TO)', tarifa: 0.89 },
   { nome: 'Equatorial PA (PA)', tarifa: 0.98 },
+  { nome: 'Roraima Energia (RR)', tarifa: 1.05 },
+  // Nordeste
+  { nome: 'Enel CE (CE)', tarifa: 0.74 },
+  { nome: 'Energisa PB (PB)', tarifa: 0.82 },
+  { nome: 'Energisa SE (SE)', tarifa: 0.79 },
+  { nome: 'Equatorial AL (AL)', tarifa: 0.86 },
   { nome: 'Equatorial MA (MA)', tarifa: 0.96 },
-  { nome: 'Energisa MT (MT)', tarifa: 0.82 },
+  { nome: 'Equatorial PI (PI)', tarifa: 0.91 },
+  { nome: 'Neoenergia Coelba (BA)', tarifa: 0.88 },
+  { nome: 'Neoenergia Cosern (RN)', tarifa: 0.84 },
+  { nome: 'Neoenergia Pernambuco (PE)', tarifa: 0.85 },
+  // Centro-Oeste
   { nome: 'Energisa MS (MS)', tarifa: 0.79 },
-  { nome: 'Enel-CE (CE)', tarifa: 0.74 },
+  { nome: 'Energisa MT (MT)', tarifa: 0.82 },
+  { nome: 'Equatorial GO (GO)', tarifa: 0.87 },
+  { nome: 'Neoenergia Brasília (DF)', tarifa: 0.81 },
+  // Sudeste
+  { nome: 'CEMIG-D (MG)', tarifa: 0.95 },
+  { nome: 'CPFL Paulista (SP)', tarifa: 0.70 },
+  { nome: 'CPFL Piratininga (SP)', tarifa: 0.71 },
+  { nome: 'EDP ES (ES)', tarifa: 0.78 },
+  { nome: 'EDP SP (SP)', tarifa: 0.76 },
+  { nome: 'Elektro (SP)', tarifa: 0.73 },
+  { nome: 'Enel RJ (RJ)', tarifa: 1.00 },
+  { nome: 'Enel SP (SP)', tarifa: 0.75 },
+  { nome: 'Energisa Minas Rio (MG/RJ)', tarifa: 0.88 },
+  { nome: 'Light (RJ)', tarifa: 1.05 },
+  // Sul
+  { nome: 'CEEE Equatorial (RS)', tarifa: 0.78 },
+  { nome: 'Celesc (SC)', tarifa: 0.65 },
+  { nome: 'Copel (PR)', tarifa: 0.85 },
+  { nome: 'RGE (RS)', tarifa: 0.80 },
 ];
 export function Orcamento() {
   // Clientes
@@ -280,7 +302,7 @@ export function Orcamento() {
 
         <div className="bg-card rounded-2xl border border-gray-100 dark:border-white/5 shadow-sm p-6 space-y-4">
           <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
-            <FileText className="w-4 h-4" /> Dados da Conta
+            <FileText className="w-4 h-4" /> Concessionárias
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="space-y-2 col-span-2 sm:col-span-2">
