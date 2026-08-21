@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import type { Cliente, Projeto } from '../types';
-import { ArrowLeft, Save, User, MapPin, Phone, Mail, FileText } from 'lucide-react';
+import type { Cliente, Projeto, Orcamento } from '../types';
+import { ArrowLeft, Save, User, MapPin, Phone, Mail, FileText, DollarSign } from 'lucide-react';
 import { StatusBadge } from '../components/ui/StatusBadge';
 
 export function ClienteDetalhes() {
@@ -14,6 +14,7 @@ export function ClienteDetalhes() {
   
   const [cliente, setCliente] = useState<Cliente | null>(null);
   const [projetos, setProjetos] = useState<Projeto[]>([]);
+  const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
 
   useEffect(() => {
     async function fetchData() {
@@ -36,6 +37,15 @@ export function ClienteDetalhes() {
         .order('criado_em', { ascending: false });
 
       if (projetosData) setProjetos(projetosData as any);
+
+      // Buscar orçamentos vinculados
+      const { data: orcamentosData } = await supabase
+        .from('orcamentos')
+        .select('*')
+        .eq('cliente_id', id)
+        .order('criado_em', { ascending: false });
+
+      if (orcamentosData) setOrcamentos(orcamentosData as any);
 
       setLoading(false);
     }
@@ -206,9 +216,50 @@ export function ClienteDetalhes() {
           </form>
         </div>
 
-        {/* Histórico de Projetos */}
-        <div className="col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-4 h-full">
+        {/* Histórico e Prontuário */}
+        <div className="col-span-1 space-y-6">
+          
+          {/* Histórico de Orçamentos */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+            <h3 className="font-semibold text-lg text-brand-dark border-b pb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
+                Orçamentos Salvos
+              </div>
+            </h3>
+
+            {orcamentos.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-6">Nenhum orçamento salvo para este cliente.</p>
+            ) : (
+              <div className="space-y-3 mt-4">
+                {orcamentos.map(orc => (
+                  <div 
+                    key={orc.id} 
+                    className="p-3 border border-gray-100 rounded-lg hover:border-brand-dark transition-all bg-gray-50"
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <h4 className="font-semibold text-brand-dark text-sm">{orc.dados?.potencia} kWp</h4>
+                      <span className="text-xs text-gray-500">{new Date(orc.criado_em).toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div className="text-xs text-gray-600 flex justify-between items-center">
+                      <span>R$ {Number(orc.dados?.investimento).toLocaleString('pt-BR')}</span>
+                      <span className="text-green-600 font-medium">Econ. R$ {Number(orc.dados?.economiaMensal).toLocaleString('pt-BR')}/mês</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <button 
+              onClick={() => navigate('/orcamentos')}
+              className="w-full mt-4 py-2 border border-dashed border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 hover:text-brand-dark transition-colors text-sm font-medium"
+            >
+              + Novo Orçamento
+            </button>
+          </div>
+
+          {/* Histórico de Projetos */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <h3 className="font-semibold text-lg text-brand-dark border-b pb-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5" />

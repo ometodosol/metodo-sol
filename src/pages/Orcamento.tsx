@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Download, User, Zap, DollarSign, Settings, Calculator } from 'lucide-react';
+import { FileText, Download, User, Zap, DollarSign, Settings, Save } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
+import { supabase } from '../lib/supabase';
+import type { Cliente } from '../types';
 
 export function Orcamento() {
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [selectedClienteId, setSelectedClienteId] = useState<string>('avulso');
+  
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [grupo, setGrupo] = useState<'A' | 'B'>('B');
@@ -22,21 +27,70 @@ export function Orcamento() {
   const [notes, setNotes] = useState('Proposta válida por 15 dias.\nInstalação inclusa. Homologação na concessionária por nossa conta.');
   
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Buscar Logo Global
     const savedLogo = localStorage.getItem('@MetodoSol:companyLogo');
     if (savedLogo) {
       setCompanyLogo(savedLogo);
     }
+    
+    // Buscar Clientes do Banco
+    async function fetchClientes() {
+      const { data } = await supabase.from('clientes').select('*').order('criado_em', { ascending: false });
+      if (data) setClientes(data);
+    }
+    fetchClientes();
   }, []);
+
+  const handleSaveOrcamento = async () => {
+    if (selectedClienteId === 'avulso') {
+      alert('Para salvar no prontuário, selecione um cliente cadastrado na lista.');
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    const dadosJson = {
+      grupo,
+      consumoMensal,
+      geracaoEstimada,
+      potencia,
+      modulosQtd,
+      modulosMarca,
+      inversorQtd,
+      inversorMarca,
+      investimento,
+      economiaMensal,
+      payback,
+      notes,
+      clientName,
+      date
+    };
+
+    const { error } = await supabase
+      .from('orcamentos')
+      .insert([{
+        cliente_id: selectedClienteId,
+        dados: dadosJson
+      }]);
+
+    setIsSaving(false);
+    
+    if (error) {
+      alert('Erro ao salvar orçamento: ' + error.message + '\n\n(Dica: Você rodou o código SQL no Supabase para criar a tabela orcamentos?)');
+    } else {
+      alert('Orçamento salvo no prontuário do cliente com sucesso!');
+    }
+  };
 
   const generatePDF = () => {
     if (!pdfRef.current) return;
     setIsGenerating(true);
     
-    // Mostra o container oculto para que o html2canvas consiga ler as dimensões corretamente
     const element = pdfRef.current;
     element.style.display = 'block';
 
@@ -49,7 +103,7 @@ export function Orcamento() {
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-      element.style.display = 'none'; // Esconde novamente após gerar
+      element.style.display = 'none';
       setIsGenerating(false);
     });
   };
@@ -61,14 +115,27 @@ export function Orcamento() {
           <h1 className="text-2xl font-bold tracking-tight text-foreground">Proposta Solar</h1>
           <p className="text-sm text-muted-foreground">Gere propostas comerciais personalizadas (Atualizado Lei 14.300)</p>
         </div>
-        <button
-          onClick={generatePDF}
-          disabled={isGenerating}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 gap-2 shadow-md"
-        >
-          {isGenerating ? <FileText className="w-4 h-4 animate-pulse" /> : <Download className="w-4 h-4" />}
-          {isGenerating ? 'Processando PDF...' : 'Gerar PDF Profissional'}
-        </button>
+        
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button
+            onClick={handleSaveOrcamento}
+            disabled={isSaving || selectedClienteId === 'avulso'}
+            className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 gap-2 shadow-sm disabled:opacity-50"
+            title={selectedClienteId === 'avulso' ? "Selecione um cliente para salvar" : "Salvar no Prontuário do Cliente"}
+          >
+            {isSaving ? <Settings className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            Salvar
+          </button>
+          
+          <button
+            onClick={generatePDF}
+            disabled={isGenerating}
+            className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 gap-2 shadow-md"
+          >
+            {isGenerating ? <FileText className="w-4 h-4 animate-pulse" /> : <Download className="w-4 h-4" />}
+            {isGenerating ? 'PDF...' : 'Gerar PDF'}
+          </button>
+        </div>
       </div>
 
       {!companyLogo && (
@@ -88,8 +155,37 @@ export function Orcamento() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2 sm:col-span-2">
               <label className="text-sm font-medium">Nome do Cliente</label>
-              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: João da Silva" />
+              <select 
+                value={selectedClienteId} 
+                onChange={e => {
+                  const val = e.target.value;
+                  setSelectedClienteId(val);
+                  if (val !== 'avulso') {
+                    const c = clientes.find(c => c.id === val);
+                    if (c) setClientName(c.nome);
+                  } else {
+                    setClientName('');
+                  }
+                }} 
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="avulso">Avulso (Não salvar no prontuário)</option>
+                {clientes.map(c => (
+                  <option key={c.id} value={c.id}>{c.nome}</option>
+                ))}
+              </select>
+              
+              {selectedClienteId === 'avulso' && (
+                <input 
+                  type="text" 
+                  value={clientName} 
+                  onChange={e => setClientName(e.target.value)} 
+                  className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
+                  placeholder="Ex: João da Silva" 
+                />
+              )}
             </div>
+            
             <div className="space-y-2">
               <label className="text-sm font-medium">Data da Proposta</label>
               <input type="date" value={date} onChange={e => setDate(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
@@ -98,7 +194,7 @@ export function Orcamento() {
               <label className="text-sm font-medium">Classificação</label>
               <select value={grupo} onChange={e => setGrupo(e.target.value as 'A'|'B')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 <option value="B">Grupo B (Baixa Tensão)</option>
-                <option value="A">Grupo A (Média/Alta Tensão)</option>
+                <option value="A">Grupo A (Alta Tensão)</option>
               </select>
             </div>
           </div>
@@ -136,7 +232,7 @@ export function Orcamento() {
               <input type="number" value={modulosQtd} onChange={e => setModulosQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-center" />
             </div>
             <div className="col-span-9 sm:col-span-10 space-y-2">
-              <label className="text-sm font-medium">Módulo Solar (Painel)</label>
+              <label className="text-sm font-medium">Módulo Solar</label>
               <input type="text" value={modulosMarca} onChange={e => setModulosMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: Canadian 550W" />
             </div>
             <div className="col-span-3 sm:col-span-2 space-y-2">
@@ -144,8 +240,8 @@ export function Orcamento() {
               <input type="number" value={inversorQtd} onChange={e => setInversorQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-center" />
             </div>
             <div className="col-span-9 sm:col-span-10 space-y-2">
-              <label className="text-sm font-medium">Inversor / Microinversor</label>
-              <input type="text" value={inversorMarca} onChange={e => setInversorMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: Growatt MIN 5000TL-X" />
+              <label className="text-sm font-medium">Inversor</label>
+              <input type="text" value={inversorMarca} onChange={e => setInversorMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: Growatt 5kW" />
             </div>
           </div>
         </div>
@@ -157,11 +253,11 @@ export function Orcamento() {
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Investimento Total (R$)</label>
+              <label className="text-sm font-medium">Investimento (R$)</label>
               <input type="number" value={investimento} onChange={e => setInvestimento(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Economia Mensal (R$)</label>
+              <label className="text-sm font-medium">Economia/mês (R$)</label>
               <input type="number" value={economiaMensal} onChange={e => setEconomiaMensal(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2">
@@ -186,7 +282,7 @@ export function Orcamento() {
         </div>
       </div>
 
-      {/* CONTAINER DO PDF (Oculto na tela para evitar quebra de layout, mas processado pelo html2pdf) */}
+      {/* CONTAINER DO PDF (Oculto) */}
       <div style={{ display: 'none' }}>
         <div 
           ref={pdfRef} 
@@ -194,7 +290,7 @@ export function Orcamento() {
             width: '210mm', 
             minHeight: '297mm', 
             backgroundColor: '#ffffff',
-            color: '#1f2937', // gray-800
+            color: '#1f2937', 
             fontFamily: 'Inter, sans-serif',
             padding: '0',
             boxSizing: 'border-box',

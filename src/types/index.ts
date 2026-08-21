@@ -23,6 +23,13 @@ export interface Projeto {
   criado_em: string;
 }
 
+export interface Orcamento {
+  id: string;
+  cliente_id: string;
+  dados: any;
+  criado_em: string;
+}
+
 export interface Profissional {
   id: string;
   usuario_id: string;
