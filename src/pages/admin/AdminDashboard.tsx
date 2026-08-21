@@ -62,7 +62,8 @@ export function AdminDashboard() {
     especialidade: '',
     telefone: '',
     estado: '',
-    cidade: ''
+    cidade: '',
+    foto_url: ''
   });
 
   useEffect(() => {
@@ -73,7 +74,8 @@ export function AdminDashboard() {
 
   const fetchBanners = async () => {
     setLoadingBanners(true);
-    const { data, error } = await supabase.from('banners').select('*').order('criado_em', { ascending: false });
+    const { data, error } = await supabase.from('banners').select('*').order('id', { ascending: false });
+    if (error) console.error("Erro ao buscar banners:", error);
     if (!error && data) setBanners(data);
     setLoadingBanners(false);
   };
@@ -94,8 +96,10 @@ export function AdminDashboard() {
 
   // Funções de Banners
   const handleAddBanner = async (local: 'login' | 'dashboard') => {
-    const newBanner = { local, imagem_url: '', titulo: '', texto: '', ativo: true };
+    if (!user) return;
+    const newBanner = { local, imagem_url: '', titulo: '', texto: '', ativo: true, usuario_id: user.id };
     const { data, error } = await supabase.from('banners').insert([newBanner]).select();
+    if (error) console.error("Erro ao criar banner:", error);
     if (!error && data) setBanners([data[0], ...banners]);
   };
 
@@ -121,12 +125,15 @@ export function AdminDashboard() {
   // Funções de Notificações
   const handleSendNotificacao = async () => {
     if (!notifForm.titulo || !notifForm.mensagem) return alert('Preencha título e mensagem.');
+    if (!user) return;
     setSaving(true);
-    const { data, error } = await supabase.from('notificacoes').insert([notifForm]).select();
+    const payload = { ...notifForm, usuario_id: user.id };
+    const { data, error } = await supabase.from('notificacoes').insert([payload]).select();
     if (!error && data) {
       setNotificacoes([data[0], ...notificacoes]);
       setNotifForm({ titulo: '', mensagem: '' });
     } else {
+      console.error("Erro ao enviar notificacao:", error);
       alert('Erro ao enviar notificação.');
     }
     setSaving(false);
@@ -141,7 +148,7 @@ export function AdminDashboard() {
   };
 
   // Funções de Profissionais
-  const openProfModal = (prof?: Profissional) => {
+  const openProfModal = (prof?: Profissional & { foto_url?: string }) => {
     if (prof) {
       setEditingProfId(prof.id);
       setProfForm({
@@ -149,11 +156,12 @@ export function AdminDashboard() {
         especialidade: prof.especialidade,
         telefone: prof.telefone,
         estado: prof.estado,
-        cidade: prof.cidade
+        cidade: prof.cidade,
+        foto_url: prof.foto_url || ''
       });
     } else {
       setEditingProfId(null);
-      setProfForm({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '' });
+      setProfForm({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '' });
     }
     setShowProfModal(true);
   };
@@ -448,7 +456,7 @@ export function AdminDashboard() {
       {/* Modal de Cadastro/Edição de Profissional */}
       {showProfModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-card rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-border">
+          <div className="bg-white dark:bg-[#040B15] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-border">
             <div className="p-6 border-b border-border flex items-center justify-between bg-muted/50">
               <h2 className="text-xl font-bold text-card-foreground">
                 {editingProfId ? 'Editar Profissional' : 'Cadastrar Profissional'}
@@ -470,6 +478,10 @@ export function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">Especialidade</label>
                   <input required type="text" value={profForm.especialidade} onChange={(e) => setProfForm({...profForm, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: Engenheiro Eletricista" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-card-foreground mb-1">Foto (URL)</label>
+                  <input type="text" value={profForm.foto_url} onChange={(e) => setProfForm({...profForm, foto_url: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">WhatsApp de Contato</label>
