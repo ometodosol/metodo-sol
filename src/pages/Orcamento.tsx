@@ -1,325 +1,334 @@
-import React, { useState, useRef } from 'react';
-import { Plus, Trash2, FileText, Download, User, Save, Upload } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FileText, Download, User, Zap, DollarSign, Settings, Calculator } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
-
-interface BudgetItem {
-  id: string;
-  description: string;
-  quantity: number;
-  unitPrice: number;
-}
 
 export function Orcamento() {
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [notes, setNotes] = useState('');
-  const [discount, setDiscount] = useState(0);
-  const [items, setItems] = useState<BudgetItem[]>([
-    { id: '1', description: 'Sistema Fotovoltaico 5kWp', quantity: 1, unitPrice: 15000 }
-  ]);
+  const [grupo, setGrupo] = useState<'A' | 'B'>('B');
+  const [consumoMensal, setConsumoMensal] = useState<number>(400);
+  const [geracaoEstimada, setGeracaoEstimada] = useState<number>(450);
+  const [potencia, setPotencia] = useState<number>(3.3);
+  
+  const [modulosQtd, setModulosQtd] = useState<number>(6);
+  const [modulosMarca, setModulosMarca] = useState<string>('Canadian 550W');
+  const [inversorQtd, setInversorQtd] = useState<number>(1);
+  const [inversorMarca, setInversorMarca] = useState<string>('Growatt 3kW');
+  
+  const [investimento, setInvestimento] = useState<number>(12000);
+  const [economiaMensal, setEconomiaMensal] = useState<number>(350);
+  const [payback, setPayback] = useState<number>(34); // Meses
+  
+  const [notes, setNotes] = useState('Proposta válida por 15 dias.\nInstalação inclusa. Homologação na concessionária por nossa conta.');
+  
   const [isGenerating, setIsGenerating] = useState(false);
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > 2 * 1024 * 1024) {
-      alert('A logo deve ter no máximo 2MB.');
-      return;
+  useEffect(() => {
+    const savedLogo = localStorage.getItem('@MetodoSol:companyLogo');
+    if (savedLogo) {
+      setCompanyLogo(savedLogo);
     }
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setCustomLogo(event.target?.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const addItem = () => {
-    setItems([...items, { id: Date.now().toString(), description: '', quantity: 1, unitPrice: 0 }]);
-  };
-
-  const removeItem = (id: string) => {
-    setItems(items.filter(item => item.id !== id));
-  };
-
-  const updateItem = (id: string, field: keyof BudgetItem, value: string | number) => {
-    setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
-  };
-
-  const subtotal = items.reduce((acc, item) => acc + (item.quantity * item.unitPrice), 0);
-  const total = subtotal - discount;
+  }, []);
 
   const generatePDF = () => {
     if (!pdfRef.current) return;
     setIsGenerating(true);
     
+    // Mostra o container oculto para que o html2canvas consiga ler as dimensões corretamente
     const element = pdfRef.current;
+    element.style.display = 'block';
+
     const opt = {
-      margin:       10,
-      filename:     `Orcamento_${clientName || 'Cliente'}.pdf`,
+      margin:       0,
+      filename:     `Proposta_Solar_${clientName || 'Cliente'}.pdf`,
       image:        { type: 'jpeg' as const, quality: 0.98 },
-      html2canvas:  { scale: 2 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
       jsPDF:        { unit: 'mm' as const, format: 'a4' as const, orientation: 'portrait' as const }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
+      element.style.display = 'none'; // Esconde novamente após gerar
       setIsGenerating(false);
     });
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500 max-w-6xl mx-auto">
+    <div className="space-y-6 animate-in fade-in duration-500 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">Novo Orçamento</h1>
-          <p className="text-sm text-muted-foreground">Preencha os dados abaixo para gerar o PDF.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Proposta Solar</h1>
+          <p className="text-sm text-muted-foreground">Gere propostas comerciais personalizadas (Atualizado Lei 14.300)</p>
         </div>
         <button
           onClick={generatePDF}
           disabled={isGenerating}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 gap-2"
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-6 py-2 gap-2 shadow-md"
         >
           {isGenerating ? <FileText className="w-4 h-4 animate-pulse" /> : <Download className="w-4 h-4" />}
-          {isGenerating ? 'Gerando PDF...' : 'Baixar PDF'}
+          {isGenerating ? 'Processando PDF...' : 'Gerar PDF Profissional'}
         </button>
       </div>
 
+      {!companyLogo && (
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg flex items-center gap-3 text-sm">
+          <Settings className="w-5 h-5 flex-shrink-0" />
+          <p>Você ainda não configurou sua Logo. Vá em <strong>Minha Conta</strong> para enviar a logo da sua empresa e deixá-la visível no PDF.</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Lado do Formulário */}
-        <div className="space-y-6">
-          <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
-            <h3 className="font-semibold flex items-center gap-2">
-              <User className="w-4 h-4" /> Dados Gerais
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none">Sua Logo (Opcional)</label>
-                <div className="flex items-center gap-3">
-                  {customLogo && (
-                    <div className="w-10 h-10 border border-border rounded-md overflow-hidden bg-white flex-shrink-0">
-                      <img src={customLogo} alt="Logo" className="w-full h-full object-contain" />
-                    </div>
-                  )}
-                  <label className="flex h-10 flex-1 cursor-pointer items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors">
-                    <Upload className="w-4 h-4 mr-2" />
-                    {customLogo ? 'Trocar Logo' : 'Enviar Logo (Máx 2MB)'}
-                    <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
-                  </label>
-                </div>
-                <p className="text-[10px] text-muted-foreground mt-1">A imagem processa no navegador sem consumir espaço no servidor.</p>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none">Cliente</label>
-                <input
-                  type="text"
-                  value={clientName}
-                  onChange={(e) => setClientName(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  placeholder="Nome do cliente"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none">Data</label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-              </div>
+        
+        {/* Painel 1: Dados Básicos */}
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2">
+            <User className="w-4 h-4 text-primary" /> Dados do Cliente e Sistema
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2 sm:col-span-2">
+              <label className="text-sm font-medium">Nome do Cliente</label>
+              <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: João da Silva" />
             </div>
-          </div>
-
-          <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
-            <div className="flex justify-between items-center">
-              <h3 className="font-semibold flex items-center gap-2">
-                <FileText className="w-4 h-4" /> Itens do Orçamento
-              </h3>
-              <button
-                onClick={addItem}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-8 px-3 gap-1 border border-border"
-              >
-                <Plus className="w-3 h-3" /> Adicionar Item
-              </button>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Data da Proposta</label>
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
-            
-            <div className="space-y-3">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-2 items-start">
-                  <div className="flex-1 space-y-2">
-                    <input
-                      type="text"
-                      value={item.description}
-                      onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                      className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                      placeholder="Descrição do item"
-                    />
-                    <div className="flex gap-2">
-                      <div className="w-1/3">
-                        <input
-                          type="number"
-                          min="1"
-                          value={item.quantity}
-                          onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                          placeholder="Qtd"
-                        />
-                      </div>
-                      <div className="w-2/3 relative">
-                        <span className="absolute left-3 top-2 text-muted-foreground text-sm">R$</span>
-                        <input
-                          type="number"
-                          min="0"
-                          value={item.unitPrice}
-                          onChange={(e) => updateItem(item.id, 'unitPrice', Number(e.target.value))}
-                          className="flex h-9 w-full rounded-md border border-input bg-background pl-8 pr-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                          placeholder="0,00"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-destructive/10 text-destructive h-9 w-9 border border-transparent flex-shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Classificação</label>
+              <select value={grupo} onChange={e => setGrupo(e.target.value as 'A'|'B')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="B">Grupo B (Baixa Tensão)</option>
+                <option value="A">Grupo A (Média/Alta Tensão)</option>
+              </select>
             </div>
-
-            <div className="pt-4 border-t border-border flex justify-end">
-              <div className="w-1/2 space-y-2">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
-                  <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm gap-2">
-                  <span className="text-muted-foreground">Desconto</span>
-                  <input
-                    type="number"
-                    value={discount}
-                    onChange={(e) => setDiscount(Number(e.target.value))}
-                    className="flex h-8 w-24 rounded-md border border-input bg-background px-2 py-1 text-sm text-right focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                  />
-                </div>
-                <div className="flex justify-between items-center font-bold text-lg pt-2 border-t border-border">
-                  <span>Total</span>
-                  <span>R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
-            <h3 className="font-semibold flex items-center gap-2">
-              <Save className="w-4 h-4" /> Observações (Termos)
-            </h3>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              placeholder="Ex: Proposta válida por 15 dias. Forma de pagamento: 50% no aceite e 50% na entrega."
-            />
           </div>
         </div>
 
-        {/* Lado do Preview do PDF */}
-        <div className="relative">
-          <div className="sticky top-6">
-            <div className="mb-2 flex justify-between items-center">
-              <h3 className="font-semibold text-foreground">Pré-visualização</h3>
-              <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-md">Formato A4</span>
+        {/* Painel 2: Dimensionamento */}
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2">
+            <Zap className="w-4 h-4 text-primary" /> Engenharia e Geração
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Consumo (kWh)</label>
+              <input type="number" value={consumoMensal} onChange={e => setConsumoMensal(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
             </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Geração (kWh)</label>
+              <input type="number" value={geracaoEstimada} onChange={e => setGeracaoEstimada(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Potência (kWp)</label>
+              <input type="number" step="0.1" value={potencia} onChange={e => setPotencia(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        {/* Painel 3: Equipamentos */}
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2">
+            <Settings className="w-4 h-4 text-primary" /> Equipamentos
+          </h3>
+          <div className="grid grid-cols-12 gap-4">
+            <div className="col-span-3 sm:col-span-2 space-y-2">
+              <label className="text-sm font-medium">Qtd</label>
+              <input type="number" value={modulosQtd} onChange={e => setModulosQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-center" />
+            </div>
+            <div className="col-span-9 sm:col-span-10 space-y-2">
+              <label className="text-sm font-medium">Módulo Solar (Painel)</label>
+              <input type="text" value={modulosMarca} onChange={e => setModulosMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: Canadian 550W" />
+            </div>
+            <div className="col-span-3 sm:col-span-2 space-y-2">
+              <label className="text-sm font-medium">Qtd</label>
+              <input type="number" value={inversorQtd} onChange={e => setInversorQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-center" />
+            </div>
+            <div className="col-span-9 sm:col-span-10 space-y-2">
+              <label className="text-sm font-medium">Inversor / Microinversor</label>
+              <input type="text" value={inversorMarca} onChange={e => setInversorMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" placeholder="Ex: Growatt MIN 5000TL-X" />
+            </div>
+          </div>
+        </div>
+
+        {/* Painel 4: Financeiro */}
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2">
+            <DollarSign className="w-4 h-4 text-primary" /> Financeiro
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Investimento Total (R$)</label>
+              <input type="number" value={investimento} onChange={e => setInvestimento(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Economia Mensal (R$)</label>
+              <input type="number" value={economiaMensal} onChange={e => setEconomiaMensal(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Payback (Meses)</label>
+              <input type="number" value={payback} onChange={e => setPayback(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+            </div>
+          </div>
+        </div>
+
+        {/* Painel 5: Termos */}
+        <div className="bg-card text-card-foreground rounded-lg border border-border shadow-sm p-6 space-y-4 lg:col-span-2">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2">
+            <FileText className="w-4 h-4 text-primary" /> Observações e Condições
+          </h3>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={2}
+            className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm resize-none"
+            placeholder="Garantias, forma de pagamento, etc."
+          />
+        </div>
+      </div>
+
+      {/* CONTAINER DO PDF (Oculto na tela para evitar quebra de layout, mas processado pelo html2pdf) */}
+      <div style={{ display: 'none' }}>
+        <div 
+          ref={pdfRef} 
+          style={{ 
+            width: '210mm', 
+            minHeight: '297mm', 
+            backgroundColor: '#ffffff',
+            color: '#1f2937', // gray-800
+            fontFamily: 'Inter, sans-serif',
+            padding: '0',
+            boxSizing: 'border-box',
+            position: 'relative'
+          }}
+        >
+          {/* Tarja Azul / Verde no topo estilo Azumi */}
+          <div style={{ backgroundColor: '#0f172a', padding: '30px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff' }}>
+            <div>
+              {companyLogo ? (
+                <img src={companyLogo} alt="Logo" style={{ maxHeight: '60px', maxWidth: '200px', objectFit: 'contain' }} />
+              ) : (
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#CDF757' }}>Sua Logo Aqui</div>
+              )}
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <h1 style={{ margin: 0, fontSize: '24px', textTransform: 'uppercase', letterSpacing: '1px' }}>Proposta Comercial</h1>
+              <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#94a3b8' }}>Energia Solar Fotovoltaica</p>
+            </div>
+          </div>
+
+          <div style={{ padding: '40px' }}>
             
-            {/* O container a ser exportado para PDF */}
-            <div className="bg-white border border-border shadow-sm rounded-lg overflow-hidden">
-              <div 
-                ref={pdfRef} 
-                className="p-8 text-black bg-white" 
-                style={{ width: '100%', minHeight: '297mm', boxSizing: 'border-box' }}
-              >
-                {/* Cabeçalho do PDF */}
-                <div className="flex justify-between items-start border-b-2 border-gray-200 pb-6 mb-6">
-                  <div>
-                    {customLogo ? (
-                      <img src={customLogo} alt="Logo do Cliente" className="h-12 object-contain mb-2" />
-                    ) : (
-                      <div className="h-12 flex items-end mb-2 text-gray-400 text-sm font-medium">
-                        [Sua Logo Aqui]
-                      </div>
-                    )}
-                    <h2 className="text-sm text-gray-500 uppercase tracking-widest font-semibold">Proposta Comercial</h2>
-                  </div>
-                  <div className="text-right text-sm text-gray-600 space-y-1">
-                    <p><strong>Data:</strong> {new Date(date).toLocaleDateString('pt-BR')}</p>
-                    <p><strong>Cliente:</strong> {clientName || '_______________'}</p>
-                  </div>
-                </div>
+            {/* Bloco Cliente */}
+            <div style={{ borderLeft: '4px solid #CDF757', paddingLeft: '15px', marginBottom: '30px' }}>
+              <h2 style={{ margin: '0 0 5px 0', fontSize: '18px', color: '#0f172a' }}>Para: {clientName || '_______________'}</h2>
+              <p style={{ margin: 0, fontSize: '14px', color: '#64748b' }}>Data: {new Date(date).toLocaleDateString('pt-BR')} &bull; Classificação: {grupo === 'A' ? 'Grupo A (Alta Tensão)' : 'Grupo B (Baixa Tensão)'}</p>
+            </div>
 
-                {/* Tabela de Itens */}
-                <div className="mb-8">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-600 font-semibold border-b border-gray-200">
-                      <tr>
-                        <th className="py-3 px-4">Descrição</th>
-                        <th className="py-3 px-4 text-center">Qtd</th>
-                        <th className="py-3 px-4 text-right">Valor Unit.</th>
-                        <th className="py-3 px-4 text-right">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {items.map((item, idx) => (
-                        <tr key={idx}>
-                          <td className="py-3 px-4">{item.description || '-'}</td>
-                          <td className="py-3 px-4 text-center">{item.quantity}</td>
-                          <td className="py-3 px-4 text-right">R$ {item.unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                          <td className="py-3 px-4 text-right">R$ {(item.quantity * item.unitPrice).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            {/* Grid 2 colunas: Sistema e Benefícios */}
+            <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
+              {/* Coluna Esquerda */}
+              <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>
+                  Resumo do Sistema
+                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Potência Total:</span>
+                  <strong style={{ fontSize: '14px' }}>{potencia.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} kWp</strong>
                 </div>
-
-                {/* Resumo Financeiro */}
-                <div className="flex justify-end mb-8">
-                  <div className="w-64 space-y-2 text-sm">
-                    <div className="flex justify-between border-b border-gray-100 pb-2">
-                      <span className="text-gray-500">Subtotal:</span>
-                      <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between border-b border-gray-100 pb-2 text-red-500">
-                        <span>Desconto:</span>
-                        <span>- R$ {discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between text-base font-bold pt-2">
-                      <span>TOTAL:</span>
-                      <span>R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                    </div>
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Consumo Médio:</span>
+                  <strong style={{ fontSize: '14px' }}>{consumoMensal} kWh/mês</strong>
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Geração Estimada:</span>
+                  <strong style={{ fontSize: '14px', color: '#16a34a' }}>{geracaoEstimada} kWh/mês</strong>
+                </div>
+              </div>
 
-                {/* Observações */}
-                {notes && (
-                  <div className="mt-12 p-4 bg-gray-50 rounded-lg border border-gray-200 text-sm">
-                    <h4 className="font-semibold text-gray-700 mb-2">Termos e Condições:</h4>
-                    <p className="text-gray-600 whitespace-pre-wrap">{notes}</p>
-                  </div>
-                )}
-                
-                {/* Rodapé */}
-                <div className="mt-16 text-center text-xs text-gray-400 border-t border-gray-200 pt-4">
-                  Este documento é uma estimativa e está sujeito a alterações.
+              {/* Coluna Direita */}
+              <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>
+                  Retorno Financeiro
+                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Investimento:</span>
+                  <strong style={{ fontSize: '14px' }}>R$ {investimento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Economia Média:</span>
+                  <strong style={{ fontSize: '14px', color: '#16a34a' }}>R$ {economiaMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                  <span style={{ color: '#475569', fontSize: '14px' }}>Payback Estimado:</span>
+                  <strong style={{ fontSize: '14px' }}>{payback} meses</strong>
                 </div>
               </div>
             </div>
+
+            {/* Equipamentos */}
+            <div style={{ marginBottom: '40px' }}>
+              <h3 style={{ margin: '0 0 15px 0', fontSize: '16px', color: '#0f172a', borderBottom: '2px solid #0f172a', paddingBottom: '5px' }}>
+                Composição do Kit Gerador
+              </h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <thead>
+                  <tr style={{ backgroundColor: '#f1f5f9' }}>
+                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Item</th>
+                    <th style={{ padding: '10px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Descrição</th>
+                    <th style={{ padding: '10px', textAlign: 'center', borderBottom: '1px solid #cbd5e1' }}>Qtd</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Módulos Fotovoltaicos</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{modulosMarca}</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{modulosQtd}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Inversor Solar</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{inversorMarca}</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{inversorQtd}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Estrutura de Fixação</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>Kit Fixação Completo</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>1</td>
+                  </tr>
+                  <tr>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>String Box / Proteção</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>Quadro de Proteção CA/CC</td>
+                    <td style={{ padding: '12px 10px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>1</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Impacto Ambiental */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px', backgroundColor: '#ecfccb', padding: '20px', borderRadius: '8px', border: '1px solid #bef264', marginBottom: '40px' }}>
+              <div style={{ fontSize: '30px' }}>🌳</div>
+              <div>
+                <h4 style={{ margin: '0 0 5px 0', color: '#3f6212', fontSize: '15px' }}>Impacto Sustentável</h4>
+                <p style={{ margin: 0, color: '#4d7c0f', fontSize: '13px', lineHeight: '1.4' }}>
+                  Com este sistema, você deixará de emitir aproximadamente <strong>{((geracaoEstimada * 12 * 0.42) / 1000).toFixed(1)} toneladas de CO₂</strong> por ano, equivalente ao plantio de <strong>{Math.round(geracaoEstimada * 12 * 0.007)} árvores</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Condições e Observações */}
+            <div>
+              <h3 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#0f172a' }}>Observações e Condições:</h3>
+              <p style={{ margin: 0, fontSize: '13px', color: '#64748b', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>
+                {notes}
+              </p>
+            </div>
+            
+          </div>
+
+          {/* Footer Fixo */}
+          <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', backgroundColor: '#f8fafc', padding: '20px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
+            <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8' }}>
+              Proposta gerada conforme diretrizes da <strong>Lei 14.300/2022</strong>. Os valores de geração e economia são estimativas baseadas em dados históricos de irradiação solar e podem sofrer variações.
+            </p>
           </div>
         </div>
       </div>

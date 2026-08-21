@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { User, Lock, Upload, Info } from 'lucide-react';
@@ -9,6 +9,38 @@ export function Conta() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedLogo = localStorage.getItem('@MetodoSol:companyLogo');
+    if (savedLogo) {
+      setCompanyLogo(savedLogo);
+    }
+  }, []);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('A logo deve ter no máximo 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setCompanyLogo(base64);
+      localStorage.setItem('@MetodoSol:companyLogo', base64);
+      alert('Logo atualizada com sucesso!');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removeLogo = () => {
+    setCompanyLogo(null);
+    localStorage.removeItem('@MetodoSol:companyLogo');
+  };
 
   // Simulando dados que viriam do metadata do Supabase populado pelo webhook da Hotmart
   const nome = user?.user_metadata?.nome || 'Aluno Método Sol';
@@ -160,8 +192,44 @@ export function Conta() {
           </div>
 
         </div>
-
       </div>
+      
+      {/* Configurações da Empresa (Abaixo das colunas) */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 className="text-lg font-semibold text-brand-dark mb-4 border-b pb-2 flex items-center gap-2">
+          Configurações da Empresa
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Logo para Propostas Comerciais (PDF)</label>
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-24 border border-gray-200 rounded-lg overflow-hidden bg-gray-50 flex items-center justify-center flex-shrink-0">
+                {companyLogo ? (
+                  <img src={companyLogo} alt="Logo da Empresa" className="w-full h-full object-contain p-2" />
+                ) : (
+                  <span className="text-xs text-gray-400 text-center p-2">Sem Logo</span>
+                )}
+              </div>
+              <div className="space-y-2 flex-1">
+                <label className="inline-flex cursor-pointer items-center justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors">
+                  <Upload className="w-4 h-4 mr-2" />
+                  {companyLogo ? 'Trocar Logo' : 'Enviar Logo (Máx 2MB)'}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} />
+                </label>
+                {companyLogo && (
+                  <button onClick={removeLogo} className="block text-sm text-red-500 hover:text-red-700 transition-colors mt-1">
+                    Remover Logo
+                  </button>
+                )}
+                <p className="text-xs text-gray-500 mt-2">
+                  Esta logo será usada automaticamente em todos os orçamentos e propostas em PDF. A imagem fica salva no seu navegador.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
