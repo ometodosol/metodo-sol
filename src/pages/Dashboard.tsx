@@ -7,15 +7,22 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const defaultCarouselImages = [
-  'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop', // Painéis solares ao sol
-  'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop', // Instalação solar
-  'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop'  // Energia verde
+  {
+    imagem_url: 'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop',
+    titulo: 'Bem-vindo ao Dashboard',
+    texto: 'Acompanhe seus projetos e orçamentos'
+  },
+  {
+    imagem_url: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop',
+    titulo: 'Energia Solar',
+    texto: 'Soluções completas para instaladores'
+  }
 ];
 
 export function Dashboard() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [carouselImages, setCarouselImages] = useState<string[]>(defaultCarouselImages);
+  const [carouselImages, setCarouselImages] = useState<any[]>(defaultCarouselImages);
 
   useEffect(() => {
     async function fetchBanners() {
@@ -27,7 +34,7 @@ export function Dashboard() {
         .order('id', { ascending: false });
       
       if (!error && data && data.length > 0) {
-        setCarouselImages(data.map(b => b.imagem_url));
+        setCarouselImages(data);
       }
     }
     fetchBanners();
@@ -46,16 +53,21 @@ export function Dashboard() {
       
       {/* Top Carousel */}
       <div className="w-full h-48 md:h-64 rounded-2xl overflow-hidden relative shadow-md">
-        {carouselImages.map((src, idx) => (
+        {carouselImages.map((banner, idx) => (
           <img 
             key={idx}
-            src={src} 
+            src={banner.imagem_url} 
             alt={`Slide ${idx + 1}`} 
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
           />
         ))}
-        {/* Overlay escuro para garantir contraste se necessário depois */}
-        <div className="absolute inset-0 bg-black/10"></div>
+        {/* Overlay escuro e textos */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        
+        <div className="absolute bottom-8 left-8 right-8 text-white">
+          <h2 className="text-2xl font-bold mb-1">{carouselImages[currentSlide]?.titulo || ''}</h2>
+          <p className="text-sm text-gray-200 line-clamp-2 max-w-2xl">{carouselImages[currentSlide]?.texto || ''}</p>
+        </div>
         
         {/* Carousel Indicators */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">

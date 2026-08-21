@@ -37,6 +37,8 @@ export interface Profissional {
   especialidade: string;
   telefone: string;
   foto_url?: string;
+  instagram_url?: string;
+  site_url?: string;
   estado: string;
   cidade: string;
   criado_em: string;

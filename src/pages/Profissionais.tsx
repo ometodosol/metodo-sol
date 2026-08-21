@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Profissional } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { Briefcase, Search, MapPin, Phone, Plus, X } from 'lucide-react';
+import { Briefcase, Search, MapPin, Phone, Plus, X, Instagram, Globe } from 'lucide-react';
 
 const ESTADOS_BR = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -127,16 +127,41 @@ export function Profissionais() {
                     <MapPin className="w-4 h-4 shrink-0 text-gray-400" />
                     <span className="truncate">{prof.cidade} - {prof.estado}</span>
                   </div>
-                  
-                  <a 
-                    href={formatarWhatsApp(prof.telefone)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full mt-4 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
-                  >
-                    <Phone className="w-4 h-4" />
-                    Chamar no WhatsApp
-                  </a>
+                  <div className="flex items-center justify-between gap-2 mt-4">
+                    <a 
+                      href={formatarWhatsApp(prof.telefone)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
+                    >
+                      <Phone className="w-4 h-4" />
+                      WhatsApp
+                    </a>
+                    
+                    {prof.instagram_url && (
+                      <a
+                        href={prof.instagram_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white rounded-xl transition-colors"
+                        title="Instagram"
+                      >
+                        <Instagram className="w-4 h-4" />
+                      </a>
+                    )}
+                    
+                    {prof.site_url && (
+                      <a
+                        href={prof.site_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-colors"
+                        title="Site"
+                      >
+                        <Globe className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

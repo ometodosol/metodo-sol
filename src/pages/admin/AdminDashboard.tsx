@@ -63,7 +63,9 @@ export function AdminDashboard() {
     telefone: '',
     estado: '',
     cidade: '',
-    foto_url: ''
+    foto_url: '',
+    instagram_url: '',
+    site_url: ''
   });
 
   useEffect(() => {
@@ -180,11 +182,13 @@ export function AdminDashboard() {
         telefone: prof.telefone,
         estado: prof.estado,
         cidade: prof.cidade,
-        foto_url: prof.foto_url || ''
+        foto_url: prof.foto_url || '',
+        instagram_url: prof.instagram_url || '',
+        site_url: prof.site_url || ''
       });
     } else {
       setEditingProfId(null);
-      setProfForm({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '' });
+      setProfForm({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '', instagram_url: '', site_url: '' });
     }
     setShowProfModal(true);
   };
@@ -519,6 +523,16 @@ export function AdminDashboard() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp de Contato</label>
                   <input required type="text" value={profForm.telefone} onChange={(e) => setProfForm({...profForm, telefone: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: (11) 99999-9999" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Link do Instagram (Opcional)</label>
+                    <input type="text" value={profForm.instagram_url} onChange={(e) => setProfForm({...profForm, instagram_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark" placeholder="https://instagram.com/..." />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Link do Site (Opcional)</label>
+                    <input type="text" value={profForm.site_url} onChange={(e) => setProfForm({...profForm, site_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
