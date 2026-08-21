@@ -41,7 +41,7 @@ const bottomNavItems = [
 ];
 
 export function AppLayout() {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const { theme, setTheme, actualTheme } = useTheme();
   const navigate = useNavigate();
   
