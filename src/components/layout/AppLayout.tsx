@@ -1,10 +1,12 @@
-import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, FileText, CheckSquare, Calculator, 
-  LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList, Briefcase, Bell
+  LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList, Briefcase, Bell,
+  Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
@@ -26,6 +28,21 @@ const bottomNavItems = [
 
 export function AppLayout() {
   const { signOut } = useAuth();
+  const { theme, setTheme, actualTheme } = useTheme();
+  const navigate = useNavigate();
+  
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
@@ -53,32 +70,6 @@ export function AppLayout() {
             </NavLink>
           ))}
         </nav>
-
-        <div className="p-4 mt-auto border-t border-border space-y-1">
-          {bottomNavItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium ${
-                  isActive
-                    ? 'bg-secondary text-secondary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                }`
-              }
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </NavLink>
-          ))}
-          <button 
-            onClick={signOut}
-            className="flex items-center gap-3 px-3 py-2 w-full text-left rounded-md transition-colors text-sm font-medium text-destructive hover:bg-destructive/10"
-          >
-            <LogOut className="w-4 h-4" />
-            Sair da Conta
-          </button>
-        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -89,11 +80,57 @@ export function AppLayout() {
             Plataforma
           </div>
           <div className="flex items-center gap-4">
-            <button className="text-muted-foreground hover:text-foreground transition-colors">
+            <button 
+              onClick={() => setTheme(actualTheme === 'dark' ? 'light' : 'dark')}
+              className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-accent"
+              title="Alternar Tema"
+            >
+              {actualTheme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </button>
+            <button className="text-muted-foreground hover:text-foreground transition-colors p-2 rounded-full hover:bg-accent">
               <Bell className="w-5 h-5" />
             </button>
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center border border-border cursor-pointer">
-              <UserCircle className="w-5 h-5 text-muted-foreground" />
+            
+            <div className="relative" ref={profileRef}>
+              <div 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center border border-border cursor-pointer hover:ring-2 ring-primary/50 transition-all"
+              >
+                <UserCircle className="w-5 h-5 text-muted-foreground" />
+              </div>
+              
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-card rounded-lg shadow-lg border border-border overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="p-3 border-b border-border">
+                    <p className="text-sm font-medium text-foreground">Minha Conta</p>
+                  </div>
+                  <div className="p-1">
+                    <button 
+                      onClick={() => { navigate('/conta'); setIsProfileOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    >
+                      <UserCircle className="w-4 h-4" />
+                      Perfil
+                    </button>
+                    <button 
+                      onClick={() => { navigate('/configuracoes'); setIsProfileOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent rounded-md transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      Configurações
+                    </button>
+                  </div>
+                  <div className="p-1 border-t border-border">
+                    <button 
+                      onClick={() => { signOut(); setIsProfileOpen(false); }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-md transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Sair
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </header>

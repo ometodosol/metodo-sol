@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
@@ -31,51 +32,53 @@ const Placeholder = ({ title }: { title: string }) => (
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AppLayout />}>
-              <Route index element={<Dashboard />} />
-              
-              <Route path="clientes" element={<Clientes />} />
-              <Route path="clientes/novo" element={<NovoCliente />} />
-              <Route path="clientes/:id" element={<ClienteDetalhes />} />
-              
-              <Route path="projetos" element={<Projetos />} />
-              <Route path="projetos/novo" element={<NovoProjeto />} />
-              <Route path="projetos/:id" element={<ProjetoDetalhes />} />
-              
-              <Route path="comissionamento" element={<Comissionamento />} />
-              <Route path="dimensionamento" element={<Dimensionamento />} />
-              <Route path="orcamentos" element={<Orcamento />} />
-              
-              {/* Ferramentas Técnicas */}
-              <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <Router>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route index element={<Dashboard />} />
+                
+                <Route path="clientes" element={<Clientes />} />
+                <Route path="clientes/novo" element={<NovoCliente />} />
+                <Route path="clientes/:id" element={<ClienteDetalhes />} />
+                
+                <Route path="projetos" element={<Projetos />} />
+                <Route path="projetos/novo" element={<NovoProjeto />} />
+                <Route path="projetos/:id" element={<ProjetoDetalhes />} />
+                
+                <Route path="comissionamento" element={<Comissionamento />} />
+                <Route path="dimensionamento" element={<Dimensionamento />} />
+                <Route path="orcamentos" element={<Orcamento />} />
+                
+                {/* Ferramentas Técnicas */}
+                <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
 
-              <Route path="equipamentos" element={<Placeholder title="Banco de Equipamentos" />} />
-              
-              {/* Negócios e Educação */}
-              <Route path="comercial" element={<Placeholder title="Área Comercial" />} />
-              <Route path="aprender" element={<Placeholder title="Aulas" />} />
-              <Route path="profissionais" element={<Profissionais />} />
-              <Route path="homologacao" element={<Homologacao />} />
-              
-              {/* Configurações e Conta */}
-              <Route path="configuracoes" element={<Placeholder title="Configurações" />} />
-              <Route path="conta" element={<Conta />} />
-              <Route path="plano" element={<Placeholder title="Meu Plano" />} />
-              <Route path="suporte" element={<Placeholder title="Suporte" />} />
+                <Route path="equipamentos" element={<Placeholder title="Banco de Equipamentos" />} />
+                
+                {/* Negócios e Educação */}
+                <Route path="comercial" element={<Placeholder title="Área Comercial" />} />
+                <Route path="aprender" element={<Placeholder title="Aulas" />} />
+                <Route path="profissionais" element={<Profissionais />} />
+                <Route path="homologacao" element={<Homologacao />} />
+                
+                {/* Configurações e Conta */}
+                <Route path="configuracoes" element={<Placeholder title="Configurações" />} />
+                <Route path="conta" element={<Conta />} />
+                <Route path="plano" element={<Placeholder title="Meu Plano" />} />
+                <Route path="suporte" element={<Placeholder title="Suporte" />} />
+              </Route>
             </Route>
-          </Route>
-          
-          {/* Fallback */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
+            
+            {/* Fallback */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 
