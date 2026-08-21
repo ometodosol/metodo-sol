@@ -9,6 +9,9 @@ export function Orcamento() {
   const [selectedClienteId, setSelectedClienteId] = useState<string>('');
   
   const [clientName, setClientName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [grupo, setGrupo] = useState<'A' | 'B'>('B');
   const [consumoMensal, setConsumoMensal] = useState<number>(400);
@@ -45,10 +48,13 @@ export function Orcamento() {
         setClientes(data);
         setSelectedClienteId(data[0].id);
         setClientName(data[0].nome);
+        setSearchTerm(data[0].nome);
       }
     }
     fetchClientes();
   }, []);
+
+  const filteredClientes = clientes.filter(c => c.nome.toLowerCase().includes(searchTerm.toLowerCase()));
 
   const handleSaveOrcamento = async () => {
     if (!selectedClienteId) {
@@ -157,23 +163,49 @@ export function Orcamento() {
             <User className="w-4 h-4 text-primary" /> Dados do Cliente e Sistema
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2 sm:col-span-2">
+            <div className="space-y-2 sm:col-span-2 relative">
               <label className="text-sm font-medium">Nome do Cliente</label>
-              <select 
-                value={selectedClienteId} 
-                onChange={e => {
-                  const val = e.target.value;
-                  setSelectedClienteId(val);
-                  const c = clientes.find(c => c.id === val);
-                  if (c) setClientName(c.nome);
-                }} 
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {clientes.length === 0 && <option value="">Nenhum cliente cadastrado</option>}
-                {clientes.map(c => (
-                  <option key={c.id} value={c.id}>{c.nome}</option>
-                ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Buscar ou selecionar cliente..."
+                  value={searchTerm}
+                  onChange={e => {
+                    setSearchTerm(e.target.value);
+                    setIsDropdownOpen(true);
+                    if (selectedClienteId) setSelectedClienteId('');
+                  }}
+                  onFocus={() => setIsDropdownOpen(true)}
+                  onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2"
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none text-gray-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+              </div>
+              
+              {isDropdownOpen && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                  {filteredClientes.length === 0 ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">Nenhum cliente encontrado</div>
+                  ) : (
+                    filteredClientes.map(c => (
+                      <div
+                        key={c.id}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${selectedClienteId === c.id ? 'bg-gray-100 font-medium' : ''}`}
+                        onClick={() => {
+                          setSelectedClienteId(c.id);
+                          setSearchTerm(c.nome);
+                          setClientName(c.nome);
+                          setIsDropdownOpen(false);
+                        }}
+                      >
+                        {c.nome}
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
