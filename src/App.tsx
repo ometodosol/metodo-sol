@@ -16,6 +16,7 @@ import { Homologacao } from './pages/Homologacao';
 import { Profissionais } from './pages/Profissionais';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
+import { Orcamento } from './pages/Orcamento';
 
 // Placeholder para rotas em desenvolvimento
 const Placeholder = ({ title }: { title: string }) => (
@@ -49,6 +50,7 @@ function App() {
               
               <Route path="comissionamento" element={<Comissionamento />} />
               <Route path="dimensionamento" element={<Dimensionamento />} />
+              <Route path="orcamentos" element={<Orcamento />} />
               
               {/* Ferramentas Técnicas */}
               <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />
