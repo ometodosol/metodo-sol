@@ -1,19 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MetricCard } from '../components/ui/MetricCard';
 import { StatusBadge } from '../components/ui/StatusBadge';
-import { PlusSquare, CheckSquare, Wrench, Calculator, AlertTriangle, Sun, Lightbulb, Users, Activity } from 'lucide-react';
+import { PlusSquare, CheckSquare, Wrench, Calculator, AlertTriangle, Sun, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const carouselImages = [
+  'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop', // Painéis solares ao sol
+  'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop', // Instalação solar
+  'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop'  // Energia verde
+];
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="p-4 md:p-8 space-y-6 animate-in fade-in duration-500">
       
+      {/* Top Carousel */}
+      <div className="w-full h-48 md:h-64 rounded-2xl overflow-hidden relative shadow-md">
+        {carouselImages.map((src, idx) => (
+          <img 
+            key={idx}
+            src={src} 
+            alt={`Slide ${idx + 1}`} 
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+          />
+        ))}
+        {/* Overlay escuro para garantir contraste se necessário depois */}
+        <div className="absolute inset-0 bg-black/10"></div>
+        
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          {carouselImages.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-6' : 'bg-white/50'}`}
+            />
+          ))}
+        </div>
+      </div>
+
       {/* Top Banner & Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Welcome Card */}
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-6 md:p-8 shadow-sm flex flex-col justify-between relative overflow-hidden">
+        <div className="lg:col-span-2 bg-card border-0 rounded-2xl p-6 md:p-8 shadow-md flex flex-col justify-between relative overflow-hidden">
           <div className="z-10 relative">
             <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex items-center gap-2">
               Olá, Instalador <Sun className="w-6 h-6 text-primary" />
@@ -34,7 +73,7 @@ export function Dashboard() {
         </div>
 
         {/* Key Insights Card */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div className="bg-card border-0 rounded-2xl p-6 shadow-md">
           <div className="flex items-center gap-2 mb-4">
             <Lightbulb className="w-4 h-4 text-muted-foreground" />
             <h3 className="text-sm font-medium text-muted-foreground">Key Insights</h3>
@@ -87,12 +126,12 @@ export function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Alertas Técnicos */}
-        <section className="bg-card rounded-xl shadow-sm border border-border p-6 flex flex-col">
+        <section className="bg-card rounded-2xl shadow-md border-0 p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-base font-semibold text-card-foreground">Alertas Técnicos</h2>
           </div>
           <div className="flex-1">
-            <div className="pb-4 border-b border-border flex items-start gap-4">
+            <div className="pb-4 border-b border-gray-100 dark:border-white/5 flex items-start gap-4">
               <div className="mt-0.5">
                 <AlertTriangle className="w-5 h-5 text-destructive" />
               </div>
@@ -109,13 +148,13 @@ export function Dashboard() {
         </section>
 
         {/* Instalações em Andamento */}
-        <section className="bg-card rounded-xl shadow-sm border border-border p-6">
+        <section className="bg-card rounded-2xl shadow-md border-0 p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-base font-semibold text-card-foreground">Instalações em Andamento</h2>
           </div>
           <div className="space-y-4">
             {[1, 2].map((i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 cursor-pointer transition-colors border border-transparent hover:border-border">
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
                 <div>
                   <h4 className="font-semibold text-card-foreground text-sm">Residencial {i === 1 ? 'Maria Souza' : 'Carlos Almeida'}</h4>
                   <p className="text-xs text-muted-foreground">Atualizado há 2 dias</p>

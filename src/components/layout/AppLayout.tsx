@@ -61,15 +61,15 @@ export function AppLayout() {
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-background border-r border-border flex-shrink-0">
-        <div className="h-14 lg:h-[60px] px-6 border-b border-border flex items-center">
-          <img src="/logo-dark.png" alt="O Método Sol" className="h-8 object-contain" />
+      <aside className="hidden md:flex flex-col w-64 bg-brand-dark text-white flex-shrink-0">
+        <div className="h-14 lg:h-[60px] px-6 flex items-center">
+          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/o-metodo-sol-logo-ligth.png" alt="O Método Sol" className="h-8 object-contain" />
         </div>
         
         <nav className="flex-1 px-4 py-4 space-y-6 overflow-y-auto">
           {navGroups.map((group, idx) => (
             <div key={idx} className="space-y-1">
-              <h4 className="px-2 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              <h4 className="px-2 mb-2 text-xs font-semibold tracking-wider text-brand-light/60 uppercase">
                 {group.title}
               </h4>
               {group.items.map((item) => (
@@ -77,10 +77,10 @@ export function AppLayout() {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-md transition-all text-sm font-medium ${
+                    `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm font-medium ${
                       isActive
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                        ? 'bg-brand-light/20 text-brand-green shadow-sm'
+                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
                     }`
                   }
                 >
@@ -94,8 +94,8 @@ export function AppLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-muted/20">
-        <header className="h-14 lg:h-[60px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-gray-50/50 dark:bg-background">
+        <header className="h-14 lg:h-[60px] bg-transparent flex items-center justify-between px-6 flex-shrink-0 pt-2">
           <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground w-full max-w-sm">
             <div className="relative w-full">
               <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -104,7 +104,7 @@ export function AppLayout() {
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full bg-background border border-border rounded-md pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                className="w-full bg-white/50 dark:bg-black/20 backdrop-blur-sm border-0 rounded-xl pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-sm"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export function AppLayout() {
             <div className="relative" ref={profileRef}>
               <div 
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center border border-border cursor-pointer hover:ring-2 ring-primary/50 transition-all"
+                className="w-9 h-9 rounded-full bg-white dark:bg-card flex items-center justify-center cursor-pointer hover:ring-2 ring-primary/50 transition-all shadow-sm"
               >
                 <UserCircle className="w-5 h-5 text-muted-foreground" />
               </div>
@@ -170,14 +170,14 @@ export function AppLayout() {
       </div>
 
       {/* Mobile Bottom Navigation (Flattened for simplicity) */}
-      <nav className="md:hidden bg-background border-t border-border flex items-center justify-around p-3 pb-safe z-50">
+      <nav className="md:hidden bg-brand-dark flex items-center justify-around p-3 pb-safe z-50">
         {navGroups.flatMap(g => g.items).slice(0, 4).map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                isActive ? 'text-brand-green' : 'text-gray-400 hover:text-white'
               }`
             }
           >
@@ -187,7 +187,7 @@ export function AppLayout() {
         ))}
         <button 
           onClick={signOut}
-          className="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+          className="flex flex-col items-center gap-1 p-2 rounded-lg transition-colors text-gray-400 hover:text-white"
         >
           <LogOut className="w-5 h-5" />
           <span className="text-[10px] font-medium">Sair</span>

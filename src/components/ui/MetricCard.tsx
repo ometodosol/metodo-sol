@@ -20,8 +20,8 @@ export function MetricCard({ title, value, icon: Icon, trend, onClick, className
     <div 
       onClick={onClick}
       className={cn(
-        "bg-card rounded-xl p-6 shadow-sm border border-border flex flex-col justify-between h-full",
-        onClick && "cursor-pointer hover:bg-accent/50 transition-all",
+        "bg-card rounded-2xl p-6 shadow-md border-0 flex flex-col justify-between h-full hover:shadow-lg transition-all",
+        onClick && "cursor-pointer",
         className
       )}
     >
