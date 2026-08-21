@@ -17,17 +17,6 @@ export function Profissionais() {
   // Filtros
   const [busca, setBusca] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
-  
-  // Modal de Cadastro
-  const [showModal, setShowModal] = useState(false);
-  const [formLoading, setFormLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    nome: '',
-    especialidade: '',
-    telefone: '',
-    estado: '',
-    cidade: ''
-  });
 
   useEffect(() => {
     fetchProfissionais();
@@ -45,36 +34,6 @@ export function Profissionais() {
     }
     setLoading(false);
   }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-    
-    setFormLoading(true);
-    
-    const { error } = await supabase
-      .from('profissionais')
-      .insert([
-        {
-          usuario_id: user.id,
-          nome: formData.nome,
-          especialidade: formData.especialidade,
-          telefone: formData.telefone,
-          estado: formData.estado,
-          cidade: formData.cidade
-        }
-      ]);
-
-    if (!error) {
-      setShowModal(false);
-      setFormData({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '' });
-      fetchProfissionais();
-    } else {
-      alert('Erro ao cadastrar profissional. Verifique se você executou o SQL no Supabase.');
-    }
-    
-    setFormLoading(false);
-  };
 
   const formatarWhatsApp = (telefone: string) => {
     // Remove tudo que não for número
@@ -105,14 +64,6 @@ export function Profissionais() {
             Encontre parceiros, engenheiros e instaladores em todo o Brasil.
           </p>
         </div>
-        
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-brand-dark text-white px-5 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-brand-green hover:text-brand-dark transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Cadastrar Profissional
-        </button>
       </header>
 
       {/* Filtros */}
@@ -190,108 +141,6 @@ export function Profissionais() {
         </div>
       )}
 
-      {/* Modal de Cadastro */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-              <h2 className="text-xl font-bold text-brand-dark">Cadastrar Profissional</h2>
-              <button 
-                onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="p-6 overflow-y-auto">
-              <form id="prof-form" onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo ou Empresa</label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.nome}
-                    onChange={(e) => setFormData({...formData, nome: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                    placeholder="Ex: João Silva Soluções"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Especialidade</label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.especialidade}
-                    onChange={(e) => setFormData({...formData, especialidade: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                    placeholder="Ex: Engenheiro Eletricista, Instalador Solar..."
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp de Contato</label>
-                  <input
-                    required
-                    type="text"
-                    value={formData.telefone}
-                    onChange={(e) => setFormData({...formData, telefone: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                    placeholder="Ex: (11) 99999-9999"
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Estado (UF)</label>
-                    <select
-                      required
-                      value={formData.estado}
-                      onChange={(e) => setFormData({...formData, estado: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                    >
-                      <option value="">Selecione</option>
-                      {ESTADOS_BR.map(uf => (
-                        <option key={uf} value={uf}>{uf}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
-                    <input
-                      required
-                      type="text"
-                      value={formData.cidade}
-                      onChange={(e) => setFormData({...formData, cidade: e.target.value})}
-                      className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-                      placeholder="Ex: São Paulo"
-                    />
-                  </div>
-                </div>
-              </form>
-            </div>
-            
-            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3 mt-auto">
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="px-5 py-2.5 text-gray-600 font-medium hover:bg-gray-200 rounded-xl transition-colors"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                form="prof-form"
-                disabled={formLoading}
-                className="px-5 py-2.5 bg-brand-dark text-brand-green font-bold rounded-xl hover:bg-black transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                {formLoading ? 'Salvando...' : 'Cadastrar na Rede'}
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </div>
   );
