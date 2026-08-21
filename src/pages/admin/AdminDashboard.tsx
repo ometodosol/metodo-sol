@@ -220,14 +220,14 @@ export function AdminDashboard() {
       </header>
 
       {/* Tabs */}
-      <div className="flex overflow-x-auto border-b border-border pb-px hide-scrollbar">
+      <div className="flex overflow-x-auto border-b border-gray-200 pb-px hide-scrollbar">
         {(['banners', 'notificacoes', 'aulas', 'profissionais'] as Tab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex items-center gap-2 px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2 transition-colors capitalize ${
               activeTab === tab
-                ? 'border-brand-green text-brand-green'
+                ? 'border-brand-light text-brand-light'
                 : 'border-transparent text-gray-500 hover:text-foreground hover:border-gray-300'
             }`}
           >
@@ -241,7 +241,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Tab Content */}
-      <div className="bg-card p-6 rounded-2xl shadow-sm border border-border">
+      <div className="bg-card p-6 rounded-2xl shadow-sm border border-gray-200">
         
         {/* TAB: BANNERS */}
         {activeTab === 'banners' && (
@@ -264,18 +264,18 @@ export function AdminDashboard() {
                   <div className="space-y-4">
                     {loginBanners.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhum banner cadastrado.</p>}
                     {loginBanners.map(banner => (
-                      <div key={banner.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-border rounded-xl bg-muted/20 items-center">
+                      <div key={banner.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">URL da Imagem</label>
-                          <input type="text" value={banner.imagem_url || ''} onChange={e => handleUpdateBanner(banner.id, { imagem_url: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={banner.imagem_url || ''} onChange={e => handleUpdateBanner(banner.id, { imagem_url: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">Título</label>
-                          <input type="text" value={banner.titulo || ''} onChange={e => handleUpdateBanner(banner.id, { titulo: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="Ex: Energia Solar" />
+                          <input type="text" value={banner.titulo || ''} onChange={e => handleUpdateBanner(banner.id, { titulo: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Energia Solar" />
                         </div>
                         <div className="md:col-span-4">
                           <label className="text-xs font-semibold text-muted-foreground">Texto</label>
-                          <input type="text" value={banner.texto || ''} onChange={e => handleUpdateBanner(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="Descrição do slide" />
+                          <input type="text" value={banner.texto || ''} onChange={e => handleUpdateBanner(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Descrição do slide" />
                         </div>
                         <div className="md:col-span-2 flex items-end gap-2 justify-end">
                           <button onClick={() => handleUpdateBanner(banner.id, { ativo: !banner.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${banner.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
@@ -288,7 +288,7 @@ export function AdminDashboard() {
                   </div>
                 </div>
 
-                <hr className="border-border" />
+                <hr className="border-gray-200" />
 
                 {/* DASHBOARD BANNERS */}
                 <div>
@@ -304,18 +304,18 @@ export function AdminDashboard() {
                   <div className="space-y-4">
                     {dashBanners.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhum banner cadastrado.</p>}
                     {dashBanners.map(banner => (
-                      <div key={banner.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-border rounded-xl bg-muted/20 items-center">
+                      <div key={banner.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">URL da Imagem</label>
-                          <input type="text" value={banner.imagem_url || ''} onChange={e => handleUpdateBanner(banner.id, { imagem_url: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={banner.imagem_url || ''} onChange={e => handleUpdateBanner(banner.id, { imagem_url: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">Título</label>
-                          <input type="text" value={banner.titulo || ''} onChange={e => handleUpdateBanner(banner.id, { titulo: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="Ex: Novidade!" />
+                          <input type="text" value={banner.titulo || ''} onChange={e => handleUpdateBanner(banner.id, { titulo: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Novidade!" />
                         </div>
                         <div className="md:col-span-4">
                           <label className="text-xs font-semibold text-muted-foreground">Texto</label>
-                          <input type="text" value={banner.texto || ''} onChange={e => handleUpdateBanner(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-border rounded-lg text-card-foreground" placeholder="Descrição do banner" />
+                          <input type="text" value={banner.texto || ''} onChange={e => handleUpdateBanner(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Descrição do banner" />
                         </div>
                         <div className="md:col-span-2 flex items-end gap-2 justify-end">
                           <button onClick={() => handleUpdateBanner(banner.id, { ativo: !banner.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${banner.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
@@ -337,14 +337,14 @@ export function AdminDashboard() {
           <div className="space-y-8">
             <div>
               <h2 className="text-xl font-bold text-card-foreground mb-4">Disparar Novo Alerta</h2>
-              <div className="grid gap-4 bg-muted/30 p-6 rounded-xl border border-border">
+              <div className="grid gap-4 bg-muted/30 p-6 rounded-xl border border-gray-200">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-card-foreground">Título do Alerta</label>
-                  <input type="text" value={notifForm.titulo} onChange={e => setNotifForm({...notifForm, titulo: e.target.value})} className="w-full px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:ring-2 focus:ring-brand-green" placeholder="Ex: Nova atualização disponível" />
+                  <input type="text" value={notifForm.titulo} onChange={e => setNotifForm({...notifForm, titulo: e.target.value})} className="w-full px-4 py-2 bg-background border border-gray-200 rounded-lg text-card-foreground focus:ring-2 focus:ring-brand-green" placeholder="Ex: Nova atualização disponível" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-card-foreground">Mensagem</label>
-                  <textarea rows={3} value={notifForm.mensagem} onChange={e => setNotifForm({...notifForm, mensagem: e.target.value})} className="w-full px-4 py-2 bg-background border border-border rounded-lg text-card-foreground focus:ring-2 focus:ring-brand-green" placeholder="Ex: Confira agora a nova ferramenta de dimensionamento..."></textarea>
+                  <textarea rows={3} value={notifForm.mensagem} onChange={e => setNotifForm({...notifForm, mensagem: e.target.value})} className="w-full px-4 py-2 bg-background border border-gray-200 rounded-lg text-card-foreground focus:ring-2 focus:ring-brand-green" placeholder="Ex: Confira agora a nova ferramenta de dimensionamento..."></textarea>
                 </div>
                 <div className="flex justify-end">
                   <button onClick={handleSendNotificacao} disabled={saving} className="bg-brand-dark text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-brand-green hover:text-brand-dark transition-colors flex items-center gap-2">
@@ -362,7 +362,7 @@ export function AdminDashboard() {
                 <div className="space-y-3">
                   {notificacoes.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhuma notificação enviada.</p>}
                   {notificacoes.map(notif => (
-                    <div key={notif.id} className="flex items-start justify-between p-4 border border-border rounded-xl bg-background shadow-sm">
+                    <div key={notif.id} className="flex items-start justify-between p-4 border border-gray-200 rounded-xl bg-background shadow-sm">
                       <div>
                         <h4 className="font-bold text-card-foreground">{notif.titulo}</h4>
                         <p className="text-sm text-muted-foreground mt-1">{notif.mensagem}</p>
@@ -389,7 +389,7 @@ export function AdminDashboard() {
               </button>
             </div>
             
-            <div className="border border-border rounded-xl p-8 text-center flex flex-col items-center bg-muted/20">
+            <div className="border border-gray-200 rounded-xl p-8 text-center flex flex-col items-center bg-muted/20">
               <GraduationCap className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
               <h3 className="text-lg font-bold text-card-foreground mb-2">Nenhuma aula cadastrada</h3>
               <p className="text-muted-foreground text-sm max-w-sm">
@@ -412,7 +412,7 @@ export function AdminDashboard() {
               </button>
             </div>
             
-            <div className="border border-border rounded-xl overflow-hidden bg-background">
+            <div className="border border-gray-200 rounded-xl overflow-hidden bg-background">
               {loadingProfissionais ? (
                 <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin text-brand-green" /></div>
               ) : (
@@ -456,8 +456,8 @@ export function AdminDashboard() {
       {/* Modal de Cadastro/Edição de Profissional */}
       {showProfModal && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-[#040B15] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-border">
-            <div className="p-6 border-b border-border flex items-center justify-between bg-muted/50">
+          <div className="bg-white dark:bg-[#040B15] rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] border border-gray-200">
+            <div className="p-6 border-b border-gray-200 flex items-center justify-between bg-muted/50">
               <h2 className="text-xl font-bold text-card-foreground">
                 {editingProfId ? 'Editar Profissional' : 'Cadastrar Profissional'}
               </h2>
@@ -473,37 +473,37 @@ export function AdminDashboard() {
               <form id="prof-form" onSubmit={handleSaveProfissional} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">Nome Completo ou Empresa</label>
-                  <input required type="text" value={profForm.nome} onChange={(e) => setProfForm({...profForm, nome: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: João Silva Soluções" />
+                  <input required type="text" value={profForm.nome} onChange={(e) => setProfForm({...profForm, nome: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: João Silva Soluções" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">Especialidade</label>
-                  <input required type="text" value={profForm.especialidade} onChange={(e) => setProfForm({...profForm, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: Engenheiro Eletricista" />
+                  <input required type="text" value={profForm.especialidade} onChange={(e) => setProfForm({...profForm, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: Engenheiro Eletricista" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">Foto (URL)</label>
-                  <input type="text" value={profForm.foto_url} onChange={(e) => setProfForm({...profForm, foto_url: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
+                  <input type="text" value={profForm.foto_url} onChange={(e) => setProfForm({...profForm, foto_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-card-foreground mb-1">WhatsApp de Contato</label>
-                  <input required type="text" value={profForm.telefone} onChange={(e) => setProfForm({...profForm, telefone: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: (11) 99999-9999" />
+                  <input required type="text" value={profForm.telefone} onChange={(e) => setProfForm({...profForm, telefone: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: (11) 99999-9999" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-card-foreground mb-1">Estado (UF)</label>
-                    <select required value={profForm.estado} onChange={(e) => setProfForm({...profForm, estado: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark">
+                    <select required value={profForm.estado} onChange={(e) => setProfForm({...profForm, estado: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark">
                       <option value="">Selecione</option>
                       {ESTADOS_BR.map(uf => <option key={uf} value={uf}>{uf}</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-card-foreground mb-1">Cidade</label>
-                    <input required type="text" value={profForm.cidade} onChange={(e) => setProfForm({...profForm, cidade: e.target.value})} className="w-full px-4 py-2.5 border border-border rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
+                    <input required type="text" value={profForm.cidade} onChange={(e) => setProfForm({...profForm, cidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-background text-card-foreground focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
                   </div>
                 </div>
               </form>
             </div>
             
-            <div className="p-6 border-t border-border bg-muted/50 flex justify-end gap-3 mt-auto">
+            <div className="p-6 border-t border-gray-200 bg-muted/50 flex justify-end gap-3 mt-auto">
               <button type="button" onClick={() => setShowProfModal(false)} className="px-5 py-2.5 text-muted-foreground font-medium hover:bg-muted rounded-xl transition-colors">
                 Cancelar
               </button>
