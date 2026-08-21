@@ -181,8 +181,8 @@ export function Orcamento() {
       )}
 
       {/* ---- CLIENTE & TARIFA ---- */}
-      <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-        <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+      <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+        <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
           <User className="w-4 h-4" /> Cliente e Modalidade
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,8 +238,8 @@ export function Orcamento() {
 
       {/* ---- UNIDADE CONSUMIDORA & DADOS DA CONTA ---- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+        <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
             <Home className="w-4 h-4" /> Unidade Consumidora
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -259,8 +259,8 @@ export function Orcamento() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+        <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
             <FileText className="w-4 h-4" /> Dados da Conta
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -289,9 +289,9 @@ export function Orcamento() {
       </div>
 
       {/* ---- CONSUMO MENSAL ---- */}
-      <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-        <div className="flex justify-between items-center border-b border-border pb-2">
-          <h3 className="font-semibold flex items-center gap-2 text-brand-dark">
+      <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+        <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/5 pb-2">
+          <h3 className="font-semibold flex items-center gap-2 text-card-foreground">
             <Zap className="w-4 h-4" /> Consumo Mensal (kWh)
           </h3>
           <div className="flex items-center gap-3">
@@ -325,8 +325,8 @@ export function Orcamento() {
 
       {/* ---- DIMENSIONAMENTO & VIABILIDADE ---- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+        <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
             <Settings className="w-4 h-4" /> Dimensionamento
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -345,8 +345,8 @@ export function Orcamento() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+        <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
             <Activity className="w-4 h-4" /> Viabilidade (Fio B)
           </h3>
           <div className="grid grid-cols-2 gap-4">
@@ -367,11 +367,11 @@ export function Orcamento() {
       </div>
 
       {/* ---- EQUIPAMENTOS & FINANCEIRO ---- */}
-      <div className="bg-white rounded-lg border border-border shadow-sm p-6 space-y-6">
+      <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           <div className="space-y-4">
-            <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+            <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
               <Settings className="w-4 h-4" /> Equipamentos
             </h3>
             <div className="grid grid-cols-12 gap-3">
@@ -395,7 +395,7 @@ export function Orcamento() {
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-brand-dark">
+            <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
               <DollarSign className="w-4 h-4" /> Resultados Financeiros
             </h3>
             <div className="space-y-4">
