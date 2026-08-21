@@ -421,117 +421,226 @@ export function Orcamento() {
       </div>
 
 
-      {/* ---- PDF OCULTO ---- */}
+      {/* ---- PDF OCULTO (Multi-páginas) ---- */}
       <div style={{ display: 'none' }}>
         <div 
           ref={pdfRef} 
-          style={{ width: '210mm', minHeight: '297mm', backgroundColor: '#ffffff', color: '#1f2937', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', position: 'relative' }}
+          style={{ width: '210mm', backgroundColor: '#ffffff', color: '#1f2937', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' }}
         >
-          {/* Header */}
-          <div style={{ backgroundColor: '#0f172a', padding: '30px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff' }}>
-            <div>
-              {companyLogo ? (
-                <img src={companyLogo} alt="Logo" style={{ maxHeight: '60px', maxWidth: '200px', objectFit: 'contain' }} />
-              ) : (
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#CDF757' }}>Sua Logo Aqui</div>
-              )}
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <h1 style={{ margin: 0, fontSize: '24px', textTransform: 'uppercase', letterSpacing: '1px' }}>Proposta Comercial</h1>
-              <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#94a3b8' }}>Energia Solar Fotovoltaica</p>
-            </div>
-          </div>
-
-          <div style={{ padding: '40px' }}>
+          
+          {/* ================= PÁGINA 1: CAPA ================= */}
+          <div style={{ minHeight: '297mm', position: 'relative', display: 'flex', flexDirection: 'column' }}>
             
-            {/* Bloco Cliente */}
-            <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
-              <div style={{ flex: 1, borderLeft: '4px solid #CDF757', paddingLeft: '15px' }}>
-                <h2 style={{ margin: '0 0 5px 0', fontSize: '18px', color: '#0f172a' }}>Para: {clientName || '_______________'}</h2>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Data: {new Date(date).toLocaleDateString('pt-BR')}</p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Unidade: {ucName || 'Principal'} ({ucTipo})</p>
+            {/* Header da Capa */}
+            <div style={{ padding: '60px', textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <div style={{ marginBottom: '60px' }}>
+                {companyLogo ? (
+                  <img src={companyLogo} alt="Logo" style={{ maxHeight: '120px', maxWidth: '300px', objectFit: 'contain', margin: '0 auto' }} />
+                ) : (
+                  <div style={{ fontSize: '40px', fontWeight: 'bold', color: '#0f172a' }}>Sua Empresa Aqui</div>
+                )}
               </div>
-              <div style={{ flex: 1, borderLeft: '4px solid #e2e8f0', paddingLeft: '15px' }}>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Concessionária: {concessionaria} - {tipoRede}</p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Tarifa: {grupo === 'A' ? 'Grupo A (Alta Tensão)' : 'Grupo B (Baixa Tensão)'}</p>
-                <p style={{ margin: 0, fontSize: '13px', color: '#64748b' }}>Valor da Tarifa: R$ {valorKwh.toFixed(2)}/kWh</p>
-              </div>
-            </div>
-
-            {/* Grid 2 colunas: Sistema e Financeiro */}
-            <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
-              <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>Resumo do Sistema</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Potência Instalada:</span>
-                  <strong>{potencia.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} kWp</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Consumo Médio Atual:</span>
-                  <strong>{mediaConsumo.toFixed(0)} kWh/mês</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Geração Projetada:</span>
-                  <strong style={{ color: '#16a34a' }}>{geracaoAlvo.toFixed(0)} kWh/mês</strong>
-                </div>
-              </div>
-
-              <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>Análise Financeira (Lei 14.300)</h3>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Investimento:</span>
-                  <strong>R$ {investimento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Economia Média:</span>
-                  <strong style={{ color: '#16a34a' }}>R$ {economiaMensalReal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
-                  <span style={{ color: '#475569' }}>Payback Estimado:</span>
-                  <strong>{paybackMeses} meses ({paybackAnos} anos)</strong>
-                </div>
+              
+              <h1 style={{ margin: '0 0 20px 0', fontSize: '36px', color: '#0f172a', fontWeight: '800', lineHeight: '1.2' }}>
+                Proposta Comercial<br/>Sistema de Energia Solar
+              </h1>
+              
+              <div style={{ width: '100px', height: '4px', backgroundColor: '#84cc16', margin: '30px auto' }}></div>
+              
+              <p style={{ margin: '0 0 10px 0', fontSize: '18px', color: '#64748b' }}>Elaborada especialmente para:</p>
+              <h2 style={{ margin: 0, fontSize: '28px', color: '#0f172a', textTransform: 'uppercase' }}>{clientName || 'Cliente'}</h2>
+              
+              <div style={{ marginTop: '50px', fontSize: '14px', color: '#94a3b8' }}>
+                <p style={{ margin: '5px 0' }}>Data: {new Date(date).toLocaleDateString('pt-BR')}</p>
+                <p style={{ margin: '5px 0' }}>Unidade Consumidora: {ucName || 'Principal'} ({ucTipo})</p>
+                <p style={{ margin: '5px 0' }}>Concessionária: {concessionaria}</p>
               </div>
             </div>
 
-            {/* Equipamentos */}
-            <div style={{ marginBottom: '30px' }}>
-              <h3 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#0f172a', borderBottom: '2px solid #0f172a', paddingBottom: '5px' }}>Composição do Kit Gerador</h3>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#f1f5f9' }}>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Item</th>
-                    <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Descrição</th>
-                    <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #cbd5e1' }}>Qtd</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Módulos Solares</td>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{modulosMarca}</td>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{modulosQtd}</td>
-                  </tr>
-                  <tr>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Inversor / Microinversor</td>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{inversorMarca}</td>
-                    <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{inversorQtd}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            {/* Notas */}
-            <div style={{ marginBottom: '20px' }}>
-              <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#0f172a' }}>Observações:</h3>
-              <p style={{ margin: 0, fontSize: '12px', color: '#64748b', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{notes}</p>
+            {/* Footer da Capa */}
+            <div style={{ backgroundColor: '#0f172a', padding: '30px', textAlign: 'center', color: '#fff' }}>
+              <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8' }}>
+                Projeto gerador de energia limpa e renovável.<br/>
+                Proteja-se contra a inflação energética e valorize seu patrimônio.
+              </p>
             </div>
           </div>
 
-          {/* Footer Fixo */}
-          <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', backgroundColor: '#f8fafc', padding: '15px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-            <p style={{ margin: 0, fontSize: '10px', color: '#94a3b8' }}>
-              Proposta baseada na Lei 14.300/2022. Economia calculada considerando Fio B (Tarifa TUSD) e Custo de Disponibilidade.
-            </p>
+          <div className="html2pdf__page-break"></div>
+
+          {/* ================= PÁGINA 2: BENEFÍCIOS E COMO FUNCIONA ================= */}
+          <div style={{ minHeight: '297mm', position: 'relative', padding: '40px' }}>
+            
+            <h2 style={{ fontSize: '24px', color: '#0f172a', textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
+              Benefícios do Sistema
+            </h2>
+            
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginBottom: '50px' }}>
+              <div style={{ width: '45%', padding: '15px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 5px 0', color: '#0f172a', fontSize: '15px' }}>💰 Economia Imediata</h4>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Reduza em até 95% o valor da sua conta de energia todos os meses.</p>
+              </div>
+              <div style={{ width: '45%', padding: '15px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 5px 0', color: '#0f172a', fontSize: '15px' }}>🛡️ Proteção Contra Inflação</h4>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Fique imune aos aumentos anuais da tarifa e bandeiras tarifárias.</p>
+              </div>
+              <div style={{ width: '45%', padding: '15px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 5px 0', color: '#0f172a', fontSize: '15px' }}>🏠 Valorização do Imóvel</h4>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Imóveis com energia solar são mais atrativos e valorizados no mercado.</p>
+              </div>
+              <div style={{ width: '45%', padding: '15px', backgroundColor: '#f8fafc', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                <h4 style={{ margin: '0 0 5px 0', color: '#0f172a', fontSize: '15px' }}>🌱 Energia Sustentável</h4>
+                <p style={{ margin: 0, color: '#64748b', fontSize: '12px' }}>Gere energia limpa, renovável e contribua com o futuro do planeta.</p>
+              </div>
+            </div>
+
+            <h2 style={{ fontSize: '24px', color: '#0f172a', textAlign: 'center', marginBottom: '30px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
+              Como Funciona
+            </h2>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '50px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>1</div>
+                <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Captação:</strong> Os módulos fotovoltaicos transformam a luz do sol em energia elétrica contínua.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>2</div>
+                <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Inversão:</strong> O inversor transforma a energia contínua em alternada, pronta para uso no imóvel.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>3</div>
+                <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Consumo:</strong> A energia processada alimenta todos os equipamentos da sua unidade consumidora.</p>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>4</div>
+                <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Injeção:</strong> Toda energia excedente que você não usar é injetada na rede e vira créditos para a noite.</p>
+              </div>
+            </div>
+
+            <h2 style={{ fontSize: '24px', color: '#0f172a', textAlign: 'center', marginBottom: '30px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
+              Nosso Processo (Passo a Passo)
+            </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center', gap: '10px' }}>
+              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>1. Proposta</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Aprovação comercial</span></div>
+              <div style={{ color: '#cbd5e1' }}>→</div>
+              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>2. Vistoria</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Análise técnica</span></div>
+              <div style={{ color: '#cbd5e1' }}>→</div>
+              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>3. Engenharia</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Aprovação na rede</span></div>
+              <div style={{ color: '#cbd5e1' }}>→</div>
+              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>4. Instalação</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Montagem do kit</span></div>
+              <div style={{ color: '#cbd5e1' }}>→</div>
+              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>5. Ativação</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Troca do relógio</span></div>
+            </div>
+
           </div>
+
+          <div className="html2pdf__page-break"></div>
+
+          {/* ================= PÁGINA 3: PROPOSTA TÉCNICA E FINANCEIRA ================= */}
+          <div style={{ minHeight: '297mm', position: 'relative', padding: '0' }}>
+            
+            {/* Header Reduzido */}
+            <div style={{ backgroundColor: '#0f172a', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff' }}>
+              <div>
+                <h1 style={{ margin: 0, fontSize: '18px', textTransform: 'uppercase', letterSpacing: '1px' }}>Proposta Técnica e Financeira</h1>
+              </div>
+              <div>
+                {companyLogo ? (
+                  <img src={companyLogo} alt="Logo" style={{ maxHeight: '30px', objectFit: 'contain' }} />
+                ) : (
+                  <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#CDF757' }}>Sua Logo</div>
+                )}
+              </div>
+            </div>
+
+            <div style={{ padding: '40px' }}>
+              
+              <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
+                <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>Resumo do Sistema</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Potência Instalada:</span>
+                    <strong>{potencia.toLocaleString('pt-BR', { minimumFractionDigits: 1 })} kWp</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Consumo Médio Atual:</span>
+                    <strong>{mediaConsumo.toFixed(0)} kWh/mês</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Geração Projetada:</span>
+                    <strong style={{ color: '#16a34a' }}>{geracaoAlvo.toFixed(0)} kWh/mês</strong>
+                  </div>
+                </div>
+
+                <div style={{ flex: 1, backgroundColor: '#f8fafc', padding: '20px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#0f172a', borderBottom: '1px solid #cbd5e1', paddingBottom: '10px' }}>Análise Financeira (Lei 14.300)</h3>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Investimento:</span>
+                    <strong>R$ {investimento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Economia Média:</span>
+                    <strong style={{ color: '#16a34a' }}>R$ {economiaMensalReal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} /mês</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                    <span style={{ color: '#475569' }}>Payback Estimado:</span>
+                    <strong>{paybackMeses} meses ({paybackAnos} anos)</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Impacto Ambiental */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', backgroundColor: '#ecfccb', padding: '20px', borderRadius: '8px', border: '1px solid #bef264', marginBottom: '30px' }}>
+                <div style={{ fontSize: '30px' }}>🌳</div>
+                <div>
+                  <h4 style={{ margin: '0 0 5px 0', color: '#3f6212', fontSize: '15px' }}>Impacto Sustentável</h4>
+                  <p style={{ margin: 0, color: '#4d7c0f', fontSize: '13px', lineHeight: '1.4' }}>
+                    Com este sistema, você deixará de emitir <strong>{((geracaoAlvo * 12 * 0.42) / 1000).toFixed(1)} toneladas de CO₂</strong> por ano, equivalente ao plantio de <strong>{Math.round(geracaoAlvo * 12 * 0.007)} árvores</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* Equipamentos */}
+              <div style={{ marginBottom: '30px' }}>
+                <h3 style={{ margin: '0 0 10px 0', fontSize: '15px', color: '#0f172a', borderBottom: '2px solid #0f172a', paddingBottom: '5px' }}>Composição do Kit Gerador</h3>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#f1f5f9' }}>
+                      <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Item</th>
+                      <th style={{ padding: '8px', textAlign: 'left', borderBottom: '1px solid #cbd5e1' }}>Descrição</th>
+                      <th style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #cbd5e1' }}>Qtd</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Módulos Solares</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{modulosMarca}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{modulosQtd}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', color: '#475569' }}>Inversor / Microinversor</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', fontWeight: 'bold' }}>{inversorMarca}</td>
+                      <td style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', textAlign: 'center' }}>{inversorQtd}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Notas */}
+              <div>
+                <h3 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#0f172a' }}>Observações:</h3>
+                <p style={{ margin: 0, fontSize: '12px', color: '#64748b', whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{notes}</p>
+              </div>
+            </div>
+
+            {/* Footer Fixo */}
+            <div style={{ position: 'absolute', bottom: '0', left: '0', right: '0', backgroundColor: '#f8fafc', padding: '15px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
+              <p style={{ margin: 0, fontSize: '10px', color: '#94a3b8' }}>
+                Proposta baseada na Lei 14.300/2022. Economia calculada considerando Fio B (Tarifa TUSD) e Custo de Disponibilidade.
+              </p>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>
