@@ -6,7 +6,7 @@ import type { Cliente } from '../types';
 
 export function Orcamento() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [selectedClienteId, setSelectedClienteId] = useState<string>('avulso');
+  const [selectedClienteId, setSelectedClienteId] = useState<string>('');
   
   const [clientName, setClientName] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -41,13 +41,17 @@ export function Orcamento() {
     // Buscar Clientes do Banco
     async function fetchClientes() {
       const { data } = await supabase.from('clientes').select('*').order('criado_em', { ascending: false });
-      if (data) setClientes(data);
+      if (data && data.length > 0) {
+        setClientes(data);
+        setSelectedClienteId(data[0].id);
+        setClientName(data[0].nome);
+      }
     }
     fetchClientes();
   }, []);
 
   const handleSaveOrcamento = async () => {
-    if (selectedClienteId === 'avulso') {
+    if (!selectedClienteId) {
       alert('Para salvar no prontuário, selecione um cliente cadastrado na lista.');
       return;
     }
@@ -119,9 +123,9 @@ export function Orcamento() {
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={handleSaveOrcamento}
-            disabled={isSaving || selectedClienteId === 'avulso'}
+            disabled={isSaving || !selectedClienteId}
             className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2 gap-2 shadow-sm disabled:opacity-50"
-            title={selectedClienteId === 'avulso' ? "Selecione um cliente para salvar" : "Salvar no Prontuário do Cliente"}
+            title={!selectedClienteId ? "Selecione um cliente para salvar" : "Salvar no Prontuário do Cliente"}
           >
             {isSaving ? <Settings className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Salvar
@@ -160,30 +164,16 @@ export function Orcamento() {
                 onChange={e => {
                   const val = e.target.value;
                   setSelectedClienteId(val);
-                  if (val !== 'avulso') {
-                    const c = clientes.find(c => c.id === val);
-                    if (c) setClientName(c.nome);
-                  } else {
-                    setClientName('');
-                  }
+                  const c = clientes.find(c => c.id === val);
+                  if (c) setClientName(c.nome);
                 }} 
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="avulso">Avulso (Não salvar no prontuário)</option>
+                {clientes.length === 0 && <option value="">Nenhum cliente cadastrado</option>}
                 {clientes.map(c => (
                   <option key={c.id} value={c.id}>{c.nome}</option>
                 ))}
               </select>
-              
-              {selectedClienteId === 'avulso' && (
-                <input 
-                  type="text" 
-                  value={clientName} 
-                  onChange={e => setClientName(e.target.value)} 
-                  className="mt-2 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" 
-                  placeholder="Ex: João da Silva" 
-                />
-              )}
             </div>
             
             <div className="space-y-2">
