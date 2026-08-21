@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { 
-  LayoutDashboard, Users, FileText, CheckSquare, Zap, Calculator, 
+  LayoutDashboard, Users, FileText, CheckSquare, Calculator, 
   LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList, Briefcase
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -31,17 +31,7 @@ export function AppLayout() {
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-brand-dark text-white shadow-xl flex-shrink-0">
         <div className="p-6 flex items-center gap-3">
-          <div className="w-10 h-10 bg-brand-green rounded-lg flex items-center justify-center">
-            <Zap className="w-6 h-6 text-brand-dark" />
-          </div>
-          <div>
-            <h1 className="font-bold text-lg leading-tight tracking-tight text-white">
-              Método Sol
-            </h1>
-            <span className="text-[10px] text-brand-light uppercase tracking-wider font-semibold">
-              Assistente Técnico
-            </span>
-          </div>
+          <img src="/logo-light.png" alt="O Método Sol" className="h-10 object-contain" />
         </div>
         
         <nav className="flex-1 px-4 py-4 space-y-2">

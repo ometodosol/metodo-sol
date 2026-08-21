@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
-import { Zap, Mail, Lock } from 'lucide-react';
+import { Mail, Lock } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -35,14 +35,14 @@ export function Login() {
   return (
     <div className="min-h-screen bg-brand-gray flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center text-brand-dark mb-4">
-          <Zap className="w-12 h-12" />
+        <div className="flex justify-center mb-6">
+          <img src="/logo-dark.png" alt="O Método Sol" className="h-16 object-contain" />
         </div>
         <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
           Entrar na Plataforma
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Exclusivo para alunos do <span className="font-semibold text-brand-dark">Método Sol</span>
+          Acesso exclusivo para alunos
         </p>
       </div>
 
