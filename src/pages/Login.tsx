@@ -88,7 +88,7 @@ export function Login() {
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 relative">
         <div className="w-full max-w-sm flex flex-col items-center">
           
-          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/o-metodo-sol-logo-dark.png" alt="O Método Sol" className="h-10 object-contain mb-8" />
+          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/o-metodo-sol-logo-ligth.png" alt="O Método Sol" className="h-9 object-contain mb-8" />
           
           <p className="text-gray-400 mb-8 text-center text-sm">
             Acesse sua conta
