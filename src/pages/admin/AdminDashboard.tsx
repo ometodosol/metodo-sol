@@ -33,6 +33,17 @@ const ESTADOS_BR = [
   'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
+const ESPECIALIDADES = [
+  'Engenheiro Eletricista',
+  'Engenheiro Civil',
+  'Instalador Solar',
+  'Projetista',
+  'Vendedor / Comercial',
+  'Consultor',
+  'Integrador',
+  'Outros'
+];
+
 export function AdminDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('banners');
@@ -514,7 +525,10 @@ export function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Especialidade</label>
-                  <input required type="text" value={profForm.especialidade} onChange={(e) => setProfForm({...profForm, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: Engenheiro Eletricista" />
+                  <select required value={profForm.especialidade} onChange={(e) => setProfForm({...profForm, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark">
+                    <option value="">Selecione a especialidade</option>
+                    {ESPECIALIDADES.map(esp => <option key={esp} value={esp}>{esp}</option>)}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Foto (URL)</label>

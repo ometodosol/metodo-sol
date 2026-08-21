@@ -9,6 +9,17 @@ const ESTADOS_BR = [
   'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
+const ESPECIALIDADES = [
+  'Engenheiro Eletricista',
+  'Engenheiro Civil',
+  'Instalador Solar',
+  'Projetista',
+  'Vendedor / Comercial',
+  'Consultor',
+  'Integrador',
+  'Outros'
+];
+
 export function Profissionais() {
   const { user } = useAuth();
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
@@ -17,6 +28,7 @@ export function Profissionais() {
   // Filtros
   const [busca, setBusca] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [filtroEspecialidade, setFiltroEspecialidade] = useState('');
 
   useEffect(() => {
     fetchProfissionais();
@@ -49,7 +61,8 @@ export function Profissionais() {
                        p.especialidade.toLowerCase().includes(busca.toLowerCase()) ||
                        p.cidade.toLowerCase().includes(busca.toLowerCase());
     const matchEstado = filtroEstado === '' || p.estado === filtroEstado;
-    return matchBusca && matchEstado;
+    const matchEspecialidade = filtroEspecialidade === '' || p.especialidade === filtroEspecialidade;
+    return matchBusca && matchEstado && matchEspecialidade;
   });
 
   return (
@@ -81,13 +94,26 @@ export function Profissionais() {
           />
         </div>
         
-        <div className="w-full md:w-64">
+        <div className="w-full md:w-48">
+          <select
+            value={filtroEspecialidade}
+            onChange={(e) => setFiltroEspecialidade(e.target.value)}
+            className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50 cursor-pointer text-sm"
+          >
+            <option value="">Todas Especialidades</option>
+            {ESPECIALIDADES.map(esp => (
+              <option key={esp} value={esp}>{esp}</option>
+            ))}
+          </select>
+        </div>
+        
+        <div className="w-full md:w-48">
           <select
             value={filtroEstado}
             onChange={(e) => setFiltroEstado(e.target.value)}
-            className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50 cursor-pointer"
+            className="block w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50 cursor-pointer text-sm"
           >
-            <option value="">Todos os Estados</option>
+            <option value="">Todos Estados</option>
             {ESTADOS_BR.map(uf => (
               <option key={uf} value={uf}>{uf}</option>
             ))}
@@ -101,7 +127,7 @@ export function Profissionais() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green"></div>
         </div>
       ) : profissionaisFiltrados.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {profissionaisFiltrados.map((prof) => (
             <div key={prof.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full">
               <div className="h-40 w-full bg-gray-100 relative overflow-hidden flex-shrink-0">
