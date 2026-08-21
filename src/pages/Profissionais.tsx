@@ -36,12 +36,12 @@ export function Profissionais() {
   }
 
   const formatarWhatsApp = (telefone: string) => {
-    // Remove tudo que não for número
     const apenasNumeros = telefone.replace(/\D/g, '');
-    if (apenasNumeros.length >= 10) {
-      return `https://wa.me/55${apenasNumeros}`;
+    if (!apenasNumeros) return '#';
+    if (apenasNumeros.startsWith('55') && apenasNumeros.length >= 12) {
+      return `https://wa.me/${apenasNumeros}`;
     }
-    return '#';
+    return `https://wa.me/55${apenasNumeros}`;
   };
 
   const profissionaisFiltrados = profissionais.filter(p => {
@@ -104,7 +104,16 @@ export function Profissionais() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {profissionaisFiltrados.map((prof) => (
             <div key={prof.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full">
-              <div className="h-2 bg-brand-green w-full"></div>
+              <div className="h-40 w-full bg-gray-100 relative overflow-hidden flex-shrink-0">
+                {prof.foto_url ? (
+                  <img src={prof.foto_url} alt={prof.nome} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                    <Briefcase className="w-12 h-12" />
+                  </div>
+                )}
+                <div className="absolute top-0 left-0 w-full h-1 bg-brand-green"></div>
+              </div>
               <div className="p-6 flex-1 flex flex-col">
                 <h3 className="font-bold text-lg text-brand-dark line-clamp-1 group-hover:text-brand-green transition-colors">
                   {prof.nome}
