@@ -140,8 +140,6 @@ export function Profissionais() {
           <p className="text-gray-400 mt-2">Tente buscar por outras palavras ou cadastre um novo.</p>
         </div>
       )}
-
-      )}
     </div>
   );
 }
