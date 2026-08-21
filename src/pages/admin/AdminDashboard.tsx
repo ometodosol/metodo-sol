@@ -19,7 +19,8 @@ export function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<Tab>('banners');
   
   // Apenas admins podem ver esta página
-  const isAdmin = user?.email === 'w.souzalmeida@gmail.com' || user?.email?.includes('admin');
+  // Temporariamente liberado para visualização
+  const isAdmin = true;
   
   if (!isAdmin) {
     return <Navigate to="/" replace />;

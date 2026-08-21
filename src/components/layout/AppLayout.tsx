@@ -58,7 +58,8 @@ export function AppLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isAdmin = user?.email === 'w.souzalmeida@gmail.com' || user?.email?.includes('admin');
+  // Temporariamente liberado para visualização
+  const isAdmin = true;
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
