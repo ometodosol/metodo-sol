@@ -195,7 +195,7 @@ CABEAMENTO CA:
 
         {/* Status e Título */}
         <div>
-          <h3 className="font-semibold text-lg text-brand-dark border-b pb-2 mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-lg text-brand-dark border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
             <FileText className="w-5 h-5" />
             Informações Gerais
           </h3>
@@ -230,7 +230,7 @@ CABEAMENTO CA:
 
         {/* Dimensionamento e Equipamentos */}
         <div>
-          <h3 className="font-semibold text-lg text-brand-dark border-b pb-2 mb-4 flex items-center gap-2">
+          <h3 className="font-semibold text-lg text-brand-dark border-b border-gray-100 pb-2 mb-4 flex items-center gap-2">
             <Component className="w-5 h-5" />
             Dimensionamento Técnico
           </h3>
@@ -309,7 +309,7 @@ CABEAMENTO CA:
 
       {projeto.dimensionamento && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 space-y-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-100 pb-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-100 border-gray-100 pb-4">
             <h3 className="text-lg font-bold text-brand-dark flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-gray-400" />
               Lista de Materiais Salva
