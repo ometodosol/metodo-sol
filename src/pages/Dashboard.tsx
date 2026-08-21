@@ -4,7 +4,9 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { PlusSquare, CheckSquare, Wrench, Calculator, AlertTriangle, Sun, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const carouselImages = [
+import { supabase } from '../lib/supabase';
+
+const defaultCarouselImages = [
   'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop', // Painéis solares ao sol
   'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop', // Instalação solar
   'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop'  // Energia verde
@@ -13,13 +15,31 @@ const carouselImages = [
 export function Dashboard() {
   const navigate = useNavigate();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [carouselImages, setCarouselImages] = useState<string[]>(defaultCarouselImages);
 
   useEffect(() => {
+    async function fetchBanners() {
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .eq('local', 'dashboard')
+        .eq('ativo', true)
+        .order('id', { ascending: false });
+      
+      if (!error && data && data.length > 0) {
+        setCarouselImages(data.map(b => b.imagem_url));
+      }
+    }
+    fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    if (carouselImages.length === 0) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [carouselImages]);
 
   return (
     <div className="p-4 md:p-8 space-y-6 animate-in fade-in duration-500">

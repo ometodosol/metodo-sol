@@ -4,7 +4,7 @@ import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-const carouselImages = [
+const defaultCarouselImages = [
   'https://images.unsplash.com/photo-1509391366360-1e97b524f425?q=80&w=2069&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1548337138-e87d889cc369?q=80&w=2036&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?q=80&w=2076&auto=format&fit=crop'
@@ -17,13 +17,31 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [carouselImages, setCarouselImages] = useState<string[]>(defaultCarouselImages);
 
   useEffect(() => {
+    async function fetchBanners() {
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .eq('local', 'login')
+        .eq('ativo', true)
+        .order('id', { ascending: false });
+      
+      if (!error && data && data.length > 0) {
+        setCarouselImages(data.map(b => b.imagem_url));
+      }
+    }
+    fetchBanners();
+  }, []);
+
+  useEffect(() => {
+    if (carouselImages.length === 0) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [carouselImages]);
 
   // Se já estiver logado, redireciona pro Dashboard
   if (user) {
