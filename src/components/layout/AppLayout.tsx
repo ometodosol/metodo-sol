@@ -66,27 +66,22 @@ export function AppLayout() {
           <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/o-metodo-sol-logo-ligth.png" alt="O Método Sol" className="h-8 object-contain" />
         </div>
         
-        <nav className="flex-1 px-4 py-4 space-y-6 overflow-y-auto">
-          {navGroups.map((group, idx) => (
-            <div key={idx} className="space-y-1">
-              {/* Títulos removidos a pedido do usuário */}
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm font-medium ${
-                      isActive
-                        ? 'bg-brand-light/20 text-brand-green shadow-sm'
-                        : 'text-gray-400 hover:bg-white/5 hover:text-white'
-                    }`
-                  }
-                >
-                  <item.icon className="w-4 h-4" />
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
+        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+          {navGroups.flatMap(g => g.items).map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm font-medium ${
+                  isActive
+                    ? 'bg-brand-light/20 text-brand-green shadow-sm'
+                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                }`
+              }
+            >
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </NavLink>
           ))}
         </nav>
       </aside>
@@ -129,28 +124,28 @@ export function AppLayout() {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#0a1120] rounded-2xl shadow-xl border-0 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200 ring-1 ring-black/5 dark:ring-white/5">
                   <div className="p-4 text-center">
-                    <p className="text-sm font-semibold text-foreground">Minha Conta</p>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Minha Conta</p>
                   </div>
-                  <div className="p-2 space-y-1 bg-gray-50/50 dark:bg-black/20">
+                  <div className="p-2 space-y-1 bg-gray-50 dark:bg-black/20">
                     <button 
                       onClick={() => { navigate('/conta'); setIsProfileOpen(false); }}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all"
                     >
                       <UserCircle className="w-4 h-4" />
                       Perfil
                     </button>
                     <button 
                       onClick={() => { navigate('/configuracoes'); setIsProfileOpen(false); }}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-white/10 rounded-xl transition-all"
                     >
                       <Settings className="w-4 h-4" />
                       Configurações
                     </button>
                   </div>
-                  <div className="p-2 pt-0 bg-gray-50/50 dark:bg-black/20">
+                  <div className="p-2 pt-0 bg-gray-50 dark:bg-black/20">
                     <button 
                       onClick={() => { signOut(); setIsProfileOpen(false); }}
-                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-destructive hover:bg-destructive/10 rounded-xl transition-all font-medium"
+                      className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-all font-medium"
                     >
                       <LogOut className="w-4 h-4" />
                       Sair

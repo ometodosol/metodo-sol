@@ -4,6 +4,25 @@ import html2pdf from 'html2pdf.js';
 import { supabase } from '../lib/supabase';
 import type { Cliente } from '../types';
 
+const concessionariasData = [
+  { nome: 'CEMIG-D (MG)', tarifa: 0.95 },
+  { nome: 'ENEL-SP (SP)', tarifa: 0.75 },
+  { nome: 'CPFL Paulista (SP)', tarifa: 0.70 },
+  { nome: 'Elektro (SP)', tarifa: 0.73 },
+  { nome: 'Copel (PR)', tarifa: 0.85 },
+  { nome: 'Celesc (SC)', tarifa: 0.65 },
+  { nome: 'RGE (RS)', tarifa: 0.80 },
+  { nome: 'CEEE Equatorial (RS)', tarifa: 0.78 },
+  { nome: 'Light (RJ)', tarifa: 1.05 },
+  { nome: 'Enel-RJ (RJ)', tarifa: 1.00 },
+  { nome: 'Neoenergia Coelba (BA)', tarifa: 0.88 },
+  { nome: 'Neoenergia Pernambuco (PE)', tarifa: 0.85 },
+  { nome: 'Equatorial PA (PA)', tarifa: 0.98 },
+  { nome: 'Equatorial MA (MA)', tarifa: 0.96 },
+  { nome: 'Energisa MT (MT)', tarifa: 0.82 },
+  { nome: 'Energisa MS (MS)', tarifa: 0.79 },
+  { nome: 'Enel-CE (CE)', tarifa: 0.74 },
+];
 export function Orcamento() {
   // Clientes
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -182,7 +201,7 @@ export function Orcamento() {
 
       {/* ---- CLIENTE & TARIFA ---- */}
       <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-        <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+        <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
           <User className="w-4 h-4" /> Cliente e Modalidade
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,7 +219,7 @@ export function Orcamento() {
                 }}
                 onFocus={() => setIsDropdownOpen(true)}
                 onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
-                className="flex h-10 w-full rounded-md border border-input bg-gray-50 px-3 py-2 text-sm focus:ring-1 focus:ring-brand-dark"
+                className="flex h-10 w-full rounded-md border border-border bg-gray-50 px-3 py-2 text-sm focus:ring-1 focus:ring-brand-dark"
               />
             </div>
             {isDropdownOpen && (
@@ -228,7 +247,7 @@ export function Orcamento() {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Modalidade Tarifária</label>
-            <select value={grupo} onChange={e => setGrupo(e.target.value as 'A'|'B')} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <select value={grupo} onChange={e => setGrupo(e.target.value as 'A'|'B')} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
               <option value="B">Grupo B (Baixa Tensão)</option>
               <option value="A">Grupo A (Alta Tensão)</option>
             </select>
@@ -239,17 +258,17 @@ export function Orcamento() {
       {/* ---- UNIDADE CONSUMIDORA & DADOS DA CONTA ---- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
             <Home className="w-4 h-4" /> Unidade Consumidora
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2 col-span-2 sm:col-span-1">
               <label className="text-sm font-medium text-gray-700">Nome da UC</label>
-              <input type="text" value={ucName} onChange={e => setUcName(e.target.value)} placeholder="Ex: Casa Praia" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="text" value={ucName} onChange={e => setUcName(e.target.value)} placeholder="Ex: Casa Praia" className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2 col-span-2 sm:col-span-1">
               <label className="text-sm font-medium text-gray-700">Tipo de UC</label>
-              <select value={ucTipo} onChange={e => setUcTipo(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+              <select value={ucTipo} onChange={e => setUcTipo(e.target.value)} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
                 <option value="Residencial">Residencial</option>
                 <option value="Comercial">Comercial</option>
                 <option value="Industrial">Industrial</option>
@@ -260,17 +279,30 @@ export function Orcamento() {
         </div>
 
         <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
             <FileText className="w-4 h-4" /> Dados da Conta
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div className="space-y-2 col-span-2 sm:col-span-2">
               <label className="text-sm font-medium text-gray-700">Concessionária</label>
-              <input type="text" value={concessionaria} onChange={e => setConcessionaria(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <select 
+                value={concessionaria} 
+                onChange={e => {
+                  setConcessionaria(e.target.value);
+                  const found = concessionariasData.find(c => c.nome === e.target.value);
+                  if(found) setValorKwh(found.tarifa);
+                }} 
+                className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground"
+              >
+                <option value="">Selecione...</option>
+                {concessionariasData.map(c => (
+                  <option key={c.nome} value={c.nome}>{c.nome}</option>
+                ))}
+              </select>
             </div>
             <div className="space-y-2 col-span-2 sm:col-span-2">
               <label className="text-sm font-medium text-gray-700">Rede</label>
-              <select value={tipoRede} onChange={e => setTipoRede(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+              <select value={tipoRede} onChange={e => setTipoRede(e.target.value)} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
                 <option value="Monofásico">Monofásico</option>
                 <option value="Bifásico">Bifásico</option>
                 <option value="Trifásico">Trifásico</option>
@@ -278,11 +310,11 @@ export function Orcamento() {
             </div>
             <div className="space-y-2 col-span-2">
               <label className="text-sm font-medium text-gray-700">Valor kWh (R$)</label>
-              <input type="number" step="0.01" value={valorKwh} onChange={e => setValorKwh(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" step="0.01" value={valorKwh} onChange={e => setValorKwh(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2 col-span-2">
               <label className="text-sm font-medium text-gray-700">Taxa Ilum. Púb (R$)</label>
-              <input type="number" step="0.01" value={taxaIlumPub} onChange={e => setTaxaIlumPub(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" step="0.01" value={taxaIlumPub} onChange={e => setTaxaIlumPub(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
           </div>
         </div>
@@ -290,7 +322,7 @@ export function Orcamento() {
 
       {/* ---- CONSUMO MENSAL ---- */}
       <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-        <div className="flex justify-between items-center border-b border-gray-100 dark:border-white/5 pb-2">
+        <div className="flex justify-between items-center border-b border-border pb-2">
           <h3 className="font-semibold flex items-center gap-2 text-card-foreground">
             <Zap className="w-4 h-4" /> Consumo Mensal (kWh)
           </h3>
@@ -309,14 +341,14 @@ export function Orcamento() {
         {consumoMode === 'media' ? (
           <div className="max-w-xs">
             <label className="text-sm font-medium text-gray-700">Valor Média (kWh)</label>
-            <input type="number" value={consumoMensal} onChange={e => setConsumoMensal(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-blue-50 px-3 py-2 text-sm font-semibold" />
+            <input type="number" value={consumoMensal} onChange={e => setConsumoMensal(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-blue-50 px-3 py-2 text-sm font-semibold" />
           </div>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {mesesNomes.map((mes, idx) => (
               <div key={mes} className="space-y-1">
                 <label className="text-xs font-medium text-gray-500">{mes}</label>
-                <input type="number" value={consumosMeses[idx] || ''} onChange={e => handleMesChange(idx, e.target.value)} className="flex h-9 w-full rounded-md border border-input bg-background px-2 py-1 text-sm text-center" />
+                <input type="number" value={consumosMeses[idx] || ''} onChange={e => handleMesChange(idx, e.target.value)} className="flex h-9 w-full rounded-md border border-border bg-background px-2 py-1 text-sm text-center" />
               </div>
             ))}
           </div>
@@ -326,41 +358,41 @@ export function Orcamento() {
       {/* ---- DIMENSIONAMENTO & VIABILIDADE ---- */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
             <Settings className="w-4 h-4" /> Dimensionamento
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">% Geração</label>
-              <input type="number" value={geracaoPercentual} onChange={e => setGeracaoPercentual(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" value={geracaoPercentual} onChange={e => setGeracaoPercentual(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">% Perdas</label>
-              <input type="number" value={perdas} onChange={e => setPerdas(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" value={perdas} onChange={e => setPerdas(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2 col-span-2 border-t pt-3">
               <label className="text-sm font-medium text-gray-700">Potência do Sistema (kWp)</label>
-              <input type="number" step="0.1" value={potencia} onChange={e => setPotencia(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-brand-primary bg-brand-primary/5 px-3 py-2 text-sm font-semibold" />
+              <input type="number" step="0.1" value={potencia} onChange={e => setPotencia(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-brand-primary/5 px-3 py-2 text-sm font-semibold" />
             </div>
           </div>
         </div>
 
         <div className="bg-card rounded-2xl border-0 shadow-md p-6 space-y-4">
-          <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+          <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
             <Activity className="w-4 h-4" /> Viabilidade (Fio B)
           </h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2 col-span-2">
               <label className="text-sm font-medium text-gray-700">Fator de Simultaneidade (%)</label>
-              <input type="number" value={fatorSimultaneidade} onChange={e => setFatorSimultaneidade(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" value={fatorSimultaneidade} onChange={e => setFatorSimultaneidade(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Valor Fio B (R$)</label>
-              <input type="number" step="0.01" value={valorFioB} onChange={e => setValorFioB(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+              <input type="number" step="0.01" value={valorFioB} onChange={e => setValorFioB(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Percentual Fio B (%)</label>
-              <input type="number" value={percentualFioB} onChange={e => setPercentualFioB(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-gray-100 px-3 py-2 text-sm text-gray-500" readOnly title="Usado em cálculos avançados" />
+              <input type="number" value={percentualFioB} onChange={e => setPercentualFioB(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-gray-100 px-3 py-2 text-sm text-gray-500" readOnly title="Usado em cálculos avançados" />
             </div>
           </div>
         </div>
@@ -371,37 +403,37 @@ export function Orcamento() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           <div className="space-y-4">
-            <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+            <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
               <Settings className="w-4 h-4" /> Equipamentos
             </h3>
             <div className="grid grid-cols-12 gap-3">
               <div className="col-span-3">
                 <label className="text-xs font-medium text-gray-500">Qtd</label>
-                <input type="number" value={modulosQtd} onChange={e => setModulosQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-2 py-2 text-sm text-center" />
+                <input type="number" value={modulosQtd} onChange={e => setModulosQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-center" />
               </div>
               <div className="col-span-9">
                 <label className="text-xs font-medium text-gray-500">Módulo Solar</label>
-                <input type="text" value={modulosMarca} onChange={e => setModulosMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <input type="text" value={modulosMarca} onChange={e => setModulosMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               </div>
               <div className="col-span-3">
                 <label className="text-xs font-medium text-gray-500">Qtd</label>
-                <input type="number" value={inversorQtd} onChange={e => setInversorQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-input bg-background px-2 py-2 text-sm text-center" />
+                <input type="number" value={inversorQtd} onChange={e => setInversorQtd(Number(e.target.value))} className="flex h-10 w-full rounded-md border border-border bg-background px-2 py-2 text-sm text-center" />
               </div>
               <div className="col-span-9">
                 <label className="text-xs font-medium text-gray-500">Inversor</label>
-                <input type="text" value={inversorMarca} onChange={e => setInversorMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" />
+                <input type="text" value={inversorMarca} onChange={e => setInversorMarca(e.target.value)} className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h3 className="font-semibold flex items-center gap-2 border-b border-gray-100 dark:border-white/5 pb-2 text-card-foreground">
+            <h3 className="font-semibold flex items-center gap-2 border-b border-border pb-2 text-card-foreground">
               <DollarSign className="w-4 h-4" /> Resultados Financeiros
             </h3>
             <div className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Investimento Total (R$)</label>
-                <input type="number" value={investimento} onChange={e => setInvestimento(Number(e.target.value))} className="flex h-12 w-full rounded-md border-2 border-brand-dark bg-gray-50 px-3 py-2 text-lg font-bold text-brand-dark" />
+                <input type="number" value={investimento} onChange={e => setInvestimento(Number(e.target.value))} className="flex h-12 w-full rounded-md border border-border bg-gray-50 px-3 py-2 text-lg font-bold text-brand-dark" />
               </div>
               
               <div className="grid grid-cols-2 gap-4 pt-2">
