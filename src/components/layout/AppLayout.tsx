@@ -8,17 +8,31 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Users, label: 'Clientes', path: '/clientes' },
-  { icon: FileText, label: 'Meus Projetos', path: '/projetos' },
-  { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
-  { icon: ClipboardList, label: 'Orçamentos', path: '/orcamentos' },
-
-  { icon: Settings2, label: 'Homologação', path: '/homologacao' },
-  { icon: CheckSquare, label: 'Comissionamento', path: '/comissionamento' },
-  { icon: GraduationCap, label: 'Aulas', path: '/aprender' },
-  { icon: Briefcase, label: 'Conexões', path: '/profissionais' },
+const navGroups = [
+  {
+    title: 'VISÃO GERAL',
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
+      { icon: Users, label: 'Clientes', path: '/clientes' },
+      { icon: FileText, label: 'Meus Projetos', path: '/projetos' },
+    ]
+  },
+  {
+    title: 'ENGENHARIA',
+    items: [
+      { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
+      { icon: Settings2, label: 'Homologação', path: '/homologacao' },
+      { icon: CheckSquare, label: 'Comissionamento', path: '/comissionamento' },
+    ]
+  },
+  {
+    title: 'NEGÓCIOS',
+    items: [
+      { icon: ClipboardList, label: 'Orçamentos', path: '/orcamentos' },
+      { icon: GraduationCap, label: 'Aulas', path: '/aprender' },
+      { icon: Briefcase, label: 'Conexões', path: '/profissionais' },
+    ]
+  }
 ];
 
 const bottomNavItems = [
@@ -52,22 +66,29 @@ export function AppLayout() {
           <img src="/logo-dark.png" alt="O Método Sol" className="h-8 object-contain" />
         </div>
         
-        <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-md transition-colors text-sm font-medium ${
-                  isActive
-                    ? 'bg-secondary text-secondary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
-                }`
-              }
-            >
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </NavLink>
+        <nav className="flex-1 px-4 py-4 space-y-6 overflow-y-auto">
+          {navGroups.map((group, idx) => (
+            <div key={idx} className="space-y-1">
+              <h4 className="px-2 mb-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+                {group.title}
+              </h4>
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-md transition-all text-sm font-medium ${
+                      isActive
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    }`
+                  }
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
       </aside>
@@ -75,9 +96,17 @@ export function AppLayout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-muted/20">
         <header className="h-14 lg:h-[60px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
-          <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
-            {/* Breadcrumb Area */}
-            Plataforma
+          <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground w-full max-w-sm">
+            <div className="relative w-full">
+              <svg xmlns="http://www.w3.org/2000/svg" className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-background border border-border rounded-md pl-9 pr-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -140,9 +169,9 @@ export function AppLayout() {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation (Flattened for simplicity) */}
       <nav className="md:hidden bg-background border-t border-border flex items-center justify-around p-3 pb-safe z-50">
-        {navItems.slice(0, 4).map((item) => (
+        {navGroups.flatMap(g => g.items).slice(0, 4).map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

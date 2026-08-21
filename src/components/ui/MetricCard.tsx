@@ -20,25 +20,23 @@ export function MetricCard({ title, value, icon: Icon, trend, onClick, className
     <div 
       onClick={onClick}
       className={cn(
-        "bg-white rounded-xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between h-full",
-        onClick && "cursor-pointer hover:border-brand-light hover:shadow-md transition-all",
+        "bg-card rounded-xl p-6 shadow-sm border border-border flex flex-col justify-between h-full",
+        onClick && "cursor-pointer hover:bg-accent/50 transition-all",
         className
       )}
     >
-      <div className="flex justify-between items-start">
-        <p className="text-sm font-medium text-gray-500">{title}</p>
-        <div className="p-2 bg-brand-gray rounded-lg">
-          <Icon className="w-5 h-5 text-brand-dark" />
-        </div>
+      <div className="flex justify-between items-center pb-2">
+        <p className="text-sm font-medium tracking-tight text-card-foreground">{title}</p>
+        <Icon className="w-4 h-4 text-muted-foreground" />
       </div>
-      <div className="mt-4">
-        <h3 className="text-2xl font-bold text-brand-dark">{value}</h3>
+      <div>
+        <h3 className="text-2xl font-bold text-card-foreground">{value}</h3>
         {trend && (
-          <p className="text-xs mt-1 font-medium flex items-center gap-1">
-            <span className={trend.isPositive ? "text-status-success" : "text-status-error"}>
+          <p className="text-xs mt-1 text-muted-foreground flex items-center gap-1">
+            <span className={trend.isPositive ? "text-primary" : "text-destructive"}>
               {trend.isPositive ? '+' : ''}{trend.value}%
             </span>
-            <span className="text-gray-400 font-normal">{trend.label}</span>
+            <span>{trend.label}</span>
           </p>
         )}
       </div>
