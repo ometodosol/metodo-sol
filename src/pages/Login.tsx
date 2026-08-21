@@ -88,11 +88,11 @@ export function Login() {
       <div className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 relative">
         <div className="w-full max-w-sm flex flex-col items-center">
           
-          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/Icon.png" alt="O Método Sol" className="h-10 w-10 object-contain mb-8" />
+          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/o-metodo-sol-logo-dark.png" alt="O Método Sol" className="h-10 object-contain mb-8" />
           
-          <h2 className="text-2xl font-bold text-white mb-10 text-center tracking-tight">
+          <p className="text-gray-400 mb-8 text-center text-sm">
             Acesse sua conta
-          </h2>
+          </p>
 
           <form className="w-full space-y-4" onSubmit={handleLogin}>
             
@@ -146,19 +146,8 @@ export function Login() {
                 disabled={loading}
                 className="w-full flex justify-center items-center gap-2 py-4 px-4 rounded-xl text-sm font-bold text-[#0a0a0a] bg-white hover:bg-gray-100 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Entrando...' : 'Continuar'}
+                {loading ? 'Entrando...' : 'Entrar'}
               </button>
-            </div>
-            
-            <div className="pt-8 flex items-start gap-3">
-              <input 
-                type="checkbox" 
-                id="terms" 
-                className="mt-1 rounded border-gray-600 bg-white/5 text-white focus:ring-white focus:ring-offset-0 w-4 h-4" 
-              />
-              <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed">
-                Ao continuar, você concorda com os <a href="#" className="text-white font-medium hover:underline">Termos de Uso</a> e a <a href="#" className="text-white font-medium hover:underline">Política de Privacidade</a> da plataforma.
-              </label>
             </div>
           </form>
         </div>
