@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Profissional } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { Briefcase, Search, MapPin, Phone, Plus, X, Instagram, Globe } from 'lucide-react';
+import { Briefcase, Search, MapPin, Phone, Plus, X, Camera, Globe } from 'lucide-react';
 
 const ESTADOS_BR = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -146,7 +146,7 @@ export function Profissionais() {
                         className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white rounded-xl transition-colors"
                         title="Instagram"
                       >
-                        <Instagram className="w-4 h-4" />
+                        <Camera className="w-4 h-4" />
                       </a>
                     )}
                     
