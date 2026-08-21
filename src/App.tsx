@@ -18,6 +18,7 @@ import { Profissionais } from './pages/Profissionais';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 import { Orcamento } from './pages/Orcamento';
+import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 // Placeholder para rotas em desenvolvimento
 const Placeholder = ({ title }: { title: string }) => (
@@ -64,6 +65,9 @@ function App() {
                 <Route path="aprender" element={<Placeholder title="Aulas" />} />
                 <Route path="profissionais" element={<Profissionais />} />
                 <Route path="homologacao" element={<Homologacao />} />
+                
+                {/* Admin */}
+                <Route path="admin" element={<AdminDashboard />} />
                 
                 {/* Configurações e Conta */}
                 <Route path="configuracoes" element={<Placeholder title="Configurações" />} />

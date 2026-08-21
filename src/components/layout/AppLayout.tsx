@@ -3,7 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, FileText, CheckSquare, Calculator, 
   LogOut, Settings, UserCircle, Wrench, Settings2, PlayCircle, BookOpen, GraduationCap, ClipboardList, Briefcase, Bell,
-  Sun, Moon
+  Sun, Moon, ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -58,6 +58,8 @@ export function AppLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const isAdmin = user?.email === 'w.souzalmeida@gmail.com' || user?.email?.includes('admin');
+
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
       {/* Desktop Sidebar */}
@@ -83,6 +85,27 @@ export function AppLayout() {
               {item.label}
             </NavLink>
           ))}
+          
+          {isAdmin && (
+            <>
+              <div className="pt-4 pb-1">
+                <p className="px-3 text-xs font-bold text-gray-500">ADMINISTRAÇÃO</p>
+              </div>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  `flex items-center gap-3 px-3 py-2 rounded-xl transition-all text-sm font-medium ${
+                    isActive
+                      ? 'bg-brand-light/20 text-brand-green shadow-sm'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                  }`
+                }
+              >
+                <ShieldCheck className="w-4 h-4 text-amber-500" />
+                Painel Admin
+              </NavLink>
+            </>
+          )}
         </nav>
       </aside>
 
