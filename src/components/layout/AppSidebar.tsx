@@ -18,7 +18,7 @@ const navItems = [
   { icon: Activity, label: 'Diagnóstico', path: '/diagnostico' },
   { icon: Calculator, label: 'Dimensionamento', path: '/dimensionamento' },
   { icon: Cpu, label: 'Equipamentos', path: '/equipamentos' },
-  { icon: GraduationCap, label: 'Aulas', path: '/aprender' },
+  { icon: GraduationCap, label: 'Academy', path: '/academy' },
   { icon: Briefcase, label: 'Conexões', path: '/profissionais' },
   { icon: FileSignature, label: 'Homologação', path: '/homologacao' },
 ];

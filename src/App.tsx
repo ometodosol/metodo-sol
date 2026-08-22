@@ -18,6 +18,7 @@ import { Profissionais } from './pages/Profissionais';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
 import { Orcamento } from './pages/Orcamento';
+import { Academy } from './pages/Academy';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 
 // Placeholder para rotas em desenvolvimento
@@ -62,7 +63,7 @@ function App() {
                 
                 {/* Negócios e Educação */}
                 <Route path="comercial" element={<Placeholder title="Área Comercial" />} />
-                <Route path="aprender" element={<Placeholder title="Aulas" />} />
+                <Route path="academy" element={<Academy />} />
                 <Route path="profissionais" element={<Profissionais />} />
                 <Route path="homologacao" element={<Homologacao />} />
                 

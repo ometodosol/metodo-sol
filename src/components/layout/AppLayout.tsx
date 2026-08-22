@@ -30,7 +30,7 @@ const navGroups = [
     title: 'NEGÓCIOS',
     items: [
       { icon: ClipboardList, label: 'Orçamentos', path: '/orcamentos' },
-      { icon: GraduationCap, label: 'Aulas', path: '/aprender' },
+      { icon: GraduationCap, label: 'Academy', path: '/academy' },
       { icon: Briefcase, label: 'Conexões', path: '/profissionais' },
     ]
   }
