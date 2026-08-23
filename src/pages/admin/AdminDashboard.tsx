@@ -244,13 +244,20 @@ export function AdminDashboard() {
     setSaving(false);
   };
 
-  const handleUpdateAcademySlide = async (id: string, updates: Partial<AcademySlide>) => {
+  const handleLocalUpdateAcademySlide = (id: string, field: string, value: any) => {
+    setAcademySlides(academySlides.map(s => s.id === id ? { ...s, [field]: value } : s));
+  };
+
+  const handleSaveAcademySlide = async (slide: AcademySlide) => {
     setSaving(true);
-    const { error } = await supabase.from('academy_slides').update(updates).eq('id', id);
+    const { id, criado_em, ...updates } = slide as any;
+    const { error } = await supabase.from('academy_slides').update(updates).eq('id', slide.id);
     if (!error) {
-      setAcademySlides(academySlides.map(s => s.id === id ? { ...s, ...updates } : s));
-      alert('Slide atualizado com sucesso!');
-    } else alert('Erro ao atualizar slide.');
+      alert('Slide salvo com sucesso!');
+    } else {
+      console.error(error);
+      alert(`Erro ao salvar slide: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
@@ -275,13 +282,20 @@ export function AdminDashboard() {
     setSaving(false);
   };
 
-  const handleUpdateAcademyModulo = async (id: string, updates: Partial<AcademyModulo>) => {
+  const handleLocalUpdateAcademyModulo = (id: string, field: string, value: any) => {
+    setAcademyModulos(academyModulos.map(m => m.id === id ? { ...m, [field]: value } : m));
+  };
+
+  const handleSaveAcademyModulo = async (modulo: AcademyModulo) => {
     setSaving(true);
-    const { error } = await supabase.from('academy_modulos').update(updates).eq('id', id);
+    const { id, criado_em, ...updates } = modulo as any;
+    const { error } = await supabase.from('academy_modulos').update(updates).eq('id', modulo.id);
     if (!error) {
-      setAcademyModulos(academyModulos.map(m => m.id === id ? { ...m, ...updates } : m));
-      alert('Módulo atualizado!');
-    } else alert('Erro ao atualizar módulo.');
+      alert('Módulo salvo com sucesso!');
+    } else {
+      console.error(error);
+      alert(`Erro ao salvar módulo: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
@@ -306,13 +320,20 @@ export function AdminDashboard() {
     setSaving(false);
   };
 
-  const handleUpdateAcademyNovidade = async (id: string, updates: Partial<AcademyNovidade>) => {
+  const handleLocalUpdateAcademyNovidade = (id: string, field: string, value: any) => {
+    setAcademyNovidades(academyNovidades.map(n => n.id === id ? { ...n, [field]: value } : n));
+  };
+
+  const handleSaveAcademyNovidade = async (novidade: AcademyNovidade) => {
     setSaving(true);
-    const { error } = await supabase.from('academy_novidades').update(updates).eq('id', id);
+    const { id, criado_em, ...updates } = novidade as any;
+    const { error } = await supabase.from('academy_novidades').update(updates).eq('id', novidade.id);
     if (!error) {
-      setAcademyNovidades(academyNovidades.map(n => n.id === id ? { ...n, ...updates } : n));
-      alert('Novidade atualizada!');
-    } else alert('Erro ao atualizar novidade.');
+      alert('Novidade salva com sucesso!');
+    } else {
+      console.error(error);
+      alert(`Erro ao salvar novidade: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
@@ -592,23 +613,26 @@ export function AdminDashboard() {
                       <div key={slide.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">URL da Imagem</label>
-                          <input type="text" value={slide.imagem_url || ''} onChange={e => handleUpdateAcademySlide(slide.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { imagem_url: slide.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={slide.imagem_url || ''} onChange={e => handleLocalUpdateAcademySlide(slide.id, 'imagem_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-2">
                           <label className="text-xs font-semibold text-muted-foreground">Título</label>
-                          <input type="text" value={slide.titulo || ''} onChange={e => handleUpdateAcademySlide(slide.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { titulo: slide.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="MasterFluxo" />
+                          <input type="text" value={slide.titulo || ''} onChange={e => handleLocalUpdateAcademySlide(slide.id, 'titulo', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="MasterFluxo" />
                         </div>
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">Subtítulo / Texto</label>
-                          <input type="text" value={slide.texto || ''} onChange={e => handleUpdateAcademySlide(slide.id, { texto: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { texto: slide.texto })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Texto de descrição..." />
+                          <input type="text" value={slide.texto || ''} onChange={e => handleLocalUpdateAcademySlide(slide.id, 'texto', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Texto de descrição..." />
                         </div>
                         <div className="md:col-span-2">
                           <label className="text-xs font-semibold text-muted-foreground">Link "Assistir"</label>
-                          <input type="text" value={slide.link_url || ''} onChange={e => handleUpdateAcademySlide(slide.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { link_url: slide.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={slide.link_url || ''} onChange={e => handleLocalUpdateAcademySlide(slide.id, 'link_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-2 flex items-end gap-2 justify-end">
-                          <button onClick={() => handleUpdateAcademySlide(slide.id, { ativo: !slide.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${slide.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                          <button onClick={() => handleLocalUpdateAcademySlide(slide.id, 'ativo', !slide.ativo)} className={`px-3 py-2 rounded-lg text-xs font-bold ${slide.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
                             {slide.ativo ? 'Ativo' : 'Inativo'}
+                          </button>
+                          <button onClick={() => handleSaveAcademySlide(slide)} className="px-3 py-2 bg-brand-green text-brand-dark rounded-lg text-xs font-bold hover:bg-[#baff4c] transition-colors" title="Salvar">
+                            Salvar
                           </button>
                           <button onClick={() => handleDeleteAcademySlide(slide.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
                             <Trash2 className="w-5 h-5" />
@@ -638,21 +662,24 @@ export function AdminDashboard() {
                       <div key={modulo.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">URL da Imagem (Poster 2:3)</label>
-                          <input type="text" value={modulo.imagem_url || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { imagem_url: modulo.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={modulo.imagem_url || ''} onChange={e => handleLocalUpdateAcademyModulo(modulo.id, 'imagem_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">Título</label>
-                          <input type="text" value={modulo.titulo || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { titulo: modulo.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Master Fluxo" />
+                          <input type="text" value={modulo.titulo || ''} onChange={e => handleLocalUpdateAcademyModulo(modulo.id, 'titulo', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Master Fluxo" />
                         </div>
                         <div className="md:col-span-2">
                           <label className="text-xs font-semibold text-muted-foreground">Selo (Ex: Nova aula)</label>
-                          <input type="text" value={modulo.badge || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { badge: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { badge: modulo.badge })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Nova aula" />
+                          <input type="text" value={modulo.badge || ''} onChange={e => handleLocalUpdateAcademyModulo(modulo.id, 'badge', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Nova aula" />
                         </div>
-                        <div className="md:col-span-3">
+                        <div className="md:col-span-2">
                           <label className="text-xs font-semibold text-muted-foreground">Link do Módulo</label>
-                          <input type="text" value={modulo.link_url || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { link_url: modulo.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={modulo.link_url || ''} onChange={e => handleLocalUpdateAcademyModulo(modulo.id, 'link_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
-                        <div className="md:col-span-1 flex items-end justify-end">
+                        <div className="md:col-span-2 flex items-end gap-2 justify-end">
+                          <button onClick={() => handleSaveAcademyModulo(modulo)} className="px-3 py-2 bg-brand-green text-brand-dark rounded-lg text-xs font-bold hover:bg-[#baff4c] transition-colors" title="Salvar">
+                            Salvar
+                          </button>
                           <button onClick={() => handleDeleteAcademyModulo(modulo.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
                             <Trash2 className="w-5 h-5" />
                           </button>
@@ -679,19 +706,22 @@ export function AdminDashboard() {
                     {academyNovidades.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhuma novidade cadastrada.</p>}
                     {academyNovidades.map(novidade => (
                       <div key={novidade.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
-                        <div className="md:col-span-4">
+                        <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">URL da Imagem (Thumb 16:9)</label>
-                          <input type="text" value={novidade.imagem_url || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { imagem_url: novidade.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={novidade.imagem_url || ''} onChange={e => handleLocalUpdateAcademyNovidade(novidade.id, 'imagem_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
                         <div className="md:col-span-4">
                           <label className="text-xs font-semibold text-muted-foreground">Título</label>
-                          <input type="text" value={novidade.titulo || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { titulo: novidade.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Encontro Zoom" />
+                          <input type="text" value={novidade.titulo || ''} onChange={e => handleLocalUpdateAcademyNovidade(novidade.id, 'titulo', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Encontro Zoom" />
                         </div>
                         <div className="md:col-span-3">
                           <label className="text-xs font-semibold text-muted-foreground">Link</label>
-                          <input type="text" value={novidade.link_url || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { link_url: novidade.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                          <input type="text" value={novidade.link_url || ''} onChange={e => handleLocalUpdateAcademyNovidade(novidade.id, 'link_url', e.target.value)} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
                         </div>
-                        <div className="md:col-span-1 flex items-end justify-end">
+                        <div className="md:col-span-2 flex items-end gap-2 justify-end">
+                          <button onClick={() => handleSaveAcademyNovidade(novidade)} className="px-3 py-2 bg-brand-green text-brand-dark rounded-lg text-xs font-bold hover:bg-[#baff4c] transition-colors" title="Salvar">
+                            Salvar
+                          </button>
                           <button onClick={() => handleDeleteAcademyNovidade(novidade.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
                             <Trash2 className="w-5 h-5" />
                           </button>
