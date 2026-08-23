@@ -100,7 +100,7 @@ export function NovoOrcamento() {
   const [isSaving, setIsSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [historicoLocal, setHistoricoLocal] = useState<any[]>([]);
-  const [viewHistoryMode, setViewHistoryMode] = useState(false);
+  const [viewingHistoryObj, setViewingHistoryObj] = useState<any>(null);
   const [backupData, setBackupData] = useState<any>(null);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
@@ -336,24 +336,27 @@ export function NovoOrcamento() {
         </div>
       )}
 
-      {viewHistoryMode && (
+      {viewingHistoryObj && (
         <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-xl flex items-center justify-between shadow-sm flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <History className="w-5 h-5" />
-            <p className="font-medium text-sm">Você está visualizando uma versão antiga do histórico. Edite e salve para torná-la a atual.</p>
+            <div>
+              <p className="font-bold text-sm">Visualizando versão de {new Date(viewingHistoryObj.data).toLocaleDateString('pt-BR')} às {new Date(viewingHistoryObj.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
+              <p className="text-xs opacity-80 mt-0.5">Você pode rolar a tela e ver todos os dados abaixo. Salve para tornar esta versão a atual.</p>
+            </div>
           </div>
           <div className="flex gap-2">
             <button 
               onClick={() => {
                 loadOrcamentoData(backupData);
-                setViewHistoryMode(false);
+                setViewingHistoryObj(null);
               }}
               className="px-3 py-1.5 bg-yellow-200 hover:bg-yellow-300 text-yellow-900 rounded-lg text-xs font-bold transition-colors"
             >
               Desfazer e Voltar
             </button>
             <button 
-              onClick={() => setViewHistoryMode(false)}
+              onClick={() => setViewingHistoryObj(null)}
               className="px-3 py-1.5 bg-brand-dark text-white hover:bg-brand-dark/90 rounded-lg text-xs font-bold transition-colors"
             >
               Manter na tela
@@ -661,12 +664,14 @@ export function NovoOrcamento() {
                         modulosQtd, modulosMarca, inversorQtd, inversorMarca,
                         investimento, notes
                       };
-                      if (!viewHistoryMode) {
+                      if (!viewingHistoryObj) {
                         setBackupData(currentDados);
                       }
-                      setViewHistoryMode(true);
+                      setViewingHistoryObj(h);
                       loadOrcamentoData(h.dados_completos);
                       setShowHistory(false);
+                    } else {
+                      alert('Aviso: Esta versão mais antiga não possui os detalhes completos salvos. (O sistema começou a registrar todos os campos nas versões mais recentes).');
                     }
                   }}
                 >
