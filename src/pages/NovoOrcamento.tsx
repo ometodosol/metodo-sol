@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Download, User, Zap, DollarSign, Settings, Save, Home, Activity } from 'lucide-react';
+import { FileText, Download, User, Zap, DollarSign, Settings, Save, Home, Activity, History, X } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import { supabase } from '../lib/supabase';
 import type { Cliente } from '../types';
@@ -98,6 +98,8 @@ export function NovoOrcamento() {
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [historicoLocal, setHistoricoLocal] = useState<any[]>([]);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -178,6 +180,7 @@ export function NovoOrcamento() {
       if (d.inversorMarca) setInversorMarca(d.inversorMarca);
       if (d.investimento) setInvestimento(d.investimento);
       if (d.notes) setNotes(d.notes);
+      if (d.historico) setHistoricoLocal(d.historico);
     }
   }, [location.state, clientes]);
 
@@ -217,6 +220,7 @@ export function NovoOrcamento() {
         potencia_anterior: oldData?.dados?.potencia || 0
       });
       
+      setHistoricoLocal(historico);
       const novosDados = { ...dadosJson, historico };
       
       const { error: updateError } = await supabase
@@ -267,6 +271,16 @@ export function NovoOrcamento() {
         </div>
         
         <div className="flex items-center gap-3 w-full sm:w-auto">
+          {historicoLocal.length > 0 && (
+            <button
+              onClick={() => setShowHistory(true)}
+              className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 h-10 px-4 py-2 gap-2 shadow-sm"
+            >
+              <History className="w-4 h-4" />
+              Histórico
+            </button>
+          )}
+
           <button
             onClick={handleSaveOrcamento}
             disabled={isSaving || !selectedClienteId}
@@ -566,6 +580,51 @@ export function NovoOrcamento() {
         </div>
       </div>
 
+      {showHistory && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <History className="w-5 h-5 text-blue-600" />
+                Histórico do Orçamento
+              </h3>
+              <button onClick={() => setShowHistory(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+              {[...historicoLocal].reverse().map((h, i) => (
+                <div key={i} className="border border-gray-100 rounded-lg p-3 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                    <span className="font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">v{historicoLocal.length - i}</span>
+                    {new Date(h.data).toLocaleDateString('pt-BR')} às {new Date(h.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">Investimento:</span>
+                      <span className="font-semibold text-gray-900">R$ {Number(h.investimento_anterior || 0).toLocaleString('pt-BR')}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">Potência:</span>
+                      <span className="font-semibold text-gray-900">{h.potencia_anterior || 0} kWp</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="mt-5 pt-4 border-t border-gray-100">
+              <button
+                onClick={() => setShowHistory(false)}
+                className="w-full py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium transition-colors"
+              >
+                Fechar Histórico
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ---- PDF OCULTO (Multi-páginas) ---- */}
       <div style={{ display: 'none' }}>
