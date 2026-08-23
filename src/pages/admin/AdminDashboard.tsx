@@ -28,6 +28,32 @@ interface Notificacao {
   criado_em: string;
 }
 
+interface AcademySlide {
+  id: string;
+  titulo: string;
+  texto: string;
+  imagem_url: string;
+  link_url: string;
+  ativo: boolean;
+}
+
+interface AcademyModulo {
+  id: string;
+  titulo: string;
+  imagem_url: string;
+  badge: string;
+  link_url: string;
+  ordem: number;
+}
+
+interface AcademyNovidade {
+  id: string;
+  titulo: string;
+  imagem_url: string;
+  link_url: string;
+  ordem: number;
+}
+
 const ESTADOS_BR = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
   'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
@@ -56,10 +82,16 @@ export function AdminDashboard() {
   const [notificacoes, setNotificacoes] = useState<Notificacao[]>([]);
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
   
+  // Academy Data
+  const [academySlides, setAcademySlides] = useState<AcademySlide[]>([]);
+  const [academyModulos, setAcademyModulos] = useState<AcademyModulo[]>([]);
+  const [academyNovidades, setAcademyNovidades] = useState<AcademyNovidade[]>([]);
+  
   // Estados de Carregamento
   const [loadingBanners, setLoadingBanners] = useState(false);
   const [loadingNotificacoes, setLoadingNotificacoes] = useState(false);
   const [loadingProfissionais, setLoadingProfissionais] = useState(false);
+  const [loadingAcademy, setLoadingAcademy] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Formulário Notificações
@@ -83,6 +115,7 @@ export function AdminDashboard() {
     if (activeTab === 'banners') fetchBanners();
     if (activeTab === 'notificacoes') fetchNotificacoes();
     if (activeTab === 'profissionais') fetchProfissionais();
+    if (activeTab === 'aulas') fetchAcademyData();
   }, [activeTab]);
 
   const fetchBanners = async () => {
@@ -105,6 +138,20 @@ export function AdminDashboard() {
     const { data, error } = await supabase.from('profissionais').select('*').order('criado_em', { ascending: false });
     if (!error && data) setProfissionais(data as Profissional[]);
     setLoadingProfissionais(false);
+  };
+
+  const fetchAcademyData = async () => {
+    setLoadingAcademy(true);
+    const [slidesRes, modulosRes, novidadesRes] = await Promise.all([
+      supabase.from('academy_slides').select('*').order('criado_em', { ascending: false }),
+      supabase.from('academy_modulos').select('*').order('ordem', { ascending: true }),
+      supabase.from('academy_novidades').select('*').order('ordem', { ascending: true })
+    ]);
+    
+    if (!slidesRes.error && slidesRes.data) setAcademySlides(slidesRes.data);
+    if (!modulosRes.error && modulosRes.data) setAcademyModulos(modulosRes.data);
+    if (!novidadesRes.error && novidadesRes.data) setAcademyNovidades(novidadesRes.data);
+    setLoadingAcademy(false);
   };
 
   // Funções de Banners
@@ -180,6 +227,88 @@ export function AdminDashboard() {
     setSaving(true);
     const { error } = await supabase.from('notificacoes').delete().eq('id', id);
     if (!error) setNotificacoes(notificacoes.filter(n => n.id !== id));
+    setSaving(false);
+  };
+
+  // Funções de Academy
+  const handleAddAcademySlide = async () => {
+    setSaving(true);
+    const newItem = { titulo: 'Novo Banner', texto: '', imagem_url: '', link_url: '', ativo: true };
+    const { data, error } = await supabase.from('academy_slides').insert([newItem]).select();
+    if (!error && data) setAcademySlides([data[0] as AcademySlide, ...academySlides]);
+    else alert('Erro ao criar slide.');
+    setSaving(false);
+  };
+
+  const handleUpdateAcademySlide = async (id: string, updates: Partial<AcademySlide>) => {
+    setSaving(true);
+    const { error } = await supabase.from('academy_slides').update(updates).eq('id', id);
+    if (!error) {
+      setAcademySlides(academySlides.map(s => s.id === id ? { ...s, ...updates } : s));
+      alert('Slide atualizado com sucesso!');
+    } else alert('Erro ao atualizar slide.');
+    setSaving(false);
+  };
+
+  const handleDeleteAcademySlide = async (id: string) => {
+    if (!window.confirm('Excluir este slide?')) return;
+    setSaving(true);
+    const { error } = await supabase.from('academy_slides').delete().eq('id', id);
+    if (!error) setAcademySlides(academySlides.filter(s => s.id !== id));
+    setSaving(false);
+  };
+
+  const handleAddAcademyModulo = async () => {
+    setSaving(true);
+    const newItem = { titulo: 'Novo Módulo', badge: '', imagem_url: '', link_url: '', ordem: academyModulos.length };
+    const { data, error } = await supabase.from('academy_modulos').insert([newItem]).select();
+    if (!error && data) setAcademyModulos([...academyModulos, data[0] as AcademyModulo]);
+    else alert('Erro ao criar módulo.');
+    setSaving(false);
+  };
+
+  const handleUpdateAcademyModulo = async (id: string, updates: Partial<AcademyModulo>) => {
+    setSaving(true);
+    const { error } = await supabase.from('academy_modulos').update(updates).eq('id', id);
+    if (!error) {
+      setAcademyModulos(academyModulos.map(m => m.id === id ? { ...m, ...updates } : m));
+      alert('Módulo atualizado!');
+    } else alert('Erro ao atualizar módulo.');
+    setSaving(false);
+  };
+
+  const handleDeleteAcademyModulo = async (id: string) => {
+    if (!window.confirm('Excluir este módulo?')) return;
+    setSaving(true);
+    const { error } = await supabase.from('academy_modulos').delete().eq('id', id);
+    if (!error) setAcademyModulos(academyModulos.filter(m => m.id !== id));
+    setSaving(false);
+  };
+
+  const handleAddAcademyNovidade = async () => {
+    setSaving(true);
+    const newItem = { titulo: 'Nova Aula', imagem_url: '', link_url: '', ordem: academyNovidades.length };
+    const { data, error } = await supabase.from('academy_novidades').insert([newItem]).select();
+    if (!error && data) setAcademyNovidades([...academyNovidades, data[0] as AcademyNovidade]);
+    else alert('Erro ao criar novidade.');
+    setSaving(false);
+  };
+
+  const handleUpdateAcademyNovidade = async (id: string, updates: Partial<AcademyNovidade>) => {
+    setSaving(true);
+    const { error } = await supabase.from('academy_novidades').update(updates).eq('id', id);
+    if (!error) {
+      setAcademyNovidades(academyNovidades.map(n => n.id === id ? { ...n, ...updates } : n));
+      alert('Novidade atualizada!');
+    } else alert('Erro ao atualizar novidade.');
+    setSaving(false);
+  };
+
+  const handleDeleteAcademyNovidade = async (id: string) => {
+    if (!window.confirm('Excluir esta novidade?')) return;
+    setSaving(true);
+    const { error } = await supabase.from('academy_novidades').delete().eq('id', id);
+    if (!error) setAcademyNovidades(academyNovidades.filter(n => n.id !== id));
     setSaving(false);
   };
 
@@ -273,7 +402,7 @@ export function AdminDashboard() {
             {tab === 'notificacoes' && <Bell className="w-4 h-4" />}
             {tab === 'aulas' && <GraduationCap className="w-4 h-4" />}
             {tab === 'profissionais' && <Briefcase className="w-4 h-4" />}
-            {tab}
+            {tab === 'aulas' ? 'Academy' : tab}
           </button>
         ))}
       </div>
@@ -427,23 +556,140 @@ export function AdminDashboard() {
           </div>
         )}
 
-        {/* TAB: AULAS */}
+        {/* TAB: AULAS / ACADEMY */}
         {activeTab === 'aulas' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-card-foreground">Gestão de Aulas</h2>
-              <button className="bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-green hover:text-brand-dark transition-colors flex items-center gap-2">
-                <Plus className="w-4 h-4" /> Adicionar Aula
-              </button>
-            </div>
-            
-            <div className="border border-gray-200 rounded-xl p-8 text-center flex flex-col items-center bg-muted/20">
-              <GraduationCap className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
-              <h3 className="text-lg font-bold text-card-foreground mb-2">Nenhuma aula cadastrada</h3>
-              <p className="text-muted-foreground text-sm max-w-sm">
-                Aqui você poderá cadastrar os links (YouTube/Vimeo) para popular a aba "Aulas" para seus alunos.
-              </p>
-            </div>
+          <div className="space-y-8">
+            {loadingAcademy ? (
+              <div className="flex justify-center p-8"><Loader2 className="w-8 h-8 animate-spin text-brand-green" /></div>
+            ) : (
+              <>
+                {/* ACADEMY SLIDES */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-card-foreground">Banners Principais (Hero)</h3>
+                      <p className="text-sm text-muted-foreground">O slide de destaque gigante no topo da página Academy.</p>
+                    </div>
+                    <button onClick={handleAddAcademySlide} className="bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-green hover:text-brand-dark transition-colors flex items-center gap-2">
+                      <Plus className="w-4 h-4" /> Adicionar Slide
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {academySlides.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhum slide cadastrado.</p>}
+                    {academySlides.map(slide => (
+                      <div key={slide.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">URL da Imagem</label>
+                          <input type="text" value={slide.imagem_url || ''} onChange={e => handleUpdateAcademySlide(slide.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { imagem_url: slide.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-xs font-semibold text-muted-foreground">Título</label>
+                          <input type="text" value={slide.titulo || ''} onChange={e => handleUpdateAcademySlide(slide.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { titulo: slide.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="MasterFluxo" />
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">Subtítulo / Texto</label>
+                          <input type="text" value={slide.texto || ''} onChange={e => handleUpdateAcademySlide(slide.id, { texto: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { texto: slide.texto })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Texto de descrição..." />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-xs font-semibold text-muted-foreground">Link "Assistir"</label>
+                          <input type="text" value={slide.link_url || ''} onChange={e => handleUpdateAcademySlide(slide.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademySlide(slide.id, { link_url: slide.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-2 flex items-end gap-2 justify-end">
+                          <button onClick={() => handleUpdateAcademySlide(slide.id, { ativo: !slide.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${slide.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                            {slide.ativo ? 'Ativo' : 'Inativo'}
+                          </button>
+                          <button onClick={() => handleDeleteAcademySlide(slide.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="border-gray-200" />
+
+                {/* ACADEMY MÓDULOS */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-card-foreground">Módulos Principais</h3>
+                      <p className="text-sm text-muted-foreground">Os posters verticais principais logo abaixo do banner.</p>
+                    </div>
+                    <button onClick={handleAddAcademyModulo} className="bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-green hover:text-brand-dark transition-colors flex items-center gap-2">
+                      <Plus className="w-4 h-4" /> Adicionar Módulo
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {academyModulos.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhum módulo cadastrado.</p>}
+                    {academyModulos.map(modulo => (
+                      <div key={modulo.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">URL da Imagem (Poster 2:3)</label>
+                          <input type="text" value={modulo.imagem_url || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { imagem_url: modulo.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">Título</label>
+                          <input type="text" value={modulo.titulo || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { titulo: modulo.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Master Fluxo" />
+                        </div>
+                        <div className="md:col-span-2">
+                          <label className="text-xs font-semibold text-muted-foreground">Selo (Ex: Nova aula)</label>
+                          <input type="text" value={modulo.badge || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { badge: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { badge: modulo.badge })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Nova aula" />
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">Link do Módulo</label>
+                          <input type="text" value={modulo.link_url || ''} onChange={e => handleUpdateAcademyModulo(modulo.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademyModulo(modulo.id, { link_url: modulo.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-1 flex items-end justify-end">
+                          <button onClick={() => handleDeleteAcademyModulo(modulo.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <hr className="border-gray-200" />
+
+                {/* ACADEMY NOVIDADES */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-card-foreground">Sessão "Novidades"</h3>
+                      <p className="text-sm text-muted-foreground">Vídeos horizontais recentes da plataforma.</p>
+                    </div>
+                    <button onClick={handleAddAcademyNovidade} className="bg-brand-dark text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-brand-green hover:text-brand-dark transition-colors flex items-center gap-2">
+                      <Plus className="w-4 h-4" /> Adicionar Novidade
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {academyNovidades.length === 0 && <p className="text-sm text-muted-foreground italic">Nenhuma novidade cadastrada.</p>}
+                    {academyNovidades.map(novidade => (
+                      <div key={novidade.id} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-4 border border-gray-200 rounded-xl bg-muted/20 items-center">
+                        <div className="md:col-span-4">
+                          <label className="text-xs font-semibold text-muted-foreground">URL da Imagem (Thumb 16:9)</label>
+                          <input type="text" value={novidade.imagem_url || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { imagem_url: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { imagem_url: novidade.imagem_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-4">
+                          <label className="text-xs font-semibold text-muted-foreground">Título</label>
+                          <input type="text" value={novidade.titulo || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { titulo: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { titulo: novidade.titulo })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Encontro Zoom" />
+                        </div>
+                        <div className="md:col-span-3">
+                          <label className="text-xs font-semibold text-muted-foreground">Link</label>
+                          <input type="text" value={novidade.link_url || ''} onChange={e => handleUpdateAcademyNovidade(novidade.id, { link_url: e.target.value })} onBlur={() => handleUpdateAcademyNovidade(novidade.id, { link_url: novidade.link_url })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-1 flex items-end justify-end">
+                          <button onClick={() => handleDeleteAcademyNovidade(novidade.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
 

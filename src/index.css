@@ -92,3 +92,19 @@
     -webkit-font-smoothing: antialiased;
   }
 }
+
+/* Custom Minimalist Horizontal Scrollbar */
+.hide-scrollbar::-webkit-scrollbar {
+  height: 6px;
+}
+.hide-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+}
+.hide-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
