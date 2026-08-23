@@ -164,18 +164,12 @@ export function Dashboard() {
       </div>
 
       {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
         <MetricCard 
           title="Novos Projetos"
           value={totalProjetos.toString()}
           icon={PlusSquare}
           onClick={() => navigate('/projetos/novo')}
-        />
-        <MetricCard 
-          title="Kits Conferidos"
-          value="0"
-          icon={CheckSquare}
-          onClick={() => navigate('/conferir-kit')}
         />
         <MetricCard 
           title="Problemas Abertos"
@@ -187,7 +181,7 @@ export function Dashboard() {
           title="Propostas Geradas"
           value={totalOrcamentos.toString()}
           icon={Calculator}
-          trend={{ value: 4, label: "vs last month", isPositive: true }}
+          trend={{ value: 4, label: "vs último mês", isPositive: true }}
           onClick={() => navigate('/orcamentos')}
         />
       </div>
