@@ -111,7 +111,7 @@ export function Academy() {
         </div>
       )}
 
-      <div className={`relative z-20 space-y-12 pb-12 overflow-x-hidden px-4 md:px-0 ${mainSlide ? 'mt-[50px]' : 'mt-12 pt-12'}`}>
+      <div className={`relative z-20 space-y-12 pb-12 overflow-x-hidden px-4 md:px-0 ${mainSlide ? 'mt-[25px]' : 'mt-12 pt-12'}`}>
         
         {/* Row: Módulos (Posters verticais) */}
         {modulos.length > 0 && (
