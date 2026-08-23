@@ -114,6 +114,16 @@ export function Dashboard() {
             <div className="absolute bottom-8 left-8 right-8 text-white">
               <h2 className="text-2xl font-bold mb-1">{carouselImages[currentSlide]?.titulo || ''}</h2>
               <p className="text-sm text-gray-200 line-clamp-2 max-w-2xl">{carouselImages[currentSlide]?.texto || ''}</p>
+              {carouselImages[currentSlide]?.botao_texto && (
+                <a 
+                  href={carouselImages[currentSlide]?.botao_link || '#'} 
+                  target={carouselImages[currentSlide]?.botao_link?.startsWith('http') ? '_blank' : '_self'}
+                  rel="noopener noreferrer"
+                  className="inline-block mt-4 px-6 py-2 bg-brand-green text-brand-dark font-bold rounded-xl hover:bg-brand-green/90 transition-colors shadow-lg"
+                >
+                  {carouselImages[currentSlide].botao_texto}
+                </a>
+              )}
             </div>
             
             {/* Carousel Indicators */}

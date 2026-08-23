@@ -18,6 +18,8 @@ interface Banner {
   titulo: string;
   texto: string;
   ativo: boolean;
+  botao_texto?: string;
+  botao_link?: string;
 }
 
 interface Notificacao {
@@ -175,7 +177,9 @@ export function AdminDashboard() {
        imagem_url: banner.imagem_url,
        titulo: banner.titulo,
        texto: banner.texto,
-       ativo: banner.ativo
+       ativo: banner.ativo,
+       botao_texto: banner.botao_texto,
+       botao_link: banner.botao_link
     }).eq('id', id);
     if (error) {
       console.error(error);
@@ -477,7 +481,15 @@ export function AdminDashboard() {
                           <label className="text-xs font-semibold text-muted-foreground">Texto</label>
                           <input type="text" value={banner.texto || ''} onChange={e => handleLocalBannerChange(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Descrição do slide" />
                         </div>
-                        <div className="md:col-span-3 flex items-end gap-2 justify-end">
+                        <div className="md:col-span-6">
+                          <label className="text-xs font-semibold text-muted-foreground">Texto do Botão (Opcional)</label>
+                          <input type="text" value={banner.botao_texto || ''} onChange={e => handleLocalBannerChange(banner.id, { botao_texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Saiba Mais" />
+                        </div>
+                        <div className="md:col-span-6">
+                          <label className="text-xs font-semibold text-muted-foreground">Link do Botão (Opcional)</label>
+                          <input type="text" value={banner.botao_link || ''} onChange={e => handleLocalBannerChange(banner.id, { botao_link: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-12 flex items-end gap-2 justify-end">
                           <button onClick={() => handleUpdateBanner(banner.id, { ativo: !banner.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${banner.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
                             {banner.ativo ? 'Ativo' : 'Inativo'}
                           </button>
@@ -522,7 +534,15 @@ export function AdminDashboard() {
                           <label className="text-xs font-semibold text-muted-foreground">Texto</label>
                           <input type="text" value={banner.texto || ''} onChange={e => handleLocalBannerChange(banner.id, { texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Descrição do banner" />
                         </div>
-                        <div className="md:col-span-3 flex items-end gap-2 justify-end">
+                        <div className="md:col-span-6">
+                          <label className="text-xs font-semibold text-muted-foreground">Texto do Botão (Opcional)</label>
+                          <input type="text" value={banner.botao_texto || ''} onChange={e => handleLocalBannerChange(banner.id, { botao_texto: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="Ex: Saiba Mais" />
+                        </div>
+                        <div className="md:col-span-6">
+                          <label className="text-xs font-semibold text-muted-foreground">Link do Botão (Opcional)</label>
+                          <input type="text" value={banner.botao_link || ''} onChange={e => handleLocalBannerChange(banner.id, { botao_link: e.target.value })} className="w-full px-3 py-2 text-sm bg-background border border-gray-200 rounded-lg text-card-foreground" placeholder="https://..." />
+                        </div>
+                        <div className="md:col-span-12 flex items-end gap-2 justify-end">
                           <button onClick={() => handleUpdateBanner(banner.id, { ativo: !banner.ativo })} className={`px-3 py-2 rounded-lg text-xs font-bold ${banner.ativo ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
                             {banner.ativo ? 'Ativo' : 'Inativo'}
                           </button>
