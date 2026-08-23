@@ -17,7 +17,7 @@ export function SejaParceiro() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 py-6">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-center">
-          <img src="/logomarca-dark.png" alt="O Método Sol" className="h-10 opacity-90" />
+          <img src="/logo-dark.png" alt="O Método Sol" className="h-10 opacity-90" />
         </div>
       </header>
 
