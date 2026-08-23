@@ -116,6 +116,7 @@ export function AdminDashboard() {
     cpf: '',
     rg: '',
     cnh: '',
+    crea: '',
     foto_documento_url: '',
     foto_segurando_documento_url: ''
   });
@@ -374,6 +375,7 @@ export function AdminDashboard() {
         cpf: prof.cpf || '',
         rg: prof.rg || '',
         cnh: prof.cnh || '',
+        crea: prof.crea || '',
         foto_documento_url: prof.foto_documento_url || '',
         foto_segurando_documento_url: prof.foto_segurando_documento_url || ''
       });
@@ -381,7 +383,7 @@ export function AdminDashboard() {
       setEditingProfId(null);
       setProfForm({ 
         nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '', instagram_url: '', site_url: '',
-        nome_completo: '', endereco_residencia: '', cpf: '', rg: '', cnh: '', foto_documento_url: '', foto_segurando_documento_url: ''
+        nome_completo: '', endereco_residencia: '', cpf: '', rg: '', cnh: '', crea: '', foto_documento_url: '', foto_segurando_documento_url: ''
       });
     }
     setShowProfModal(true);
@@ -954,6 +956,12 @@ export function AdminDashboard() {
                         <input type="text" value={profForm.cnh} onChange={(e) => setProfForm({...profForm, cnh: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="Nº da CNH" />
                       </div>
                     </div>
+                    {(profForm.especialidade === 'Engenheiro Eletricista' || profForm.especialidade === 'Engenheiro Civil') && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">CREA *</label>
+                        <input required type="text" value={profForm.crea} onChange={(e) => setProfForm({...profForm, crea: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="Número do CREA" />
+                      </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">URL Foto do Documento (Frente/Verso)</label>

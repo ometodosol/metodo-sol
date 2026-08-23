@@ -39,6 +39,7 @@ export function CadastroProfissional() {
     cpf: '',
     rg: '',
     cnh: '',
+    crea: '',
     foto_url: '',
     instagram_url: '',
     site_url: ''
@@ -175,7 +176,7 @@ export function CadastroProfissional() {
                   <input required type="text" value={form.telefone} onChange={(e) => setForm({...form, telefone: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="(11) 99999-9999" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Link de Foto de Perfil (Opcional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Link de Foto de Perfil</label>
                   <input type="url" value={form.foto_url} onChange={(e) => setForm({...form, foto_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
                 <div>
@@ -190,11 +191,11 @@ export function CadastroProfissional() {
                   <input required type="text" value={form.cidade} onChange={(e) => setForm({...form, cidade: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Instagram (Opcional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
                   <input type="url" value={form.instagram_url} onChange={(e) => setForm({...form, instagram_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://instagram.com/..." />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Site (Opcional)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Site</label>
                   <input type="url" value={form.site_url} onChange={(e) => setForm({...form, site_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
               </div>
@@ -228,9 +229,15 @@ export function CadastroProfissional() {
                   <input required type="text" value={form.rg} onChange={(e) => setForm({...form, rg: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">CNH (Opcional se tiver RG)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">CNH</label>
                   <input type="text" value={form.cnh} onChange={(e) => setForm({...form, cnh: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
                 </div>
+                {(form.especialidade === 'Engenheiro Eletricista' || form.especialidade === 'Engenheiro Civil') && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">CREA *</label>
+                    <input required type="text" value={form.crea} onChange={(e) => setForm({...form, crea: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Número do CREA" />
+                  </div>
+                )}
               </div>
             </div>
 
