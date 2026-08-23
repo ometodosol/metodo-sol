@@ -49,6 +49,7 @@ const concessionariasData = [
 export function NovoOrcamento() {
   const location = useLocation();
   // Clientes
+  const [orcamentoId, setOrcamentoId] = useState<string | null>(null);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [selectedClienteId, setSelectedClienteId] = useState<string>('');
   const [clientName, setClientName] = useState('');
@@ -140,6 +141,7 @@ export function NovoOrcamento() {
   useEffect(() => {
     if (location.state?.orcamento && clientes.length > 0) {
       const { orcamento } = location.state;
+      setOrcamentoId(orcamento.id);
       const d = orcamento.dados;
       if (!d) return;
 
@@ -202,7 +204,34 @@ export function NovoOrcamento() {
       investimento, economiaMensal: economiaMensalReal, payback: paybackMeses, notes, clientName
     };
 
-    const { error } = await supabase.from('orcamentos').insert([{ cliente_id: selectedClienteId, dados: dadosJson }]);
+    let error;
+
+    if (orcamentoId) {
+      // Buscar dados antigos para salvar no histórico
+      const { data: oldData } = await supabase.from('orcamentos').select('dados').eq('id', orcamentoId).single();
+      
+      const historico = oldData?.dados?.historico || [];
+      historico.push({
+        data: new Date().toISOString(),
+        investimento_anterior: oldData?.dados?.investimento || 0,
+        potencia_anterior: oldData?.dados?.potencia || 0
+      });
+      
+      const novosDados = { ...dadosJson, historico };
+      
+      const { error: updateError } = await supabase
+        .from('orcamentos')
+        .update({ dados: novosDados })
+        .eq('id', orcamentoId);
+        
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('orcamentos')
+        .insert([{ cliente_id: selectedClienteId, dados: dadosJson }]);
+      error = insertError;
+    }
+
     setIsSaving(false);
     
     if (error) alert('Erro ao salvar: ' + error.message);
@@ -274,42 +303,61 @@ export function NovoOrcamento() {
           <div className="space-y-2 relative">
             <label className="text-sm font-medium text-gray-700">Nome do Cliente</label>
             <div className="relative">
-              <input
-                type="text"
-                placeholder="Buscar cliente..."
-                value={searchTerm}
-                onChange={e => {
-                  setSearchTerm(e.target.value);
-                  setIsDropdownOpen(true);
-                  if (selectedClienteId) setSelectedClienteId('');
-                }}
-                onFocus={() => setIsDropdownOpen(true)}
-                onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
-                className="flex h-10 w-full rounded-md border border-gray-200 dark:border-white/10 bg-background px-3 py-2 text-sm focus:ring-1 focus:ring-brand-dark"
-              />
-            </div>
-            {isDropdownOpen && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
-                {filteredClientes.length === 0 ? (
-                  <div className="px-4 py-2 text-sm text-gray-500">Nenhum cliente</div>
-                ) : (
-                  filteredClientes.map(c => (
-                    <div
-                      key={c.id}
-                      className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${selectedClienteId === c.id ? 'bg-gray-100 font-medium' : ''}`}
-                      onClick={() => {
-                        setSelectedClienteId(c.id);
-                        setSearchTerm(c.nome);
-                        setClientName(c.nome);
-                        setIsDropdownOpen(false);
-                      }}
-                    >
-                      {c.nome}
+              {selectedClienteId ? (
+                <div className="flex items-center justify-between h-10 w-full rounded-md border border-green-200 bg-green-50/50 px-3 py-2 text-sm">
+                  <div className="flex items-center gap-2 text-green-800 font-medium">
+                    <User className="w-4 h-4 text-green-600" />
+                    {clientName}
+                  </div>
+                  <button 
+                    onClick={() => {
+                      setSelectedClienteId('');
+                      setSearchTerm('');
+                    }}
+                    className="text-xs text-green-600 hover:text-green-800 font-semibold underline px-2"
+                  >
+                    Trocar
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Buscar cliente..."
+                    value={searchTerm}
+                    onChange={e => {
+                      setSearchTerm(e.target.value);
+                      setIsDropdownOpen(true);
+                    }}
+                    onFocus={() => setIsDropdownOpen(true)}
+                    onBlur={() => setTimeout(() => setIsDropdownOpen(false), 200)}
+                    className="flex h-10 w-full rounded-md border border-gray-200 dark:border-white/10 bg-background px-3 py-2 text-sm focus:ring-1 focus:ring-brand-dark"
+                  />
+                  {isDropdownOpen && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+                      {filteredClientes.length === 0 ? (
+                        <div className="px-4 py-2 text-sm text-gray-500">Nenhum cliente encontrado</div>
+                      ) : (
+                        filteredClientes.map(c => (
+                          <div
+                            key={c.id}
+                            className="px-4 py-2 text-sm cursor-pointer hover:bg-gray-100"
+                            onClick={() => {
+                              setSelectedClienteId(c.id);
+                              setSearchTerm(c.nome);
+                              setClientName(c.nome);
+                              setIsDropdownOpen(false);
+                            }}
+                          >
+                            {c.nome}
+                          </div>
+                        ))
+                      )}
                     </div>
-                  ))
-                )}
-              </div>
-            )}
+                  )}
+                </>
+              )}
+            </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Modalidade Tarifária</label>
