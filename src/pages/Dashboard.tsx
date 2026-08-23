@@ -3,6 +3,7 @@ import { MetricCard } from '../components/ui/MetricCard';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { PlusSquare, CheckSquare, Wrench, Calculator, AlertTriangle, Sun, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 import { supabase } from '../lib/supabase';
 
@@ -21,23 +22,60 @@ const defaultCarouselImages = [
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const userName = user?.user_metadata?.nome || user?.email?.split('@')[0] || 'Instalador';
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [carouselImages, setCarouselImages] = useState<any[]>(defaultCarouselImages);
+  
+  const [totalProjetos, setTotalProjetos] = useState(0);
+  const [totalOrcamentos, setTotalOrcamentos] = useState(0);
+  const [totalKwp, setTotalKwp] = useState(0);
+  const [projetosInstalacao, setProjetosInstalacao] = useState<any[]>([]);
 
   useEffect(() => {
-    async function fetchBanners() {
-      const { data, error } = await supabase
+    async function fetchDashboardData() {
+      // Fetch Banners
+      const { data: bannersData } = await supabase
         .from('banners')
         .select('*')
         .eq('local', 'dashboard')
         .eq('ativo', true)
         .order('id', { ascending: false });
       
-      if (!error && data && data.length > 0) {
-        setCarouselImages(data);
+      if (bannersData && bannersData.length > 0) {
+        setCarouselImages(bannersData);
+      }
+
+      // Fetch Projetos
+      const { data: projetosData } = await supabase
+        .from('projetos')
+        .select('*, clientes(nome)')
+        .order('criado_em', { ascending: false });
+        
+      if (projetosData) {
+        setTotalProjetos(projetosData.length);
+        
+        // Sum total kWp
+        const kwp = projetosData.reduce((acc, curr) => acc + (Number(curr.potencia_kwp) || 0), 0);
+        setTotalKwp(kwp);
+        
+        // Filter installation status
+        const instalacao = projetosData.filter(p => p.status === 'instalacao').slice(0, 5);
+        setProjetosInstalacao(instalacao);
+      }
+
+      // Fetch Orçamentos
+      const { count: orcamentosCount } = await supabase
+        .from('orcamentos')
+        .select('*', { count: 'exact', head: true });
+        
+      if (orcamentosCount !== null) {
+        setTotalOrcamentos(orcamentosCount);
       }
     }
-    fetchBanners();
+    
+    fetchDashboardData();
   }, []);
 
   useEffect(() => {
@@ -86,8 +124,8 @@ export function Dashboard() {
         {/* Welcome Card */}
         <div className="lg:col-span-2 bg-card border-0 rounded-2xl p-6 md:p-8 shadow-md flex flex-col justify-between relative overflow-hidden">
           <div className="z-10 relative">
-            <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex items-center gap-2">
-              Olá, Instalador <Sun className="w-6 h-6 text-primary" />
+            <h1 className="text-2xl md:text-3xl font-bold text-card-foreground flex items-center gap-2 capitalize">
+              Olá, {userName} <Sun className="w-6 h-6 text-primary" />
             </h1>
             <p className="text-muted-foreground mt-2 max-w-md">
               Fique por dentro das análises de hoje. Dê uma olhada rápida nas principais estatísticas dos seus projetos.
@@ -111,9 +149,9 @@ export function Dashboard() {
             <h3 className="text-sm font-medium text-muted-foreground">Key Insights</h3>
           </div>
           <div className="mb-6">
-            <h2 className="text-3xl font-bold text-card-foreground">R$ 20.320</h2>
+            <h2 className="text-3xl font-bold text-card-foreground">{totalKwp.toFixed(2)} kWp</h2>
             <p className="text-xs text-primary font-medium flex items-center gap-1 mt-1">
-              +40% <span className="text-muted-foreground font-normal">vs último mês</span>
+              Potência Total <span className="text-muted-foreground font-normal">projetada</span>
             </p>
           </div>
           {/* Mockup de Gráfico de barras simples */}
@@ -129,27 +167,25 @@ export function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard 
           title="Novos Projetos"
-          value="12"
+          value={totalProjetos.toString()}
           icon={PlusSquare}
-          trend={{ value: 18, label: "vs last month", isPositive: true }}
           onClick={() => navigate('/projetos/novo')}
         />
         <MetricCard 
           title="Kits Conferidos"
-          value="4"
+          value="0"
           icon={CheckSquare}
           onClick={() => navigate('/conferir-kit')}
         />
         <MetricCard 
           title="Problemas Abertos"
-          value="2"
+          value="0"
           icon={AlertTriangle}
-          trend={{ value: 10, label: "vs last month", isPositive: false }}
           onClick={() => navigate('/diagnostico')}
         />
         <MetricCard 
           title="Propostas Geradas"
-          value="8"
+          value={totalOrcamentos.toString()}
           icon={Calculator}
           trend={{ value: 4, label: "vs last month", isPositive: true }}
           onClick={() => navigate('/orcamentos')}
@@ -165,12 +201,12 @@ export function Dashboard() {
           <div className="flex-1">
             <div className="pb-4 border-b border-gray-100 dark:border-white/5 flex items-start gap-4">
               <div className="mt-0.5">
-                <AlertTriangle className="w-5 h-5 text-destructive" />
+                <CheckSquare className="w-5 h-5 text-green-500" />
               </div>
               <div>
-                <h4 className="font-semibold text-card-foreground text-sm">Incompatibilidade CC/CA</h4>
-                <p className="text-xs text-muted-foreground mt-1 mb-2">O projeto "João Silva" possui um oversizing de 145%, acima do suportado pelo inversor.</p>
-                <StatusBadge status="warning" label="Atenção Necessária" />
+                <h4 className="font-semibold text-card-foreground text-sm">Tudo certo por aqui!</h4>
+                <p className="text-xs text-muted-foreground mt-1 mb-2">Seus projetos não possuem alertas técnicos pendentes no momento.</p>
+                <StatusBadge status="success" label="Sistema Saudável" />
               </div>
             </div>
           </div>
@@ -185,15 +221,19 @@ export function Dashboard() {
             <h2 className="text-base font-semibold text-card-foreground">Instalações em Andamento</h2>
           </div>
           <div className="space-y-4">
-            {[1, 2].map((i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
-                <div>
-                  <h4 className="font-semibold text-card-foreground text-sm">Residencial {i === 1 ? 'Maria Souza' : 'Carlos Almeida'}</h4>
-                  <p className="text-xs text-muted-foreground">Atualizado há 2 dias</p>
+            {projetosInstalacao.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">Nenhuma instalação em andamento no momento.</p>
+            ) : (
+              projetosInstalacao.map((projeto) => (
+                <div key={projeto.id} onClick={() => navigate(`/projetos/${projeto.id}`)} className="flex items-center justify-between p-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
+                  <div>
+                    <h4 className="font-semibold text-card-foreground text-sm">{projeto.titulo || `Projeto ${projeto.clientes?.nome || ''}`}</h4>
+                    <p className="text-xs text-muted-foreground">Potência: {projeto.potencia_kwp || 0} kWp</p>
+                  </div>
+                  <StatusBadge status="info" label="Em andamento" />
                 </div>
-                <StatusBadge status="info" label="Em andamento" />
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </section>
       </div>
