@@ -142,23 +142,7 @@ export function NovoOrcamento() {
     fetchClientes();
   }, []);
 
-  useEffect(() => {
-    if (location.state?.orcamento && clientes.length > 0) {
-      const { orcamento } = location.state;
-      setOrcamentoId(orcamento.id);
-      const d = orcamento.dados;
-      if (!d) return;
 
-      setSelectedClienteId(orcamento.cliente_id);
-      const clienteEncontrado = clientes.find(c => c.id === orcamento.cliente_id);
-      if (clienteEncontrado) {
-        setClientName(clienteEncontrado.nome);
-        setSearchTerm(clienteEncontrado.nome);
-      } else if (d.clientName) {
-        setClientName(d.clientName);
-        setSearchTerm(d.clientName);
-      }
-      
   const loadOrcamentoData = (d: any) => {
     if (!d) return;
     if (d.date) setDate(d.date);
