@@ -42,7 +42,8 @@ export function CadastroProfissional() {
     crea: '',
     foto_url: '',
     instagram_url: '',
-    site_url: ''
+    site_url: '',
+    apresentacao: ''
   });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'doc' | 'selfie') => {
@@ -197,6 +198,10 @@ export function CadastroProfissional() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Site</label>
                   <input type="url" value={form.site_url} onChange={(e) => setForm({...form, site_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Apresentação / Biografia (Aparecerá no seu perfil)</label>
+                  <textarea value={form.apresentacao} onChange={(e) => setForm({...form, apresentacao: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark min-h-[100px]" placeholder="Conte um pouco sobre você, sua experiência e como você trabalha..."></textarea>
                 </div>
               </div>
             </div>
