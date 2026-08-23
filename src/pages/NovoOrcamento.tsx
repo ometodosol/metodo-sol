@@ -100,6 +100,8 @@ export function NovoOrcamento() {
   const [isSaving, setIsSaving] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [historicoLocal, setHistoricoLocal] = useState<any[]>([]);
+  const [viewHistoryMode, setViewHistoryMode] = useState(false);
+  const [backupData, setBackupData] = useState<any>(null);
   const [companyLogo, setCompanyLogo] = useState<string | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
 
@@ -157,29 +159,51 @@ export function NovoOrcamento() {
         setSearchTerm(d.clientName);
       }
       
-      if (d.date) setDate(d.date);
-      if (d.grupo) setGrupo(d.grupo);
-      if (d.ucName) setUcName(d.ucName);
-      if (d.ucTipo) setUcTipo(d.ucTipo);
-      if (d.concessionaria) setConcessionaria(d.concessionaria);
-      if (d.valorKwh) setValorKwh(d.valorKwh);
-      if (d.taxaIlumPub) setTaxaIlumPub(d.taxaIlumPub);
-      if (d.tipoRede) setTipoRede(d.tipoRede);
-      if (d.consumoMode) setConsumoMode(d.consumoMode);
-      if (d.consumoMensal) setConsumoMensal(d.consumoMensal);
-      if (d.consumosMeses) setConsumosMeses(d.consumosMeses);
-      if (d.geracaoPercentual) setGeracaoPercentual(d.geracaoPercentual);
-      if (d.perdas) setPerdas(d.perdas);
-      if (d.potencia) setPotencia(d.potencia);
-      if (d.fatorSimultaneidade) setFatorSimultaneidade(d.fatorSimultaneidade);
-      if (d.valorFioB) setValorFioB(d.valorFioB);
-      if (d.percentualFioB) setPercentualFioB(d.percentualFioB);
-      if (d.modulosQtd) setModulosQtd(d.modulosQtd);
-      if (d.modulosMarca) setModulosMarca(d.modulosMarca);
-      if (d.inversorQtd) setInversorQtd(d.inversorQtd);
-      if (d.inversorMarca) setInversorMarca(d.inversorMarca);
-      if (d.investimento) setInvestimento(d.investimento);
-      if (d.notes) setNotes(d.notes);
+  const loadOrcamentoData = (d: any) => {
+    if (!d) return;
+    if (d.date) setDate(d.date);
+    if (d.grupo) setGrupo(d.grupo);
+    if (d.ucName) setUcName(d.ucName);
+    if (d.ucTipo) setUcTipo(d.ucTipo);
+    if (d.concessionaria) setConcessionaria(d.concessionaria);
+    if (d.valorKwh) setValorKwh(d.valorKwh);
+    if (d.taxaIlumPub) setTaxaIlumPub(d.taxaIlumPub);
+    if (d.tipoRede) setTipoRede(d.tipoRede);
+    if (d.consumoMode) setConsumoMode(d.consumoMode);
+    if (d.consumoMensal) setConsumoMensal(d.consumoMensal);
+    if (d.consumosMeses) setConsumosMeses(d.consumosMeses);
+    if (d.geracaoPercentual) setGeracaoPercentual(d.geracaoPercentual);
+    if (d.perdas) setPerdas(d.perdas);
+    if (d.potencia) setPotencia(d.potencia);
+    if (d.fatorSimultaneidade) setFatorSimultaneidade(d.fatorSimultaneidade);
+    if (d.valorFioB) setValorFioB(d.valorFioB);
+    if (d.percentualFioB) setPercentualFioB(d.percentualFioB);
+    if (d.modulosQtd) setModulosQtd(d.modulosQtd);
+    if (d.modulosMarca) setModulosMarca(d.modulosMarca);
+    if (d.inversorQtd) setInversorQtd(d.inversorQtd);
+    if (d.inversorMarca) setInversorMarca(d.inversorMarca);
+    if (d.investimento) setInvestimento(d.investimento);
+    if (d.notes) setNotes(d.notes);
+  };
+
+  useEffect(() => {
+    if (location.state?.orcamento && clientes.length > 0) {
+      const { orcamento } = location.state;
+      setOrcamentoId(orcamento.id);
+      const d = orcamento.dados;
+      if (!d) return;
+
+      setSelectedClienteId(orcamento.cliente_id);
+      const clienteEncontrado = clientes.find(c => c.id === orcamento.cliente_id);
+      if (clienteEncontrado) {
+        setClientName(clienteEncontrado.nome);
+        setSearchTerm(clienteEncontrado.nome);
+      } else if (d.clientName) {
+        setClientName(d.clientName);
+        setSearchTerm(d.clientName);
+      }
+      
+      loadOrcamentoData(d);
       if (d.historico) setHistoricoLocal(d.historico);
     }
   }, [location.state, clientes]);
@@ -214,10 +238,14 @@ export function NovoOrcamento() {
       const { data: oldData } = await supabase.from('orcamentos').select('dados').eq('id', orcamentoId).single();
       
       const historico = oldData?.dados?.historico || [];
+      const oldDadosCopy = { ...oldData?.dados };
+      delete oldDadosCopy.historico;
+
       historico.push({
         data: new Date().toISOString(),
         investimento_anterior: oldData?.dados?.investimento || 0,
-        potencia_anterior: oldData?.dados?.potencia || 0
+        potencia_anterior: oldData?.dados?.potencia || 0,
+        dados_completos: oldDadosCopy
       });
       
       setHistoricoLocal(historico);
@@ -305,6 +333,32 @@ export function NovoOrcamento() {
         <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg flex items-center gap-3 text-sm">
           <Settings className="w-5 h-5 flex-shrink-0" />
           <p>Configure a sua <strong>Logo</strong> no menu <strong>Minha Conta</strong> para sair no PDF.</p>
+        </div>
+      )}
+
+      {viewHistoryMode && (
+        <div className="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded-xl flex items-center justify-between shadow-sm flex-wrap gap-4">
+          <div className="flex items-center gap-3">
+            <History className="w-5 h-5" />
+            <p className="font-medium text-sm">Você está visualizando uma versão antiga do histórico. Edite e salve para torná-la a atual.</p>
+          </div>
+          <div className="flex gap-2">
+            <button 
+              onClick={() => {
+                loadOrcamentoData(backupData);
+                setViewHistoryMode(false);
+              }}
+              className="px-3 py-1.5 bg-yellow-200 hover:bg-yellow-300 text-yellow-900 rounded-lg text-xs font-bold transition-colors"
+            >
+              Desfazer e Voltar
+            </button>
+            <button 
+              onClick={() => setViewHistoryMode(false)}
+              className="px-3 py-1.5 bg-brand-dark text-white hover:bg-brand-dark/90 rounded-lg text-xs font-bold transition-colors"
+            >
+              Manter na tela
+            </button>
+          </div>
         </div>
       )}
 
@@ -595,10 +649,35 @@ export function NovoOrcamento() {
             
             <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
               {[...historicoLocal].reverse().map((h, i) => (
-                <div key={i} className="border border-gray-100 rounded-lg p-3 bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
-                    <span className="font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">v{historicoLocal.length - i}</span>
-                    {new Date(h.data).toLocaleDateString('pt-BR')} às {new Date(h.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                <div 
+                  key={i} 
+                  className={`border border-gray-100 rounded-lg p-3 bg-gray-50/50 hover:bg-gray-100 transition-colors ${h.dados_completos ? 'cursor-pointer' : 'opacity-70'}`}
+                  onClick={() => {
+                    if (h.dados_completos) {
+                      const currentDados = {
+                        grupo, date, ucName, ucTipo, concessionaria, valorKwh, taxaIlumPub, tipoRede,
+                        consumoMode, consumoMensal, consumosMeses, mediaConsumo, geracaoAlvo,
+                        geracaoPercentual, perdas, potencia, fatorSimultaneidade, valorFioB, percentualFioB,
+                        modulosQtd, modulosMarca, inversorQtd, inversorMarca,
+                        investimento, notes
+                      };
+                      if (!viewHistoryMode) {
+                        setBackupData(currentDados);
+                      }
+                      setViewHistoryMode(true);
+                      loadOrcamentoData(h.dados_completos);
+                      setShowHistory(false);
+                    }
+                  }}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span className="font-medium bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">v{historicoLocal.length - i}</span>
+                      {new Date(h.data).toLocaleDateString('pt-BR')} às {new Date(h.data).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    {h.dados_completos && (
+                      <span className="text-[10px] font-bold text-brand-dark bg-brand-light/20 px-2 py-1 rounded">Ver Detalhes</span>
+                    )}
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between items-center text-sm">
