@@ -39,6 +39,7 @@ export interface Profissional {
   foto_url?: string;
   instagram_url?: string;
   site_url?: string;
+  apresentacao?: string;
   estado: string;
   cidade: string;
   criado_em: string;

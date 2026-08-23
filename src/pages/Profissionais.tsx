@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Profissional } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { Briefcase, Search, MapPin, Phone, Plus, X, Camera, Globe, ShieldCheck } from 'lucide-react';
+import { Briefcase, Search, MapPin, Phone, Camera, Globe, ShieldCheck, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ITENS_POR_PAGINA = 20;
 
 const ESTADOS_BR = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -33,6 +35,14 @@ export function Profissionais() {
   const [busca, setBusca] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
   const [filtroEspecialidade, setFiltroEspecialidade] = useState('');
+  
+  // Paginação
+  const [paginaAtual, setPaginaAtual] = useState(1);
+
+  // Voltar para a página 1 sempre que os filtros mudarem
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [busca, filtroEstado, filtroEspecialidade]);
 
   useEffect(() => {
     // Verifica se já aceitou os termos no localStorage
@@ -52,7 +62,7 @@ export function Profissionais() {
     setLoading(true);
     const { data } = await supabase
       .from('profissionais')
-      .select('id, usuario_id, nome, especialidade, telefone, foto_url, instagram_url, site_url, estado, cidade, criado_em')
+      .select('id, usuario_id, nome, especialidade, telefone, foto_url, instagram_url, site_url, estado, cidade, criado_em, apresentacao')
       .eq('status_aprovacao', 'aprovado')
       .order('criado_em', { ascending: false });
 
@@ -79,6 +89,10 @@ export function Profissionais() {
     const matchEspecialidade = filtroEspecialidade === '' || p.especialidade === filtroEspecialidade;
     return matchBusca && matchEstado && matchEspecialidade;
   });
+
+  const totalPaginas = Math.ceil(profissionaisFiltrados.length / ITENS_POR_PAGINA);
+  const startIndex = (paginaAtual - 1) * ITENS_POR_PAGINA;
+  const profissionaisPaginados = profissionaisFiltrados.slice(startIndex, startIndex + ITENS_POR_PAGINA);
 
   return (
     <div className="p-6 md:p-10 space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-24">
@@ -182,58 +196,69 @@ export function Profissionais() {
         </div>
       </div>
 
-      {/* Grid de Profissionais */}
+      {/* Lista de Profissionais */}
       {loading ? (
         <div className="flex justify-center p-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green"></div>
         </div>
       ) : profissionaisFiltrados.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {profissionaisFiltrados.map((prof) => (
-            <div key={prof.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full">
-              <div className="h-40 w-full bg-gray-100 relative overflow-hidden flex-shrink-0">
-                {prof.foto_url ? (
-                  <img src={prof.foto_url} alt={prof.nome} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <Briefcase className="w-12 h-12" />
-                  </div>
-                )}
-                <div className="absolute top-0 left-0 w-full h-1 bg-brand-green"></div>
-              </div>
-              <div className="p-6 flex-1 flex flex-col">
-                <h3 className="font-bold text-lg text-brand-dark line-clamp-1 group-hover:text-brand-green transition-colors">
-                  {prof.nome}
-                </h3>
-                <p className="text-brand-dark/70 font-medium text-sm mt-1 mb-4">
-                  {prof.especialidade}
-                </p>
+        <div className="space-y-6">
+          <div className="flex flex-col gap-4">
+            {profissionaisPaginados.map((prof) => (
+              <div key={prof.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-6 relative">
                 
-                <div className="mt-auto space-y-3">
-                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                {/* Esquerda: Foto redonda */}
+                <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 relative rounded-full overflow-hidden border-4 border-gray-50 shadow-sm bg-gray-100">
+                  {prof.foto_url ? (
+                    <img src={prof.foto_url} alt={prof.nome} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <Briefcase className="w-10 h-10 md:w-12 md:h-12" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Meio: Dados e Bio */}
+                <div className="flex-1 flex flex-col w-full text-center md:text-left">
+                  <h3 className="font-bold text-xl text-brand-dark mb-1">{prof.nome}</h3>
+                  <p className="text-brand-green font-semibold text-sm mb-3">{prof.especialidade}</p>
+                  
+                  <div className="flex items-center justify-center md:justify-start gap-2 text-gray-500 text-sm mb-4">
                     <MapPin className="w-4 h-4 shrink-0 text-gray-400" />
                     <span className="truncate">{prof.cidade} - {prof.estado}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-2 mt-4">
-                    <a 
-                      href={formatarWhatsApp(prof.telefone)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-colors"
-                    >
-                      <Phone className="w-4 h-4" />
-                      WhatsApp
-                    </a>
-                    
+                  
+                  <div className="bg-gray-50/50 rounded-xl p-4 border border-gray-100/50 relative group">
+                    <p className="text-gray-600 text-sm leading-relaxed italic text-left">
+                      "{prof.apresentacao 
+                        ? prof.apresentacao
+                        : 'Este profissional ainda não adicionou um texto de apresentação ao seu perfil público.'}"
+                    </p>
+                  </div>
+                </div>
+
+                {/* Direita: Botões */}
+                <div className="flex flex-row md:flex-col items-center justify-center gap-3 w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-6 shrink-0">
+                  <a 
+                    href={formatarWhatsApp(prof.telefone)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 md:w-full flex items-center justify-center gap-2 bg-[#25D366] text-white hover:bg-[#20bd5a] px-4 py-3 rounded-xl text-sm font-bold transition-all hover:scale-105 shadow-sm shadow-[#25D366]/20"
+                  >
+                    <Phone className="w-4 h-4" />
+                    WhatsApp
+                  </a>
+                  
+                  <div className="flex gap-3 md:w-full">
                     {prof.instagram_url && (
                       <a
                         href={prof.instagram_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-pink-50 text-pink-600 hover:bg-pink-600 hover:text-white rounded-xl transition-colors"
+                        className="flex-1 flex items-center justify-center h-12 bg-gray-50 text-pink-600 border border-gray-100 hover:bg-pink-50 hover:border-pink-200 rounded-xl transition-colors"
                         title="Instagram"
                       >
-                        <Camera className="w-4 h-4" />
+                        <Camera className="w-5 h-5" />
                       </a>
                     )}
                     
@@ -242,17 +267,54 @@ export function Profissionais() {
                         href={prof.site_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-shrink-0 flex items-center justify-center w-10 h-10 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-colors"
+                        className="flex-1 flex items-center justify-center h-12 bg-gray-50 text-blue-600 border border-gray-100 hover:bg-blue-50 hover:border-blue-200 rounded-xl transition-colors"
                         title="Site"
                       >
-                        <Globe className="w-4 h-4" />
+                        <Globe className="w-5 h-5" />
                       </a>
                     )}
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Paginação */}
+          {totalPaginas > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-6">
+              <button
+                onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
+                disabled={paginaAtual === 1}
+                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              
+              <div className="flex gap-1">
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(pagina => (
+                  <button
+                    key={pagina}
+                    onClick={() => setPaginaAtual(pagina)}
+                    className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${
+                      pagina === paginaAtual
+                        ? 'bg-brand-dark text-white shadow-md'
+                        : 'text-gray-600 hover:bg-gray-100 border border-transparent'
+                    }`}
+                  >
+                    {pagina}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
+                disabled={paginaAtual === totalPaginas}
+                className="p-2 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
             </div>
-          ))}
+          )}
         </div>
       ) : (
         <div className="text-center p-12 bg-white rounded-2xl border border-dashed border-gray-200">
