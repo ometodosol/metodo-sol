@@ -42,4 +42,11 @@ export interface Profissional {
   estado: string;
   cidade: string;
   criado_em: string;
+  nome_completo?: string;
+  endereco_residencia?: string;
+  cpf?: string;
+  rg?: string;
+  cnh?: string;
+  foto_documento_url?: string;
+  foto_segurando_documento_url?: string;
 }

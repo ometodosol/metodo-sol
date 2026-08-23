@@ -110,7 +110,14 @@ export function AdminDashboard() {
     cidade: '',
     foto_url: '',
     instagram_url: '',
-    site_url: ''
+    site_url: '',
+    nome_completo: '',
+    endereco_residencia: '',
+    cpf: '',
+    rg: '',
+    cnh: '',
+    foto_documento_url: '',
+    foto_segurando_documento_url: ''
   });
 
   useEffect(() => {
@@ -361,11 +368,21 @@ export function AdminDashboard() {
         cidade: prof.cidade,
         foto_url: prof.foto_url || '',
         instagram_url: prof.instagram_url || '',
-        site_url: prof.site_url || ''
+        site_url: prof.site_url || '',
+        nome_completo: prof.nome_completo || '',
+        endereco_residencia: prof.endereco_residencia || '',
+        cpf: prof.cpf || '',
+        rg: prof.rg || '',
+        cnh: prof.cnh || '',
+        foto_documento_url: prof.foto_documento_url || '',
+        foto_segurando_documento_url: prof.foto_segurando_documento_url || ''
       });
     } else {
       setEditingProfId(null);
-      setProfForm({ nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '', instagram_url: '', site_url: '' });
+      setProfForm({ 
+        nome: '', especialidade: '', telefone: '', estado: '', cidade: '', foto_url: '', instagram_url: '', site_url: '',
+        nome_completo: '', endereco_residencia: '', cpf: '', rg: '', cnh: '', foto_documento_url: '', foto_segurando_documento_url: ''
+      });
     }
     setShowProfModal(true);
   };
@@ -867,6 +884,47 @@ export function AdminDashboard() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
                     <input required type="text" value={profForm.cidade} onChange={(e) => setProfForm({...profForm, cidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white text-gray-900 focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
+                  </div>
+                </div>
+
+                {/* --- DADOS INTERNOS SIGILOSOS --- */}
+                <div className="pt-4 mt-4 border-t border-gray-200">
+                  <h4 className="text-sm font-bold text-red-600 mb-4 flex items-center gap-2">
+                    Dados Internos (Sigilosos - Não visível para clientes)
+                  </h4>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo (Pessoa Física)</label>
+                      <input type="text" value={profForm.nome_completo} onChange={(e) => setProfForm({...profForm, nome_completo: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="Ex: João da Silva Sauro" />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Endereço de Residência Completo</label>
+                      <input type="text" value={profForm.endereco_residencia} onChange={(e) => setProfForm({...profForm, endereco_residencia: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="Rua, Número, Bairro, Cidade, CEP..." />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
+                        <input type="text" value={profForm.cpf} onChange={(e) => setProfForm({...profForm, cpf: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="000.000.000-00" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">RG</label>
+                        <input type="text" value={profForm.rg} onChange={(e) => setProfForm({...profForm, rg: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="00.000.000-0" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">CNH</label>
+                        <input type="text" value={profForm.cnh} onChange={(e) => setProfForm({...profForm, cnh: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="Nº da CNH" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">URL Foto do Documento (Frente/Verso)</label>
+                        <input type="text" value={profForm.foto_documento_url} onChange={(e) => setProfForm({...profForm, foto_documento_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="https://..." />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">URL Selfie com Documento</label>
+                        <input type="text" value={profForm.foto_segurando_documento_url} onChange={(e) => setProfForm({...profForm, foto_segurando_documento_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-red-50 text-gray-900 focus:ring-red-500 focus:border-red-500" placeholder="https://..." />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </form>
