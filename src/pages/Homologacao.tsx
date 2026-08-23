@@ -166,49 +166,68 @@ export function Homologacao() {
         </p>
       </header>
 
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-        <h2 className="text-lg font-bold text-brand-dark flex items-center justify-between">
-          <span>Selecione o Projeto</span>
-          {salvando && <span className="text-sm text-gray-400 font-normal animate-pulse">Salvando alterações...</span>}
-          {!salvando && Object.keys(dados).length > 1 && <span className="text-sm text-brand-green font-normal flex items-center gap-1"><CheckCircle2 className="w-4 h-4"/> Salvo</span>}
-        </h2>
-        
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark bg-gray-50"
-            placeholder="Buscar projeto..."
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-48 overflow-y-auto pr-2 mt-4">
-          {projetosFiltrados.map((projeto: any) => (
-            <div 
-              key={projeto.id} 
-              onClick={() => setProjetoSelecionado(projeto.id)}
-              className={`border-2 rounded-xl p-3 transition-colors cursor-pointer group ${
-                projetoSelecionado === projeto.id 
-                  ? 'border-brand-green bg-brand-green/5' 
-                  : 'border-gray-100 bg-white hover:border-brand-green'
-              }`}
-            >
-              <h3 className={`font-semibold text-sm line-clamp-1 transition-colors ${
-                projetoSelecionado === projeto.id ? 'text-brand-dark' : 'text-gray-700 group-hover:text-brand-green'
-              }`}>
-                {projeto.titulo}
-              </h3>
-              <p className="text-xs text-gray-500 mt-1 truncate">{projeto.clientes?.nome}</p>
+      {!projetoSelecionado ? (
+        <div className="space-y-6">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
             </div>
-          ))}
-        </div>
-      </div>
+            <input
+              type="text"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg focus:ring-brand-dark focus:border-brand-dark bg-white"
+              placeholder="Buscar projeto para homologação..."
+            />
+          </div>
 
-      {projetoSelecionado ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {projetosFiltrados.map((projeto: any) => (
+              <div 
+                key={projeto.id} 
+                onClick={() => setProjetoSelecionado(projeto.id)}
+                className="bg-white border border-gray-100 rounded-xl p-5 hover:shadow-md transition-shadow group cursor-pointer"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="font-semibold text-brand-dark text-lg group-hover:text-brand-light transition-colors line-clamp-2">
+                    {projeto.titulo}
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span className="font-medium text-gray-700">Cliente:</span>
+                    <span className="truncate">{projeto.clientes?.nome || 'Desconhecido'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {projetosFiltrados.length === 0 && (
+              <div className="col-span-full py-8 text-center text-gray-500">
+                Nenhum projeto encontrado.
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between mb-6">
+          <div>
+            <p className="text-sm text-gray-500">Projeto selecionado:</p>
+            <h3 className="font-bold text-brand-dark text-lg flex items-center gap-3">
+              {projetos.find(p => p.id === projetoSelecionado)?.titulo}
+              {salvando && <span className="text-xs text-gray-400 font-normal animate-pulse">Salvando...</span>}
+              {!salvando && Object.keys(dados).length > 1 && <span className="text-xs text-brand-green font-normal flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Salvo</span>}
+            </h3>
+          </div>
+          <button 
+            onClick={() => setProjetoSelecionado('')}
+            className="text-sm font-medium text-brand-green hover:text-brand-dark transition-colors px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50"
+          >
+            Trocar Projeto
+          </button>
+        </div>
+      )}
+
+      {projetoSelecionado && (
         <div className="space-y-6">
           {/* Status Geral e Progresso */}
           <div className="bg-brand-dark p-6 rounded-2xl shadow-sm text-white">
