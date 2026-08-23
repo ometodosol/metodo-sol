@@ -349,12 +349,6 @@ export function Homologacao() {
             })}
           </div>
         </div>
-      ) : (
-        <div className="text-center p-12 bg-white rounded-2xl border border-dashed border-gray-200">
-          <FileSignature className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-gray-400">Selecione um projeto acima</h3>
-          <p className="text-gray-400 mt-2">Para iniciar o acompanhamento da Homologação.</p>
-        </div>
       )}
     </div>
   );
