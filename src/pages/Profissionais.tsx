@@ -39,6 +39,7 @@ export function Profissionais() {
     const { data } = await supabase
       .from('profissionais')
       .select('id, usuario_id, nome, especialidade, telefone, foto_url, instagram_url, site_url, estado, cidade, criado_em')
+      .eq('status_aprovacao', 'aprovado')
       .order('criado_em', { ascending: false });
 
     if (data) {

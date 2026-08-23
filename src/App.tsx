@@ -21,6 +21,7 @@ import { NovoOrcamento } from './pages/NovoOrcamento';
 import { Orcamentos } from './pages/Orcamentos';
 import { Academy } from './pages/Academy';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
+import { CadastroProfissional } from './pages/CadastroProfissional';
 
 // Placeholder para rotas em desenvolvimento
 const Placeholder = ({ title }: { title: string }) => (
@@ -40,6 +41,7 @@ function App() {
         <Router>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/cadastro-profissional" element={<CadastroProfissional />} />
             
             <Route element={<ProtectedRoute />}>
               <Route element={<AppLayout />}>

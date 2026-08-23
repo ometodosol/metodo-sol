@@ -49,4 +49,5 @@ export interface Profissional {
   cnh?: string;
   foto_documento_url?: string;
   foto_segurando_documento_url?: string;
+  status_aprovacao?: 'pendente' | 'aprovado' | 'reprovado';
 }

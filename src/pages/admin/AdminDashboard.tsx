@@ -421,6 +421,32 @@ export function AdminDashboard() {
     setSaving(false);
   };
 
+  const handleAprovarProfissional = async (id: string) => {
+    setSaving(true);
+    const { error } = await supabase.from('profissionais').update({ status_aprovacao: 'aprovado' }).eq('id', id);
+    if (!error) {
+      setProfissionais(profissionais.map(p => p.id === id ? { ...p, status_aprovacao: 'aprovado' } : p));
+    } else {
+      alert('Erro ao aprovar profissional.');
+    }
+    setSaving(false);
+  };
+
+  const handleReprovarProfissional = async (id: string, nome: string) => {
+    setSaving(true);
+    const { error } = await supabase.from('profissionais').update({ status_aprovacao: 'reprovado' }).eq('id', id);
+    if (!error) {
+      setProfissionais(profissionais.map(p => p.id === id ? { ...p, status_aprovacao: 'reprovado' } : p));
+      
+      const emailSubject = encodeURIComponent('Atualização do seu cadastro - O Método Sol');
+      const emailBody = encodeURIComponent(`Olá ${nome},\n\nRecebemos o seu cadastro para a plataforma O Método Sol, porém identificamos uma inconsistência nas informações ou fotos enviadas.\n\nPor favor, pedimos que acesse o portal novamente e refaça o seu cadastro com atenção aos dados inseridos e à qualidade da foto segurando o documento.\n\nAtenciosamente,\nEquipe O Método Sol`);
+      window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
+    } else {
+      alert('Erro ao reprovar profissional.');
+    }
+    setSaving(false);
+  };
+
   if (!isAdmin) return <Navigate to="/" replace />;
 
   const loginBanners = banners.filter(b => b.local === 'login');
@@ -795,13 +821,14 @@ export function AdminDashboard() {
                       <th className="px-4 py-3 font-medium">Nome</th>
                       <th className="px-4 py-3 font-medium">Especialidade</th>
                       <th className="px-4 py-3 font-medium">Localização</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
                       <th className="px-4 py-3 font-medium">Ações</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {profissionais.length === 0 && (
                       <tr>
-                        <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground italic">
+                        <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground italic">
                           Nenhum profissional cadastrado na rede.
                         </td>
                       </tr>
@@ -811,9 +838,21 @@ export function AdminDashboard() {
                         <td className="px-4 py-4 text-card-foreground font-medium">{prof.nome}</td>
                         <td className="px-4 py-4 text-muted-foreground">{prof.especialidade}</td>
                         <td className="px-4 py-4 text-muted-foreground">{prof.cidade} - {prof.estado}</td>
-                        <td className="px-4 py-4 flex gap-2">
-                          <button onClick={() => openProfModal(prof)} className="text-gray-400 hover:text-brand-dark transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5"><Edit2 className="w-4 h-4" /></button>
-                          <button onClick={() => handleDeleteProfissional(prof.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
+                        <td className="px-4 py-4">
+                          {prof.status_aprovacao === 'pendente' && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">Pendente</span>}
+                          {prof.status_aprovacao === 'aprovado' && <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">Aprovado</span>}
+                          {prof.status_aprovacao === 'reprovado' && <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">Reprovado</span>}
+                          {!prof.status_aprovacao && <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-bold rounded-full">Aprovado</span>}
+                        </td>
+                        <td className="px-4 py-4 flex gap-2 flex-wrap">
+                          {(!prof.status_aprovacao || prof.status_aprovacao === 'pendente' || prof.status_aprovacao === 'reprovado') && (
+                            <button onClick={() => handleAprovarProfissional(prof.id)} className="text-white bg-brand-green hover:bg-brand-green/90 font-bold transition-colors px-3 py-1.5 rounded-lg text-xs">Aprovar</button>
+                          )}
+                          {(!prof.status_aprovacao || prof.status_aprovacao === 'pendente' || prof.status_aprovacao === 'aprovado') && (
+                            <button onClick={() => handleReprovarProfissional(prof.id, prof.nome)} className="text-white bg-red-500 hover:bg-red-600 font-bold transition-colors px-3 py-1.5 rounded-lg text-xs">Reprovar</button>
+                          )}
+                          <button onClick={() => openProfModal(prof)} className="text-gray-400 hover:text-brand-dark transition-colors p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5" title="Editar"><Edit2 className="w-4 h-4" /></button>
+                          <button onClick={() => handleDeleteProfissional(prof.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-lg hover:bg-red-50" title="Excluir"><Trash2 className="w-4 h-4" /></button>
                         </td>
                       </tr>
                     ))}
