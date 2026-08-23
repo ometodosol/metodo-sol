@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/layout/ProtectedRoute';
+import { AdminRoute } from './components/layout/AdminRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { Dashboard } from './pages/Dashboard';
 import { Clientes } from './pages/Clientes';
@@ -74,7 +75,9 @@ function App() {
                 <Route path="homologacao" element={<Homologacao />} />
                 
                 {/* Admin */}
-                <Route path="admin" element={<AdminDashboard />} />
+                <Route element={<AdminRoute />}>
+                  <Route path="admin" element={<AdminDashboard />} />
+                </Route>
                 
                 {/* Configurações e Conta */}
                 <Route path="configuracoes" element={<Placeholder title="Configurações" />} />

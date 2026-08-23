@@ -42,7 +42,7 @@ const bottomNavItems = [
 ];
 
 export function AppLayout() {
-  const { user, signOut } = useAuth();
+  const { user, userRole, signOut } = useAuth();
   const { theme, setTheme, actualTheme } = useTheme();
   const navigate = useNavigate();
   
@@ -81,8 +81,8 @@ export function AppLayout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Temporariamente liberado para visualização
-  const isAdmin = true;
+  // Apenas administradores veem os painéis administrativos
+  const isAdmin = userRole === 'administrador';
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row font-sans text-foreground">
