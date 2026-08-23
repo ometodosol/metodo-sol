@@ -4,8 +4,14 @@ import { ArrowLeft, Upload, CheckCircle2, AlertCircle, Loader2 } from 'lucide-re
 import { Link } from 'react-router-dom';
 
 const ESPECIALIDADES = [
-  'Instalador Solar', 'Engenheiro Eletricista', 'Projetista',
-  'Vendedor Técnico', 'Consultor', 'Outro'
+  'Engenheiro Eletricista',
+  'Engenheiro Civil',
+  'Instalador Solar',
+  'Projetista',
+  'Vendedor / Comercial',
+  'Consultor',
+  'Integrador',
+  'Outros'
 ];
 
 const ESTADOS_BR = [
@@ -155,41 +161,41 @@ export function CadastroProfissional() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pl-8">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nome de Exibição / Fantasia *</label>
-                  <input required type="text" value={form.nome} onChange={(e) => setForm({...form, nome: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Como os clientes verão você" />
+                  <input required type="text" value={form.nome} onChange={(e) => setForm({...form, nome: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Como os clientes verão você" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Especialidade Principal *</label>
-                  <select required value={form.especialidade} onChange={(e) => setForm({...form, especialidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark">
+                  <select required value={form.especialidade} onChange={(e) => setForm({...form, especialidade: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark">
                     <option value="">Selecione...</option>
                     {ESPECIALIDADES.map(esp => <option key={esp} value={esp}>{esp}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Comercial *</label>
-                  <input required type="text" value={form.telefone} onChange={(e) => setForm({...form, telefone: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="(11) 99999-9999" />
+                  <input required type="text" value={form.telefone} onChange={(e) => setForm({...form, telefone: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="(11) 99999-9999" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Link de Foto de Perfil (Opcional)</label>
-                  <input type="url" value={form.foto_url} onChange={(e) => setForm({...form, foto_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
+                  <input type="url" value={form.foto_url} onChange={(e) => setForm({...form, foto_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Estado (UF) de Atuação *</label>
-                  <select required value={form.estado} onChange={(e) => setForm({...form, estado: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark">
+                  <select required value={form.estado} onChange={(e) => setForm({...form, estado: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark">
                     <option value="">Selecione...</option>
                     {ESTADOS_BR.map(uf => <option key={uf} value={uf}>{uf}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Cidade Principal *</label>
-                  <input required type="text" value={form.cidade} onChange={(e) => setForm({...form, cidade: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
+                  <input required type="text" value={form.cidade} onChange={(e) => setForm({...form, cidade: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Ex: São Paulo" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Instagram (Opcional)</label>
-                  <input type="url" value={form.instagram_url} onChange={(e) => setForm({...form, instagram_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://instagram.com/..." />
+                  <input type="url" value={form.instagram_url} onChange={(e) => setForm({...form, instagram_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://instagram.com/..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Site (Opcional)</label>
-                  <input type="url" value={form.site_url} onChange={(e) => setForm({...form, site_url: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
+                  <input type="url" value={form.site_url} onChange={(e) => setForm({...form, site_url: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="https://..." />
                 </div>
               </div>
             </div>
@@ -207,23 +213,23 @@ export function CadastroProfissional() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pl-8">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo (Pessoa Física) *</label>
-                  <input required type="text" value={form.nome_completo} onChange={(e) => setForm({...form, nome_completo: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
+                  <input required type="text" value={form.nome_completo} onChange={(e) => setForm({...form, nome_completo: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Endereço de Residência Completo *</label>
-                  <input required type="text" value={form.endereco_residencia} onChange={(e) => setForm({...form, endereco_residencia: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Rua, Número, Bairro, CEP..." />
+                  <input required type="text" value={form.endereco_residencia} onChange={(e) => setForm({...form, endereco_residencia: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="Rua, Número, Bairro, CEP..." />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CPF *</label>
-                  <input required type="text" value={form.cpf} onChange={(e) => setForm({...form, cpf: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="000.000.000-00" />
+                  <input required type="text" value={form.cpf} onChange={(e) => setForm({...form, cpf: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" placeholder="000.000.000-00" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">RG *</label>
-                  <input required type="text" value={form.rg} onChange={(e) => setForm({...form, rg: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
+                  <input required type="text" value={form.rg} onChange={(e) => setForm({...form, rg: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CNH (Opcional se tiver RG)</label>
-                  <input type="text" value={form.cnh} onChange={(e) => setForm({...form, cnh: e.target.value})} className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
+                  <input type="text" value={form.cnh} onChange={(e) => setForm({...form, cnh: e.target.value})} className="w-full px-4 py-2.5 bg-white text-gray-900 border border-gray-200 rounded-xl focus:ring-brand-dark focus:border-brand-dark" />
                 </div>
               </div>
             </div>
