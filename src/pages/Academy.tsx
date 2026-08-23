@@ -33,10 +33,19 @@ export function Academy() {
   const [modulos, setModulos] = useState<AcademyModulo[]>([]);
   const [novidades, setNovidades] = useState<AcademyNovidade[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
     fetchAcademyData();
   }, []);
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentSlideIndex(prev => (prev + 1) % slides.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
   const fetchAcademyData = async () => {
     setLoading(true);
@@ -54,37 +63,38 @@ export function Academy() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#02050A] flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin text-[#a8ff35]" />
       </div>
     );
   }
 
-  const mainSlide = slides.length > 0 ? slides[0] : null;
+  const mainSlide = slides.length > 0 ? slides[currentSlideIndex] : null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white overflow-x-hidden animate-in fade-in duration-500 pb-24">
+    <div className="min-h-[calc(100vh-2rem)] md:min-h-[calc(100vh-4rem)] bg-[#02050A] text-white rounded-[2rem] animate-in fade-in duration-500 pb-24 shadow-2xl border border-white/5">
       
       {/* Hero Banner */}
       {mainSlide && (
-        <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh]">
+        <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] rounded-t-[2rem] overflow-hidden">
           {/* Banner Image / Video Placeholder */}
-          <div className="absolute inset-0">
+          <div className="absolute inset-0 transition-opacity duration-1000">
             <img 
+              key={mainSlide.id}
               src={mainSlide.imagem_url || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=2070&auto=format&fit=crop"} 
               alt={mainSlide.titulo} 
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover object-center animate-in fade-in duration-1000"
             />
             {/* Gradient Overlay for Netflix effect */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/50 to-transparent"></div>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[#02050A] via-[#02050A]/50 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#02050A] via-[#02050A]/40 to-transparent"></div>
           </div>
 
           {/* Hero Content */}
-          <div className="absolute bottom-1/4 left-6 md:left-12 lg:left-20 z-10 max-w-2xl">
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-4">{mainSlide.titulo || 'MasterFluxo'}</h1>
+          <div className="absolute bottom-1/4 left-6 md:left-12 lg:left-20 z-10 max-w-2xl animate-in slide-in-from-bottom-4 duration-700 fade-in" key={`content-${mainSlide.id}`}>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4 text-shadow-lg">{mainSlide.titulo || 'MasterFluxo'}</h1>
             {mainSlide.texto && (
-              <p className="text-lg md:text-xl text-gray-300 font-medium mb-8 max-w-lg">
+              <p className="text-base md:text-lg text-gray-300 font-medium mb-8 max-w-lg text-shadow">
                 {mainSlide.texto}
               </p>
             )}
@@ -101,7 +111,7 @@ export function Academy() {
         </div>
       )}
 
-      <div className={`relative z-20 space-y-12 pb-12 ${mainSlide ? 'mt-[100px]' : 'mt-12'}`}>
+      <div className={`relative z-20 space-y-12 pb-12 overflow-x-hidden px-4 md:px-0 ${mainSlide ? 'mt-[50px]' : 'mt-12 pt-12'}`}>
         
         {/* Row: Módulos (Posters verticais) */}
         {modulos.length > 0 && (
