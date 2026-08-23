@@ -11,7 +11,7 @@ export function ProtectedRoute() {
     return (
       <div className="min-h-screen bg-brand-gray flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-brand-dark animate-pulse">
-          <Zap className="w-12 h-12" />
+          <img src="https://ometodosol.com.br/wp-content/uploads/2026/08/Icon.png" alt="O Método Sol" className="w-16 h-16 object-contain" />
           <p className="font-medium text-gray-500">Carregando plataforma...</p>
         </div>
       </div>
