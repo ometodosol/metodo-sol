@@ -235,8 +235,12 @@ export function AdminDashboard() {
     setSaving(true);
     const newItem = { titulo: 'Novo Banner', texto: '', imagem_url: '', link_url: '', ativo: true };
     const { data, error } = await supabase.from('academy_slides').insert([newItem]).select();
-    if (!error && data) setAcademySlides([data[0] as AcademySlide, ...academySlides]);
-    else alert('Erro ao criar slide.');
+    if (!error && data) {
+      setAcademySlides([data[0] as AcademySlide, ...academySlides]);
+    } else {
+      console.error(error);
+      alert(`Erro ao criar slide: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
@@ -262,8 +266,12 @@ export function AdminDashboard() {
     setSaving(true);
     const newItem = { titulo: 'Novo Módulo', badge: '', imagem_url: '', link_url: '', ordem: academyModulos.length };
     const { data, error } = await supabase.from('academy_modulos').insert([newItem]).select();
-    if (!error && data) setAcademyModulos([...academyModulos, data[0] as AcademyModulo]);
-    else alert('Erro ao criar módulo.');
+    if (!error && data) {
+      setAcademyModulos([...academyModulos, data[0] as AcademyModulo]);
+    } else {
+      console.error(error);
+      alert(`Erro ao criar módulo: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
@@ -289,8 +297,12 @@ export function AdminDashboard() {
     setSaving(true);
     const newItem = { titulo: 'Nova Aula', imagem_url: '', link_url: '', ordem: academyNovidades.length };
     const { data, error } = await supabase.from('academy_novidades').insert([newItem]).select();
-    if (!error && data) setAcademyNovidades([...academyNovidades, data[0] as AcademyNovidade]);
-    else alert('Erro ao criar novidade.');
+    if (!error && data) {
+      setAcademyNovidades([...academyNovidades, data[0] as AcademyNovidade]);
+    } else {
+      console.error(error);
+      alert(`Erro ao criar novidade: ${error?.message || 'Erro desconhecido'}`);
+    }
     setSaving(false);
   };
 
