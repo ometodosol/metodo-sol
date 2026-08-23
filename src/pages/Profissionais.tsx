@@ -84,14 +84,14 @@ export function Profissionais() {
     <div className="p-6 md:p-10 space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-24">
       {/* MODAL DE TERMOS DE ISENÇÃO */}
       {showTermosModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-200 relative">
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col border border-gray-200 relative">
             <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-red-50 text-red-700">
               <ShieldCheck className="w-6 h-6 flex-shrink-0" />
               <h2 className="text-xl font-bold">Aviso Importante</h2>
             </div>
             
-            <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4 text-gray-700 text-sm md:text-base leading-relaxed">
+            <div className="p-5 overflow-y-auto max-h-[30vh] space-y-4 text-gray-700 text-sm leading-relaxed">
               <p>
                 O <strong>O Método Sol</strong> atua unicamente como uma vitrine de conexões para facilitar o contato entre profissionais do setor de energia solar e potenciais parceiros.
               </p>
