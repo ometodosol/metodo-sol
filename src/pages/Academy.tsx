@@ -111,7 +111,7 @@ export function Academy() {
         </div>
       )}
 
-      <div className={`relative z-20 space-y-12 pb-12 overflow-x-hidden px-4 md:px-0 ${mainSlide ? 'mt-[25px]' : 'mt-12 pt-12'}`}>
+      <div className={`relative z-20 space-y-12 pb-12 overflow-x-hidden px-4 md:px-0 ${mainSlide ? 'mt-[15px]' : 'mt-12 pt-12'}`}>
         
         {/* Row: Módulos (Posters verticais) */}
         {modulos.length > 0 && (
@@ -142,14 +142,6 @@ export function Academy() {
                   </a>
                 ))}
               </div>
-              
-              {/* Nav arrows (desktop only) */}
-              <button className="absolute -left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 p-2 rounded-full hidden lg:group-hover:block transition-all backdrop-blur-sm pointer-events-none">
-                <ChevronLeft className="w-6 h-6 text-white" />
-              </button>
-              <button className="absolute -right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 p-2 rounded-full hidden lg:group-hover:block transition-all backdrop-blur-sm pointer-events-none">
-                <ChevronRight className="w-6 h-6 text-white" />
-              </button>
             </div>
           </section>
         )}
@@ -185,10 +177,6 @@ export function Academy() {
                   </a>
                 ))}
               </div>
-              
-              <button className="absolute -right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 p-2 rounded-full hidden lg:group-hover:block transition-all backdrop-blur-sm pointer-events-none">
-                <ChevronRight className="w-6 h-6 text-white" />
-              </button>
             </div>
           </section>
         )}
