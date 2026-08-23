@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { Profissional } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { Briefcase, Search, MapPin, Phone, Plus, X, Camera, Globe } from 'lucide-react';
+import { Briefcase, Search, MapPin, Phone, Plus, X, Camera, Globe, ShieldCheck } from 'lucide-react';
 
 const ESTADOS_BR = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG',
@@ -25,14 +25,28 @@ export function Profissionais() {
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // Controle do modal de termos
+  const [showTermosModal, setShowTermosModal] = useState(false);
+  const [aceitouTermos, setAceitouTermos] = useState(false);
+  
   // Filtros
   const [busca, setBusca] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
   const [filtroEspecialidade, setFiltroEspecialidade] = useState('');
 
   useEffect(() => {
+    // Verifica se já aceitou os termos no localStorage
+    const hasAccepted = localStorage.getItem('termos_conexoes_aceito');
+    if (!hasAccepted) {
+      setShowTermosModal(true);
+    }
     fetchProfissionais();
   }, []);
+
+  const handleAceitarTermos = () => {
+    localStorage.setItem('termos_conexoes_aceito', 'true');
+    setShowTermosModal(false);
+  };
 
   async function fetchProfissionais() {
     setLoading(true);
@@ -68,6 +82,52 @@ export function Profissionais() {
 
   return (
     <div className="p-6 md:p-10 space-y-8 animate-in fade-in duration-500 max-w-7xl mx-auto pb-24">
+      {/* MODAL DE TERMOS DE ISENÇÃO */}
+      {showTermosModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col border border-gray-200 relative">
+            <div className="p-6 border-b border-gray-100 flex items-center gap-3 bg-red-50 text-red-700">
+              <ShieldCheck className="w-6 h-6 flex-shrink-0" />
+              <h2 className="text-xl font-bold">Aviso Importante</h2>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-[60vh] space-y-4 text-gray-700 text-sm md:text-base leading-relaxed">
+              <p>
+                O <strong>O Método Sol</strong> atua unicamente como uma vitrine de conexões para facilitar o contato entre profissionais do setor de energia solar e potenciais parceiros.
+              </p>
+              <p>
+                Declaramos que <strong>não nos responsabilizamos</strong> por quaisquer serviços prestados, contratos fechados, garantias, atrasos ou problemas decorrentes das negociações feitas com os profissionais listados nesta página.
+              </p>
+              <p>
+                É de total responsabilidade do contratante analisar o perfil, solicitar documentações e validar a competência técnica do profissional antes de fechar qualquer negócio.
+              </p>
+            </div>
+            
+            <div className="p-6 border-t border-gray-100 bg-gray-50 flex flex-col gap-4">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={aceitouTermos}
+                  onChange={(e) => setAceitouTermos(e.target.checked)}
+                  className="mt-1 w-5 h-5 rounded border-gray-300 text-brand-dark focus:ring-brand-dark cursor-pointer"
+                />
+                <span className="text-sm text-gray-800 font-medium group-hover:text-black transition-colors">
+                  Li e concordo com os termos de isenção de responsabilidade.
+                </span>
+              </label>
+              
+              <button 
+                onClick={handleAceitarTermos}
+                disabled={!aceitouTermos}
+                className="w-full py-3 bg-brand-dark text-white rounded-xl font-bold hover:bg-brand-green hover:text-brand-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Acessar Rede de Conexões
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-brand-dark flex items-center gap-3">

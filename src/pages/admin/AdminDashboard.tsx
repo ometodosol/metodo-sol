@@ -429,6 +429,7 @@ export function AdminDashboard() {
     if (!error) {
       setProfissionais(profissionais.map(p => p.id === id ? { ...p, status_aprovacao: 'aprovado' } : p));
     } else {
+      console.error('Supabase update error:', error);
       alert('Erro ao aprovar profissional.');
     }
     setSaving(false);
@@ -444,6 +445,7 @@ export function AdminDashboard() {
       const emailBody = encodeURIComponent(`Olá ${nome},\n\nRecebemos o seu cadastro para a plataforma O Método Sol, porém identificamos uma inconsistência nas informações ou fotos enviadas.\n\nPor favor, pedimos que acesse o portal novamente e refaça o seu cadastro com atenção aos dados inseridos e à qualidade da foto segurando o documento.\n\nAtenciosamente,\nEquipe O Método Sol`);
       window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`, '_blank');
     } else {
+      console.error('Supabase update error:', error);
       alert('Erro ao reprovar profissional.');
     }
     setSaving(false);
