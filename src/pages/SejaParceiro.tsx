@@ -13,11 +13,11 @@ export function SejaParceiro() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-brand-dark flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 py-6">
+      <header className="py-6">
         <div className="max-w-4xl mx-auto px-4 flex items-center justify-center">
-          <img src="/logo-dark.png" alt="O Método Sol" className="h-10 opacity-90" />
+          <img src="/logo-light.png" alt="O Método Sol" className="h-7 opacity-90" />
         </div>
       </header>
 

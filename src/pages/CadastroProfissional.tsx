@@ -126,12 +126,12 @@ export function CadastroProfissional() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-brand-dark py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <img src="/logo-dark.png" alt="O Método Sol" className="h-12 mx-auto mb-6 opacity-90" />
-          <h1 className="text-3xl font-black text-gray-900">Seja um Profissional Parceiro</h1>
-          <p className="mt-3 text-lg text-gray-600">
+          <img src="/logo-light.png" alt="O Método Sol" className="h-8 mx-auto mb-6 opacity-90" />
+          <h1 className="text-3xl font-black text-white">Seja um Profissional Parceiro</h1>
+          <p className="mt-3 text-lg text-blue-100">
             Cadastre-se para fazer parte da nossa rede exclusiva de conexões.
           </p>
         </div>
