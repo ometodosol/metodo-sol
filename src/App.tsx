@@ -17,7 +17,8 @@ import { Homologacao } from './pages/Homologacao';
 import { Profissionais } from './pages/Profissionais';
 import { Login } from './pages/Login';
 import { Conta } from './pages/Conta';
-import { Orcamento } from './pages/Orcamento';
+import { NovoOrcamento } from './pages/NovoOrcamento';
+import { Orcamentos } from './pages/Orcamentos';
 import { Academy } from './pages/Academy';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 
@@ -54,7 +55,8 @@ function App() {
                 
                 <Route path="comissionamento" element={<Comissionamento />} />
                 <Route path="dimensionamento" element={<Dimensionamento />} />
-                <Route path="orcamentos" element={<Orcamento />} />
+                <Route path="orcamentos" element={<Orcamentos />} />
+                <Route path="orcamentos/novo" element={<NovoOrcamento />} />
                 
                 {/* Ferramentas Técnicas */}
                 <Route path="conferir-kit" element={<Placeholder title="Conferir Kit" />} />

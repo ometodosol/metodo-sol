@@ -235,7 +235,7 @@ export function ClienteDetalhes() {
                 {orcamentos.map(orc => (
                   <div 
                     key={orc.id} 
-                    onClick={() => navigate('/orcamentos', { state: { orcamento: orc } })}
+                    onClick={() => navigate('/orcamentos/novo', { state: { orcamento: orc } })}
                     className="p-3 border border-gray-100 rounded-lg hover:border-brand-dark transition-all bg-gray-50 cursor-pointer"
                   >
                     <div className="flex items-center justify-between mb-1">
