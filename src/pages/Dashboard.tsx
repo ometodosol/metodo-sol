@@ -26,7 +26,8 @@ export function Dashboard() {
   const userName = user?.user_metadata?.nome || user?.email?.split('@')[0] || 'Instalador';
 
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [carouselImages, setCarouselImages] = useState<any[]>(defaultCarouselImages);
+  const [carouselImages, setCarouselImages] = useState<any[]>([]);
+  const [isLoadingBanners, setIsLoadingBanners] = useState(true);
   
   const [totalProjetos, setTotalProjetos] = useState(0);
   const [totalOrcamentos, setTotalOrcamentos] = useState(0);
@@ -45,7 +46,10 @@ export function Dashboard() {
       
       if (bannersData && bannersData.length > 0) {
         setCarouselImages(bannersData);
+      } else {
+        setCarouselImages(defaultCarouselImages);
       }
+      setIsLoadingBanners(false);
 
       // Fetch Projetos
       const { data: projetosData } = await supabase
@@ -91,32 +95,39 @@ export function Dashboard() {
       
       {/* Top Carousel */}
       <div className="w-full h-48 md:h-64 rounded-2xl overflow-hidden relative shadow-md">
-        {carouselImages.map((banner, idx) => (
-          <img 
-            key={idx}
-            src={banner.imagem_url} 
-            alt={`Slide ${idx + 1}`} 
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
-          />
-        ))}
-        {/* Overlay escuro e textos */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-        
-        <div className="absolute bottom-8 left-8 right-8 text-white">
-          <h2 className="text-2xl font-bold mb-1">{carouselImages[currentSlide]?.titulo || ''}</h2>
-          <p className="text-sm text-gray-200 line-clamp-2 max-w-2xl">{carouselImages[currentSlide]?.texto || ''}</p>
-        </div>
-        
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {carouselImages.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentSlide(idx)}
-              className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-6' : 'bg-white/50'}`}
-            />
-          ))}
-        </div>
+        {isLoadingBanners ? (
+          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+        ) : (
+          <>
+            {carouselImages.map((banner, idx) => (
+              <img 
+                key={idx}
+                src={banner.imagem_url} 
+                alt={`Slide ${idx + 1}`} 
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${idx === currentSlide ? 'opacity-100' : 'opacity-0'}`}
+              />
+            ))}
+            
+            {/* Overlay escuro e textos */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+            
+            <div className="absolute bottom-8 left-8 right-8 text-white">
+              <h2 className="text-2xl font-bold mb-1">{carouselImages[currentSlide]?.titulo || ''}</h2>
+              <p className="text-sm text-gray-200 line-clamp-2 max-w-2xl">{carouselImages[currentSlide]?.texto || ''}</p>
+            </div>
+            
+            {/* Carousel Indicators */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+              {carouselImages.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentSlide(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${idx === currentSlide ? 'bg-white w-6' : 'bg-white/50'}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Top Banner & Insights */}
