@@ -3,6 +3,7 @@ import { FileText, Download, User, Zap, DollarSign, Settings, Save, Home, Activi
 import html2pdf from 'html2pdf.js';
 import { supabase } from '../lib/supabase';
 import type { Cliente } from '../types';
+import { useLocation } from 'react-router-dom';
 
 const concessionariasData = [
   // Norte
@@ -46,6 +47,7 @@ const concessionariasData = [
   { nome: 'RGE (RS)', tarifa: 0.80 },
 ];
 export function Orcamento() {
+  const location = useLocation();
   // Clientes
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [selectedClienteId, setSelectedClienteId] = useState<string>('');
@@ -134,6 +136,48 @@ export function Orcamento() {
     }
     fetchClientes();
   }, []);
+
+  useEffect(() => {
+    if (location.state?.orcamento && clientes.length > 0) {
+      const { orcamento } = location.state;
+      const d = orcamento.dados;
+      if (!d) return;
+
+      setSelectedClienteId(orcamento.cliente_id);
+      const clienteEncontrado = clientes.find(c => c.id === orcamento.cliente_id);
+      if (clienteEncontrado) {
+        setClientName(clienteEncontrado.nome);
+        setSearchTerm(clienteEncontrado.nome);
+      } else if (d.clientName) {
+        setClientName(d.clientName);
+        setSearchTerm(d.clientName);
+      }
+      
+      if (d.date) setDate(d.date);
+      if (d.grupo) setGrupo(d.grupo);
+      if (d.ucName) setUcName(d.ucName);
+      if (d.ucTipo) setUcTipo(d.ucTipo);
+      if (d.concessionaria) setConcessionaria(d.concessionaria);
+      if (d.valorKwh) setValorKwh(d.valorKwh);
+      if (d.taxaIlumPub) setTaxaIlumPub(d.taxaIlumPub);
+      if (d.tipoRede) setTipoRede(d.tipoRede);
+      if (d.consumoMode) setConsumoMode(d.consumoMode);
+      if (d.consumoMensal) setConsumoMensal(d.consumoMensal);
+      if (d.consumosMeses) setConsumosMeses(d.consumosMeses);
+      if (d.geracaoPercentual) setGeracaoPercentual(d.geracaoPercentual);
+      if (d.perdas) setPerdas(d.perdas);
+      if (d.potencia) setPotencia(d.potencia);
+      if (d.fatorSimultaneidade) setFatorSimultaneidade(d.fatorSimultaneidade);
+      if (d.valorFioB) setValorFioB(d.valorFioB);
+      if (d.percentualFioB) setPercentualFioB(d.percentualFioB);
+      if (d.modulosQtd) setModulosQtd(d.modulosQtd);
+      if (d.modulosMarca) setModulosMarca(d.modulosMarca);
+      if (d.inversorQtd) setInversorQtd(d.inversorQtd);
+      if (d.inversorMarca) setInversorMarca(d.inversorMarca);
+      if (d.investimento) setInvestimento(d.investimento);
+      if (d.notes) setNotes(d.notes);
+    }
+  }, [location.state, clientes]);
 
   const filteredClientes = clientes.filter(c => c.nome.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -483,10 +527,10 @@ export function Orcamento() {
         >
           
           {/* ================= PÁGINA 1: CAPA ================= */}
-          <div style={{ minHeight: '297mm', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ position: 'relative', display: 'flex', flexDirection: 'column' }}>
             
             {/* Header da Capa */}
-            <div style={{ padding: '60px', textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ padding: '60px', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
               <div style={{ marginBottom: '60px' }}>
                 {companyLogo ? (
                   <img src={companyLogo} alt="Logo" style={{ maxHeight: '120px', maxWidth: '300px', objectFit: 'contain', margin: '0 auto' }} />
@@ -523,7 +567,7 @@ export function Orcamento() {
           <div className="html2pdf__page-break"></div>
 
           {/* ================= PÁGINA 2: BENEFÍCIOS E COMO FUNCIONA ================= */}
-          <div style={{ minHeight: '297mm', position: 'relative', padding: '40px' }}>
+          <div style={{ position: 'relative', padding: '40px' }}>
             
             <h2 style={{ fontSize: '24px', color: '#0f172a', textAlign: 'center', marginBottom: '40px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
               Benefícios do Sistema
@@ -554,19 +598,19 @@ export function Orcamento() {
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '50px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>1</div>
+                <div style={{ minWidth: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', textAlign: 'center', lineHeight: '30px', fontWeight: 'bold' }}>1</div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Captação:</strong> Os módulos fotovoltaicos transformam a luz do sol em energia elétrica contínua.</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>2</div>
+                <div style={{ minWidth: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', textAlign: 'center', lineHeight: '30px', fontWeight: 'bold' }}>2</div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Inversão:</strong> O inversor transforma a energia contínua em alternada, pronta para uso no imóvel.</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>3</div>
+                <div style={{ minWidth: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', textAlign: 'center', lineHeight: '30px', fontWeight: 'bold' }}>3</div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Consumo:</strong> A energia processada alimenta todos os equipamentos da sua unidade consumidora.</p>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <div style={{ width: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>4</div>
+                <div style={{ minWidth: '30px', height: '30px', borderRadius: '15px', backgroundColor: '#0f172a', color: '#fff', textAlign: 'center', lineHeight: '30px', fontWeight: 'bold' }}>4</div>
                 <p style={{ margin: 0, fontSize: '13px', color: '#475569' }}><strong>Injeção:</strong> Toda energia excedente que você não usar é injetada na rede e vira créditos para a noite.</p>
               </div>
             </div>
@@ -574,16 +618,20 @@ export function Orcamento() {
             <h2 style={{ fontSize: '24px', color: '#0f172a', textAlign: 'center', marginBottom: '30px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
               Nosso Processo (Passo a Passo)
             </h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center', gap: '10px' }}>
-              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>1. Proposta</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Aprovação comercial</span></div>
-              <div style={{ color: '#cbd5e1' }}>→</div>
-              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>2. Vistoria</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Análise técnica</span></div>
-              <div style={{ color: '#cbd5e1' }}>→</div>
-              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>3. Engenharia</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Aprovação na rede</span></div>
-              <div style={{ color: '#cbd5e1' }}>→</div>
-              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>4. Instalação</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Montagem do kit</span></div>
-              <div style={{ color: '#cbd5e1' }}>→</div>
-              <div><strong style={{ display: 'block', fontSize: '14px', color: '#0f172a' }}>5. Ativação</strong><span style={{ fontSize: '11px', color: '#64748b' }}>Troca do relógio</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+              {[
+                { step: 1, title: 'Proposta', desc: 'Aprovação financeira e do projeto' },
+                { step: 2, title: 'Vistoria', desc: 'Análise técnica do local e telhado' },
+                { step: 3, title: 'Engenharia', desc: 'Aprovação junto à concessionária' },
+                { step: 4, title: 'Instalação', desc: 'Montagem completa do sistema' },
+                { step: 5, title: 'Ativação', desc: 'Troca do medidor e geração ativa' }
+              ].map(p => (
+                <div key={p.step} style={{ flex: 1, backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '15px 10px', textAlign: 'center' }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '12px', backgroundColor: '#0f172a', color: '#fff', fontSize: '12px', lineHeight: '24px', textAlign: 'center', margin: '0 auto 10px auto', fontWeight: 'bold' }}>{p.step}</div>
+                  <strong style={{ display: 'block', fontSize: '13px', color: '#0f172a', marginBottom: '5px' }}>{p.title}</strong>
+                  <span style={{ fontSize: '11px', color: '#64748b', display: 'block', lineHeight: '1.4' }}>{p.desc}</span>
+                </div>
+              ))}
             </div>
 
           </div>
@@ -591,7 +639,7 @@ export function Orcamento() {
           <div className="html2pdf__page-break"></div>
 
           {/* ================= PÁGINA 3: PROPOSTA TÉCNICA E FINANCEIRA ================= */}
-          <div style={{ minHeight: '297mm', position: 'relative', padding: '0' }}>
+          <div style={{ position: 'relative', padding: '0' }}>
             
             {/* Header Reduzido */}
             <div style={{ backgroundColor: '#0f172a', padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#fff' }}>
